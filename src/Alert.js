@@ -15,6 +15,7 @@ function App() {
   return (
     <div className="App">
       {showPopup && <Popup onClose={handleClosePopup} />}
+
       <header className="App-header">
         <p>Welcome to the website!</p>
       </header>
@@ -23,7 +24,3 @@ function App() {
 }
 
 export default App;
-
-
-
-
