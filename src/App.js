@@ -1,29 +1,21 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { Routes, Route } from 'react-router-dom';  // ไม่ต้องใช้ <Router> ที่นี่
 import Popup from './Popup';
+import Logo from './Logo';
+import Form from './Form';
 import './App.css';
-import { useNavigate } from 'react-router-dom';  // ใช้ useNavigate แทน useHistory
 
 function App() {
-  const [showPopup, setShowPopup] = useState(true);
-  const navigate = useNavigate();  // ใช้ navigate แทน history
-
-  const handleClosePopup = () => {
-    setShowPopup(false);  // ปิดป๊อปอัพเมื่อคลิก
-    navigate('/form');  // ไปยังหน้าถัดไป
-  };
-
   return (
     <div className="App">
-      {showPopup && <Popup onClose={handleClosePopup} />}
-      <header className="App-header">
-        <p>Welcome to the website!</p>
-      </header>
+      <Routes>
+        <Route path="/" element={<Popup />} />
+        <Route path="/logo" element={<Logo />} />
+        <Route path="/form" element={<Form />} />
+      </Routes>
     </div>
   );
 }
 
 export default App;
-
-
-
 

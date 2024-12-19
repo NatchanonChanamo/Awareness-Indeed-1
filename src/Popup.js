@@ -1,10 +1,17 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import './Popup.css';
 
-const Popup = ({ onClose, onProceed }) => {
+const Popup = () => {
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    navigate('/logo');
+  };
+
   return (
-    <div className="popup-overlay" onClick={onClose}>
-      <div className="popup-box" onClick={(e) => e.stopPropagation()}>
+    <div className="popup-overlay" onClick={handleClick}>
+      <div className="popup-box">
         <h2 className="warning-title">คำเตือน</h2>
         <p className="warning-message">
           เว็บนี้มีเนื้อหาเกี่ยวกับความรู้สึกและความทรงจำที่คุณมีทั้งหมด
@@ -24,9 +31,6 @@ const Popup = ({ onClose, onProceed }) => {
           ผ่านการให้ผู้เล่นมีส่วนร่วมด้วย <br></br>โดยจัดทำขึ้นเพื่อเป็นการศึกษาและช่วยเหลือสังคม ตามเงื่อนไขของทุนการศึกษาและปนิธานของผู้จัดทำ
           <br></br>จัดทำโดยนักศึกษาทุนผู้นำทางสังคมและสิ่งแวดล้อม มหาวิทยาลัยกรุงเทพ
         </p>
-        <button className="proceed-button" onClick={onProceed}>
-          กดเพื่อไปตามหาตัวคุณเอง
-        </button>
       </div>
     </div>
   );
