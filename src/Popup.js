@@ -1,16 +1,34 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import gsap from 'gsap';
 import './Popup.css';
 
 const Popup = () => {
   const navigate = useNavigate();
+  const popupRef = useRef(null);
+
+  useEffect(() => {
+    gsap.fromTo(popupRef.current,
+      { opacity: 0 },
+      { 
+        opacity: 1,
+        duration: 2.5,
+        ease: "power2.inOut"
+      }
+    );
+  }, []);
 
   const handleClick = () => {
-    navigate('/logo');
+    gsap.to(popupRef.current, {
+      opacity: 0,
+      duration: 1.5,
+      ease: "power2.inOut",
+      onComplete: () => navigate('logo')
+    });
   };
 
   return (
-    <div className="popup-overlay" onClick={handleClick}>
+    <div className="popup-overlay" onClick={handleClick} ref={popupRef}>
       <div className="popup-box">
         <h2 className="warning-title">คำเตือน</h2>
         <p className="warning-message">
