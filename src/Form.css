@@ -1,44 +1,74 @@
 /* Form.css */
+body {
+  font-family: 'Arial', sans-serif;
+  background-color: #F4A6C0; /* Background color from Berry Sorbet palette */
+  margin: 0;
+  padding: 0;
+}
+
 .form-container {
-    padding: 20px;
-    max-width: 600px;
-    margin: 0 auto;
-    background-color: white;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  }
-  
-  .form-container h2 {
-    text-align: center;
-    margin-bottom: 20px;
-  }
-  
-  .form-field {
-    margin-bottom: 20px;
-  }
-  
-  .form-field label {
-    display: block;
-    margin-bottom: 5px;
-  }
-  
-  .form-field input, .form-field select {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-  }
-  
-  button {
-    padding: 10px 20px;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-  
-  button:hover {
-    background-color: #45a049;
-  }
-  
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background-color: #FFFFFF; /* White background for form container */
+  padding: 40px;
+  max-width: 600px;
+  margin: 20px auto;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.form-container h2 {
+  margin-bottom: 20px;
+  font-size: 28px;
+  color: #A77BCA; /* Header color from Berry Sorbet palette */
+  text-align: center;
+}
+
+.form-field {
+  margin-bottom: 20px;
+  width: 100%;
+  max-width: 400px;
+}
+
+.form-field label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 18px;
+  color: #333; /* Darker text color for better readability */
+}
+
+.form-field input,
+.form-field select {
+  width: 100%;
+  padding: 12px;
+  font-size: 16px;
+  border: 1px solid #D6A6E0; /* Border color from Berry Sorbet palette */
+  border-radius: 4px;
+  box-sizing: border-box;
+  background-color: #FFFFFF; /* White background for input fields */
+  color: #333; /* Dark text color for better readability */
+}
+
+.form-field input:focus,
+.form-field select:focus {
+  border-color: #A77BCA; /* Focus border color from Berry Sorbet palette */
+  outline: none;
+}
+
+button[type="submit"] {
+  padding: 12px 24px;
+  font-size: 18px;
+  color: #FFFFFF; /* White text color */
+  background-color: #BFA2D8; /* Button background color from Berry Sorbet palette */
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button[type="submit"]:hover {
+  background-color: #A77BCA; /* Hover background color from Berry Sorbet palette */
+}

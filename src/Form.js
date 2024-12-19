@@ -10,7 +10,15 @@ function Form() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Logic to handle form submission
+    const formData = {
+      name,
+      age,
+      gender,
+      playerType,
+      saveLater
+    };
+    console.log('Form Data:', formData);
+    // Logic to handle form submission, e.g., send data to server
     alert('Form submitted');
   };
 

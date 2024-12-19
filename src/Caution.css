@@ -1,5 +1,5 @@
-/* Popup Overlay */
-.popup-overlay {
+/* Caution Overlay */
+.caution-overlay {
     position: fixed;
     top: 0;
     left: 0;
@@ -12,8 +12,8 @@
     z-index: 1000;
 }
 
-/* Popup Box */
-.popup-box {
+/* Caution Box */
+.caution-box {
     background-color: #FFFFFF; /* Match with background */
     padding: 40px;
     border-radius: 8px;
@@ -23,7 +23,7 @@
 }
 
 /* Header Styling */
-.popup-box h2 {
+.caution-box h2 {
     margin-bottom: 20px;
     font-size: 28px; /* Increase font size for emphasis */
     font-weight: bold;
@@ -31,7 +31,7 @@
 }
 
 /* Paragraph Styling */
-.popup-box p {
+.caution-box p {
     font-size: 18px;
     line-height: 1.6;
     color: #333; /* Darker text color for better readability */
@@ -39,7 +39,7 @@
 }
 
 /* Footer Text */
-.popup-box .footer-text {
+.caution-box .footer-text {
     font-size: 14px;
     color: #7f8c8d;
     font-style: italic;
@@ -47,12 +47,12 @@
 }
 
 /* Hover Effect for Overlay */
-.popup-overlay:hover {
+.caution-overlay:hover {
     cursor: pointer;
 }
 
 /* Button Styling */
-.popup-box button {
+.caution-box button {
     cursor: pointer;
     padding: 10px 20px;
     background-color: #e74c3c;
@@ -63,6 +63,6 @@
     margin-top: 20px;
 }
 
-.popup-box button:hover {
+.caution-box button:hover {
     background-color: #c0392b;
 }
