@@ -13,8 +13,8 @@ body {
   justify-content: center;
   min-height: 100vh;
   background-color: #FFFFFF; /* White background for form container */
-  padding: 40px;
-  max-width: 600px;
+  padding: 20px; /* ลด padding */
+  max-width: 500px; /* ลด max-width */
   margin: 20px auto;
   border-radius: 10px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
@@ -22,29 +22,29 @@ body {
 
 .form-container h2 {
   margin-bottom: 20px;
-  font-size: 28px;
+  font-size: 24px; /* ลด font-size */
   color: #A77BCA; /* Header color from Berry Sorbet palette */
   text-align: center;
 }
 
 .form-field {
-  margin-bottom: 20px;
+  margin-bottom: 15px; /* ลด margin-bottom */
   width: 100%;
-  max-width: 400px;
+  max-width: 350px; /* ลด max-width */
 }
 
 .form-field label {
   display: block;
   margin-bottom: 8px;
-  font-size: 18px;
+  font-size: 16px; /* ลด font-size */
   color: #333; /* Darker text color for better readability */
 }
 
 .form-field input,
 .form-field select {
   width: 100%;
-  padding: 12px;
-  font-size: 16px;
+  padding: 10px; /* ลด padding */
+  font-size: 14px; /* ลด font-size */
   border: 1px solid #D6A6E0; /* Border color from Berry Sorbet palette */
   border-radius: 4px;
   box-sizing: border-box;
@@ -59,8 +59,8 @@ body {
 }
 
 button[type="submit"] {
-  padding: 12px 24px;
-  font-size: 18px;
+  padding: 10px 20px; /* ลด padding */
+  font-size: 16px; /* ลด font-size */
   color: #FFFFFF; /* White text color */
   background-color: #BFA2D8; /* Button background color from Berry Sorbet palette */
   border: none;

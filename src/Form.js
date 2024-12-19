@@ -1,25 +1,31 @@
 import React, { useState } from 'react';
 import './Form.css';
+import { db } from './firebase';
+import { collection, addDoc } from 'firebase/firestore';
 
 function Form() {
   const [name, setName] = useState('');
   const [age, setAge] = useState('');
   const [gender, setGender] = useState('');
   const [playerType, setPlayerType] = useState('');
-  const [saveLater, setSaveLater] = useState('');
+  const [acceptPrivacy, setAcceptPrivacy] = useState(''); // เปลี่ยนตัวแปรเป็น acceptPrivacy
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const formData = {
       name,
       age,
       gender,
       playerType,
-      saveLater
+      acceptPrivacy // เปลี่ยนตัวแปรเป็น acceptPrivacy
     };
-    console.log('Form Data:', formData);
-    // Logic to handle form submission, e.g., send data to server
-    alert('Form submitted');
+    try {
+      const docRef = await addDoc(collection(db, "formdata"), formData);
+      console.log("Document written with ID: ", docRef.id);
+      alert('Form submitted');
+    } catch (e) {
+      console.error("Error adding document: ", e);
+    }
   };
 
   return (
@@ -53,11 +59,11 @@ function Form() {
           </select>
         </div>
         <div className="form-field">
-          <label>คุณต้องการให้เราบันทึกคำตอบของคุณเพื่อส่งให้คุณในภายหลังหรือไม่</label>
-          <select value={saveLater} onChange={(e) => setSaveLater(e.target.value)} required>
+          <label>คุณยินยอมให้เราเก็บข้อมูลของคุณเพื่อการศึกษาและวิเคราะห์ข้อมูลเชิงสถิติหรือไม่</label> {/* เปลี่ยนคำถาม */}
+          <select value={acceptPrivacy} onChange={(e) => setAcceptPrivacy(e.target.value)} required> {/* เปลี่ยนตัวแปรเป็น acceptPrivacy */}
             <option value="">เลือกคำตอบ</option>
-            <option value="yes">ต้องการ</option>
-            <option value="no">ไม่ต้องการ</option>
+            <option value="yes">ยินยอม</option>
+            <option value="no">ไม่ยินยอม</option>
           </select>
         </div>
         <button type="submit">ส่งข้อมูล</button>
