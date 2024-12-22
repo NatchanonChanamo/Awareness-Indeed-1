@@ -27,6 +27,11 @@ body {
   text-align: center;
 }
 
+.form-logo {
+  max-width: 150px;
+  margin-bottom: 20px;
+}
+
 .form-field {
   margin-bottom: 15px; /* ลด margin-bottom */
   width: 100%;

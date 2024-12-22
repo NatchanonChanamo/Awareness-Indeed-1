@@ -2,13 +2,16 @@ import React, { useState } from 'react';
 import './Form.css';
 import { db } from './firebase';
 import { collection, addDoc } from 'firebase/firestore';
+import { useNavigate } from 'react-router-dom';
+import bulogo from './assets/bulogo.png'; // นำเข้าโลโก้
 
 function Form() {
   const [name, setName] = useState('');
   const [age, setAge] = useState('');
   const [gender, setGender] = useState('');
   const [playerType, setPlayerType] = useState('');
-  const [acceptPrivacy, setAcceptPrivacy] = useState(''); // เปลี่ยนตัวแปรเป็น acceptPrivacy
+  const [acceptPrivacy, setAcceptPrivacy] = useState('');
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -17,12 +20,13 @@ function Form() {
       age,
       gender,
       playerType,
-      acceptPrivacy // เปลี่ยนตัวแปรเป็น acceptPrivacy
+      acceptPrivacy
     };
     try {
       const docRef = await addDoc(collection(db, "formdata"), formData);
       console.log("Document written with ID: ", docRef.id);
       alert('Form submitted');
+      navigate(`/presurvey/${docRef.id}`); // นำทางไปยังหน้า PreSurvey พร้อมกับ document ID
     } catch (e) {
       console.error("Error adding document: ", e);
     }
@@ -30,6 +34,7 @@ function Form() {
 
   return (
     <div className="form-container">
+      <img src={bulogo} alt="BU Logo" className="form-logo" /> {/* เพิ่มโลโก้ */}
       <h2>ข้อมูลผู้ใช้</h2>
       <form onSubmit={handleSubmit}>
         <div className="form-field">
