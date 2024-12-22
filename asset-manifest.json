@@ -1,14 +1,14 @@
 {
   "files": {
     "main.css": "/Awareness-Indeed-1/static/css/main.73ef18c5.css",
-    "main.js": "/Awareness-Indeed-1/static/js/main.0a8c31da.js",
+    "main.js": "/Awareness-Indeed-1/static/js/main.53445536.js",
     "static/media/bulogo.png": "/Awareness-Indeed-1/static/media/bulogo.e8442173d3f64edea1a0.png",
     "index.html": "/Awareness-Indeed-1/index.html",
     "main.73ef18c5.css.map": "/Awareness-Indeed-1/static/css/main.73ef18c5.css.map",
-    "main.0a8c31da.js.map": "/Awareness-Indeed-1/static/js/main.0a8c31da.js.map"
+    "main.53445536.js.map": "/Awareness-Indeed-1/static/js/main.53445536.js.map"
   },
   "entrypoints": [
     "static/css/main.73ef18c5.css",
-    "static/js/main.0a8c31da.js"
+    "static/js/main.53445536.js"
   ]
 }
