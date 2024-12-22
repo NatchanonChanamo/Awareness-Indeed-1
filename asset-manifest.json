@@ -1,0 +1,14 @@
+{
+  "files": {
+    "main.css": "/NatchanonChanamo/Awareness-Indeed-1.git/static/css/main.73ef18c5.css",
+    "main.js": "/NatchanonChanamo/Awareness-Indeed-1.git/static/js/main.3db614db.js",
+    "static/media/bulogo.png": "/NatchanonChanamo/Awareness-Indeed-1.git/static/media/bulogo.e8442173d3f64edea1a0.png",
+    "index.html": "/NatchanonChanamo/Awareness-Indeed-1.git/index.html",
+    "main.73ef18c5.css.map": "/NatchanonChanamo/Awareness-Indeed-1.git/static/css/main.73ef18c5.css.map",
+    "main.3db614db.js.map": "/NatchanonChanamo/Awareness-Indeed-1.git/static/js/main.3db614db.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.73ef18c5.css",
+    "static/js/main.3db614db.js"
+  ]
+}
