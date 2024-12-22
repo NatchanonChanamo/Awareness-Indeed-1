@@ -9,7 +9,7 @@ function App() {
   return (
     <div className="App">
       <Routes>
-        <Route path="/" element={<Caution />} />  // เปลี่ยนเส้นทางจาก Popup เป็น Caution
+        <Route path="/" element={<Caution />} />   
         <Route path="/logo" element={<Logo />} />
         <Route path="/form" element={<Form />} />
       </Routes>
