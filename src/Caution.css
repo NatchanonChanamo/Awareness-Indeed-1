@@ -1,0 +1,68 @@
+/* Caution Overlay */
+.caution-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #FFFFFF; /* Pure white background */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+/* Caution Box */
+.caution-box {
+    background-color: #FFFFFF; /* Match with background */
+    padding: 40px;
+    border-radius: 8px;
+    text-align: center;
+    width: 80%;
+    max-width: 600px;
+}
+
+/* Header Styling */
+.caution-box h2 {
+    margin-bottom: 20px;
+    font-size: 28px; /* Increase font size for emphasis */
+    font-weight: bold;
+    color: #e74c3c; /* Red color for warning */
+}
+
+/* Paragraph Styling */
+.caution-box p {
+    font-size: 18px;
+    line-height: 1.6;
+    color: #333; /* Darker text color for better readability */
+    margin-bottom: 15px;
+}
+
+/* Footer Text */
+.caution-box .footer-text {
+    font-size: 14px;
+    color: #7f8c8d;
+    font-style: italic;
+    margin-top: 20px;
+}
+
+/* Hover Effect for Overlay */
+.caution-overlay:hover {
+    cursor: pointer;
+}
+
+/* Button Styling */
+.caution-box button {
+    cursor: pointer;
+    padding: 10px 20px;
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    margin-top: 20px;
+}
+
+.caution-box button:hover {
+    background-color: #c0392b;
+}

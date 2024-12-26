@@ -1,0 +1,6 @@
+# https://www.robotstxt.org/robotstxt.html
+// filepath: public/robots.txt
+User-agent: *
+Allow: /
+
+Sitemap: https://natchanonchanamo.github.io/Awareness-Indeed-1/sitemap.xml
