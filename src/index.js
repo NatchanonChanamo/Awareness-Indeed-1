@@ -6,7 +6,9 @@ import App from './App';
 import Form from './Form';
 import Logo from './Logo';
 import Caution from './Caution';
-import PreSurvey from './PreSurvey'; // นำเข้า PreSurvey
+import PreSurvey from './PreSurvey'; 
+import Story from './Story';
+import PostSurvey from './PostSurvey'; // เพิ่ม import PostSurvey
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -15,7 +17,9 @@ root.render(
       <Route path="/" element={<App />} />
       <Route path="/form" element={<Form />} />
       <Route path="/logo" element={<Logo />} />
-      <Route path="/presurvey/:id" element={<PreSurvey />} /> {/* เพิ่มเส้นทางสำหรับ PreSurvey พร้อมกับ document ID */}
+      <Route path="/presurvey/:id" element={<PreSurvey />} /> 
+      <Route path="/story" element={<Story />} />
+      <Route path="/postsurvey/:id" element={<PostSurvey />} /> {/* เพิ่ม route สำหรับ PostSurvey */}
     </Routes>
   </Router>
 );

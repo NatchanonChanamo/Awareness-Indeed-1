@@ -2,11 +2,12 @@ import React, { useState, useEffect } from 'react';
 import './PreSurvey.css';
 import { db } from './firebase';
 import { doc, setDoc } from 'firebase/firestore';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { gsap } from 'gsap';
 
 function PreSurvey() {
   const { id } = useParams(); // รับ document ID จาก URL
+  const navigate = useNavigate();
   const [responses, setResponses] = useState({
     presurvey_question1: '',
     presurvey_question2: '',
@@ -33,7 +34,15 @@ function PreSurvey() {
     try {
       await setDoc(doc(db, "formdata", id), { presurvey: responses }, { merge: true });
       console.log("Pre-survey data added to document with ID: ", id);
-      alert('Pre-survey submitted');
+      
+      // Fade out animation before navigation
+      gsap.to('.presurvey-container', {
+        opacity: 0,
+        duration: 1,
+        onComplete: () => {
+          navigate('/story'); // Navigate to story page after fade out
+        }
+      });
     } catch (e) {
       console.error("Error adding document: ", e);
     }
