@@ -40,7 +40,7 @@ function PreSurvey() {
         opacity: 0,
         duration: 1,
         onComplete: () => {
-          navigate('/story'); // Navigate to story page after fade out
+          navigate(`/story/${id}`); // Navigate to story page with id
         }
       });
     } catch (e) {

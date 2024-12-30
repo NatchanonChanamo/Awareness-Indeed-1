@@ -18,7 +18,7 @@ root.render(
       <Route path="/form" element={<Form />} />
       <Route path="/logo" element={<Logo />} />
       <Route path="/presurvey/:id" element={<PreSurvey />} /> 
-      <Route path="/story" element={<Story />} />
+      <Route path="/story/:id" element={<Story />} /> {/* เพิ่ม id ในเส้นทาง story */}
       <Route path="/postsurvey/:id" element={<PostSurvey />} /> {/* เพิ่ม route สำหรับ PostSurvey */}
     </Routes>
   </Router>
