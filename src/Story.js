@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { useNavigate, useParams } from 'react-router-dom';
 import './Story.css';
+import time1 from './assets/time1.gif'; // นำเข้าไฟล์ GIF
 
 function Story() {
   const storyContainerRef = useRef(null);
@@ -62,12 +63,12 @@ function Story() {
   }, [step, navigate, id]);
 
   return (
-    <div className="story-container" ref={storyContainerRef}>
-      <div className="story-content" ref={textRef}>
+    <div className="story-container flex flex-col items-center justify-center min-h-screen bg-cover bg-center" style={{ backgroundImage: `url(${time1})` }} ref={storyContainerRef}>
+      <div className="story-content max-w-lg text-center p-8 bg-white bg-opacity-90 rounded-lg shadow-md" ref={textRef}>
         {step === 1 && (
           <>
-            <h1>ความทรงจำของคุณ</h1>
-            <p>
+            <h1 className="text-3xl font-semibold text-purple-600 mb-6">ความทรงจำของคุณ</h1>
+            <p className="text-lg text-gray-700 mb-4">
               ในทุก ๆ วัน เราต่างมีเรื่องราวมากมายที่ผ่านเข้ามาในชีวิต
               บางเรื่องสร้างรอยยิ้ม บางเรื่องทิ้งร่องรอยความเจ็บปวดไว้
               แต่ทุกเรื่องราวล้วนมีความหมาย และทำให้คุณเป็นตัวคุณในวันนี้
@@ -76,8 +77,8 @@ function Story() {
         )}
         {step === 2 && (
           <>
-            <h1>บทที่ 1</h1>
-            <p>
+            <h1 className="text-3xl font-semibold text-purple-600 mb-6">บทที่ 1</h1>
+            <p className="text-lg text-gray-700 mb-4">
               เรามาลองย้อนกลับไปในความทรงจำของคุณ
               และค้นหาความหมายที่ซ่อนอยู่ในนั้นด้วยกัน...
             </p>
@@ -85,8 +86,8 @@ function Story() {
         )}
         {step === 3 && (
           <>
-            <h1>บทที่ 2</h1>
-            <p>
+            <h1 className="text-3xl font-semibold text-purple-600 mb-6">บทที่ 2</h1>
+            <p className="text-lg text-gray-700 mb-4">
               คุณจำได้ไหมว่าครั้งสุดท้ายที่คุณรู้สึกมีความสุขคือเมื่อไหร่?
               ลองนึกถึงช่วงเวลานั้นและความรู้สึกที่คุณมี...
             </p>

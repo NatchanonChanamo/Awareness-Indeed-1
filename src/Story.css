@@ -6,6 +6,10 @@
   background-color: #FFFFFF;
   padding: 20px;
   font-family: 'Prompt', sans-serif;
+  background-size: cover; /* ปรับขนาดพื้นหลังให้ครอบคลุมทั้งหน้าจอ */
+  background-position: center; /* จัดตำแหน่งพื้นหลังให้อยู่ตรงกลาง */
+  background-repeat: no-repeat; /* ไม่ให้พื้นหลังซ้ำ */
+  transition: width 0.5s ease, height 0.5s ease; /* เพิ่มการทรานซิชั่น */
 }
 
 .story-content {
@@ -13,7 +17,7 @@
   text-align: center;
   padding: 40px;
   border-radius: 10px;
-  background-color: rgba(255, 255, 255, 0.95);
+  background-color: rgba(255, 255, 255, 0.95); /* เพิ่มพื้นหลังโปร่งแสง */
 }
 
 .story-content h1 {
@@ -29,4 +33,20 @@
   line-height: 1.8;
   margin-bottom: 20px;
   font-weight: 300;
+}
+
+/* Media Queries */
+@media (min-width: 1024px) {
+  .story-container {
+    width: 430px; /* กำหนดความกว้างให้เท่ากับหน้าจอ iPhone */
+    height: 932px; /* กำหนดความสูงให้เท่ากับหน้าจอ iPhone */
+    margin: auto; /* จัดกึ่งกลางหน้าจอ */
+  }
+}
+
+@media (max-width: 430px) {
+  .story-container {
+    width: 100vw; /* ขยายความกว้างให้เต็มหน้าจอ */
+    height: 100vh; /* ขยายความสูงให้เต็มหน้าจอ */
+  }
 }

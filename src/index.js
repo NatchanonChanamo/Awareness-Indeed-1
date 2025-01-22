@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { HashRouter as Router, Route, Routes } from 'react-router-dom';
 import './index.css';
+import './tailwind.css'; // นำเข้าไฟล์ tailwind.css
 import App from './App';
 import Form from './Form';
 import Logo from './Logo';

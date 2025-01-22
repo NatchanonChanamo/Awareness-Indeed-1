@@ -11,3 +11,10 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+/* Ensure the form container is responsive */
+.form-container {
+  max-width: 100%;
+  padding: 1rem;
+  box-sizing: border-box;
+}
