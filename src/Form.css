@@ -88,3 +88,18 @@ button[type="submit"] {
 button[type="submit"]:hover {
   background-color: #A77BCA; /* Hover background color from Berry Sorbet palette */
 }
+
+@media (max-width: 768px) {
+  .form-container {
+    padding: 15px; /* ลด padding ลงสำหรับจอที่เล็กลง */
+  }
+
+  .form-container h2 {
+    font-size: 20px; /* ลดขนาดตัวอักษรของหัวข้อ */
+  }
+
+  button[type="submit"] {
+    padding: 8px 16px; /* ลดขนาดปุ่ม */
+    font-size: 14px;
+  }
+}

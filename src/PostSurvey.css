@@ -4,118 +4,147 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   min-height: 100vh;
-  background-color: #FFFFFF;
-  padding: 20px;
-  max-width: 800px; 
-  margin: 20px auto;
-  border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  opacity: 0; 
+  background-color: #f5f3ff; /* สีพื้นหลังโทนม่วง */
+  padding: 2rem 1rem;
+  width: 100%;
+  max-width: 768px;
+  margin: 0 auto;
+  box-sizing: border-box;
   font-family: 'Prompt', sans-serif;
+  opacity: 0; 
 }
 
-.postsurvey-container h2 {
-  margin-bottom: 20px;
-  font-size: 24px;
-  color: #A77BCA;
+.postsurvey-header {
+  width: 100%;
   text-align: center;
-  font-family: 'Prompt', sans-serif;
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 2px solid #ddd6fe; /* สีเส้นขอบโทนม่วง */
+}
+
+.postsurvey-header h2 {
+  font-size: 1.5rem;
+  color: #7c3aed; /* สีหัวข้อหลักโทนม่วง */
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.instructions p, .scale-guide p {
+  font-size: 0.9rem;
+  color: #4b5563;
+  text-wrap: balance;
+  max-width: 600px;
+  margin: 0.5rem auto;
+}
+
+.survey-section {
+  width: 100%;
+  background-color: #ffffff;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  margin-bottom: 2rem;
+}
+
+.survey-section h3 {
+  font-size: 1.2rem;
   font-weight: 500;
+  color: #6d28d9; /* สีหัวข้อย่อยโทนม่วง */
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid #ede9fe;
 }
 
 .postsurvey-field {
-  margin-bottom: 15px;
+  margin-bottom: 1.5rem;
   width: 100%;
-  max-width: 700px; 
+}
+
+.postsurvey-field:last-child {
+  margin-bottom: 0;
 }
 
 .postsurvey-field label {
   display: block;
-  margin-bottom: 8px;
-  font-size: 18px; /* เพิ่มขนาดตัวอักษร */
-  color: #333;
-  font-weight: bold; /* เพิ่มความหนาของตัวอักษร */
-}
-
-.postsurvey-field > label {
-  display: block;
-  margin-bottom: 8px;
-  font-size: 18px;
-  color: #333;
-  font-weight: bold;
-  font-family: 'Prompt', sans-serif;
-  font-weight: 500;
-}
-
-.postsurvey-field select {
-  width: 100%;
-  padding: 10px;
-  font-size: 14px;
-  border: 1px solid #D6A6E0;
-  border-radius: 4px;
-  box-sizing: border-box;
-  background-color: #FFFFFF;
-  color: #333;
-}
-
-.postsurvey-field select:focus {
-  border-color: #A77BCA;
-  outline: none;
-}
-
-.postsurvey-field textarea {
-  width: 100%;
-  padding: 10px;
-  font-size: 14px;
-  border: 1px solid #D6A6E0;
-  border-radius: 4px;
-  box-sizing: border-box;
-  background-color: #FFFFFF;
-  color: #333;
-  resize: vertical;
-  min-height: 50px; /* ปรับขนาดความสูงขั้นต่ำให้เล็กลง */
-  max-height: 150px; /* เพิ่มขนาดความสูงสูงสุด */
-}
-
-.postsurvey-field textarea:focus {
-  border-color: #A77BCA;
-  outline: none;
+  margin-bottom: 1rem;
+  font-size: 1rem;
+  color: #1f2937;
+  font-weight: 400; 
+  line-height: 1.6;
+  text-wrap: balance;
 }
 
 .options {
   display: flex;
-  justify-content: space-between;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
 }
 
 .options label {
   display: flex;
   align-items: center;
-  margin-right: 10px;
-  font-weight: normal;
-  font-size: 14px;
-  font-family: 'Prompt', sans-serif;
-  font-weight: 300;
+  justify-content: center;
+  font-weight: 400;
+  font-size: 0.9rem;
+  padding: 0.5rem 1rem;
+  border: 1px solid #ddd6fe; /* สีขอบปุ่มโทนม่วง */
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
 }
 
 .options input[type="radio"] {
-  margin-right: 5px;
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+.options label:has(input[type="radio"]:checked) {
+  background-color: #7c3aed; /* สีปุ่มเมื่อเลือกโทนม่วง */
+  color: white;
+  border-color: #7c3aed;
+}
+
+.postsurvey-field textarea {
+  width: 100%;
+  padding: 0.75rem;
+  font-size: 1rem;
+  border: 1px solid #ddd6fe;
+  border-radius: 8px;
+  box-sizing: border-box;
+  background-color: #f5f3ff;
+  color: #1f2937;
+  resize: vertical;
+  min-height: 120px;
+  font-family: 'Prompt', sans-serif;
+}
+
+.postsurvey-field textarea:focus {
+  border-color: #7c3aed;
+  outline: none;
+  box-shadow: 0 0 0 2px #c4b5fd;
 }
 
 button[type="submit"] {
-  padding: 10px 20px;
-  font-size: 16px;
+  display: block;
+  margin: 1rem auto 0;
+  padding: 0.75rem 2rem;
+  font-size: 1rem;
   color: #FFFFFF;
-  background-color: #BFA2D8;
+  background-color: #8b5cf6; /* สีปุ่มส่งโทนม่วง */
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
   cursor: pointer;
   transition: background-color 0.3s ease;
   font-family: 'Prompt', sans-serif;
-  font-weight: 400;
+  font-weight: 500;
 }
 
 button[type="submit"]:hover {
-  background-color: #A77BCA;
+  background-color: #7c3aed; /* สีปุ่มส่งเมื่อ hover โทนม่วง */
 }

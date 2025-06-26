@@ -1,11 +1,21 @@
 /** @type {import('tailwindcss').Config} */
+const plugin = require('tailwindcss/plugin') // เพิ่มบรรทัดนี้
+
 module.exports = {
   content: [
-    "./src/**/*.{js,jsx,ts,tsx}", // เพิ่มเส้นทางของไฟล์ที่ Tailwind CSS จะทำงานด้วย
+    "./src/**/*.{js,jsx,ts,tsx}",
   ],
   theme: {
     extend: {},
   },
-  plugins: [],
+  plugins: [
+    // เพิ่มโค้ดส่วนนี้เข้าไป
+    plugin(function({ addUtilities }) {
+      addUtilities({
+        '.text-balance': {
+          'text-wrap': 'balance',
+        },
+      })
+    }),
+  ],
 }
-

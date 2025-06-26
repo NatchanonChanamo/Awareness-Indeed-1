@@ -1,0 +1,30 @@
+.scaler-wrapper {
+  /* ทำให้ wrapper คลุมเต็มหน้าจอจริงและจัด content ให้อยู่กลาง */
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden; /* ซ่อนส่วนที่อาจจะล้นออกไป */
+  background-color: #f0f0f0; /* สีพื้นหลังรอบๆ (เลือกสีที่ต้องการ) */
+}
+
+.scaler-content {
+  /* นี่คือหน้าจอเสมือนของเรา */
+  width: 390px;
+  height: 844px;
+  
+  /* หัวใจสำคัญ: ใช้ CSS Variable ที่เราคำนวณจาก Javascript มาสั่ง scale */
+  transform: scale(var(--scale-factor, 1));
+  transform-origin: center center; /* กำหนดให้ซูมจากตรงกลาง */
+  
+  /* ทำให้การเปลี่ยนขนาดสมูทขึ้น */
+  transition: transform 0.2s ease-out;
+
+  /* ตกแต่งเพิ่มเติม */
+  background-color: white;
+  overflow-y: auto; /* ทำให้สามารถ scroll ได้ถ้าเนื้อหายาวเกิน */
+  overflow-x: hidden;
+  position: relative;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+}

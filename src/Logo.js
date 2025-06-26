@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import gsap from 'gsap';
-import './Logo.css';
+// import './Logo.css'; // ลบการ import นี้ทิ้ง
 import bulogo from './assets/bulogo.png';
 
 function Logo() {
@@ -13,7 +13,6 @@ function Logo() {
     if (imageLoaded) {
       console.log('Image loaded, starting animation');
       
-      // Fade in logo
       gsap.fromTo(logoRef.current,
         { opacity: 0 },
         { 
@@ -25,7 +24,6 @@ function Logo() {
         }
       );
 
-      // Fade out and navigate after 7 seconds
       const timer = setTimeout(() => {
         console.log('Starting fade out');
         gsap.to(logoRef.current, {
@@ -48,11 +46,15 @@ function Logo() {
   };
 
   return (
-    <div className="logo-container" onClick={handleClick}>
+    // เปลี่ยนมาใช้ Tailwind Classes
+    <div 
+      className="w-full h-full flex justify-center items-center bg-white cursor-pointer" 
+      onClick={handleClick}
+    >
       <img 
         src={bulogo} 
         alt="BU Logo" 
-        className="logo" 
+        className="max-w-[250px] h-auto" // ลดขนาดโลโก้ลงเล็กน้อย
         ref={logoRef}
         onLoad={() => setImageLoaded(true)} 
         onError={() => console.error('Failed to load image')}
