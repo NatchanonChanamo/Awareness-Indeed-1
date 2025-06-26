@@ -3,6 +3,8 @@ import { db } from './firebase';
 import { collection, addDoc } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
 import bulogo from './assets/bulogo.png';
+import projectLogo from './assets/ProjectLogo.png'; // Import โลโก้โปรเจกต์
+import LoginBG from './assets/LoginBG.png'; // Import รูปพื้นหลัง
 
 function Form() {
   const [name, setName] = useState('');
@@ -31,14 +33,28 @@ function Form() {
   };
 
   return (
-    // ปรับแก้ Padding และ Background
-    <div className="flex flex-col items-center justify-center min-h-full bg-pink-100 p-4">
-      <img src={bulogo} alt="BU Logo" className="max-w-[150px] mb-4" /> 
-      {/* ปรับแก้ขนาดตัวอักษรและ Margin */}
-      <h2 className="mb-4 text-xl font-semibold text-purple-600">โปรดกรอกข้อมูล</h2>
-      <form onSubmit={handleSubmit} className="w-full max-w-xs p-6 bg-white rounded-lg shadow-md">
+    // --- ปรับปรุง Container หลัก ---
+    <div 
+      className="flex flex-col items-center justify-center min-h-screen bg-cover bg-center p-4"
+      style={{ backgroundImage: `url(${LoginBG})` }}
+    >
+      {/* --- เพิ่มโลโก้คู่ --- */}
+      <div className="flex items-center justify-center gap-8 sm:gap-12 mb-6">
+        <img src={bulogo} alt="BU Logo" className="max-w-[120px] sm:max-w-[150px] h-auto" />
+        <img src={projectLogo} alt="Project Logo" className="max-w-[120px] sm:max-w-[150px] h-auto" />
+      </div>
+      
+      {/* --- ปรับสีและสไตล์หัวข้อ --- */}
+      <h2 
+        className="mb-5 text-2xl font-semibold text-white"
+        style={{ textShadow: '1px 1px 6px rgba(0, 0, 0, 0.6)' }}
+      >
+        โปรดกรอกข้อมูล
+      </h2>
+
+      {/* --- ปรับสไตล์ฟอร์มให้โปร่งแสง --- */}
+      <form onSubmit={handleSubmit} className="w-full max-w-sm p-6 bg-white/90 backdrop-blur-sm rounded-xl shadow-2xl">
         
-        {/* ปรับแก้ Label และ Input field ทั้งหมด */}
         <div className="mb-3">
           <label className="block mb-1 text-sm font-medium text-gray-700">ชื่อ:</label>
           <input
@@ -46,7 +62,7 @@ function Form() {
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
-            className="w-full px-3 py-1.5 text-base border border-purple-300 rounded-md focus:outline-none focus:border-purple-500"
+            className="w-full px-3 py-1.5 text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
           />
         </div>
         <div className="mb-3">
@@ -56,7 +72,7 @@ function Form() {
             value={age}
             onChange={(e) => setAge(e.target.value)}
             required
-            className="w-full px-3 py-1.5 text-base border border-purple-300 rounded-md focus:outline-none focus:border-purple-500"
+            className="w-full px-3 py-1.5 text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
           />
         </div>
         <div className="mb-3">
@@ -65,7 +81,7 @@ function Form() {
             value={gender}
             onChange={(e) => setGender(e.target.value)}
             required
-            className="w-full px-3 py-1.5 text-base border border-purple-300 rounded-md focus:outline-none focus:border-purple-500"
+            className="w-full px-3 py-1.5 text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
           >
             <option value="">เลือกเพศ</option>
             <option value="male">ชาย</option>
@@ -79,7 +95,7 @@ function Form() {
             value={playerType}
             onChange={(e) => setPlayerType(e.target.value)}
             required
-            className="w-full px-3 py-1.5 text-base border border-purple-300 rounded-md focus:outline-none focus:border-purple-500"
+            className="w-full px-3 py-1.5 text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
           >
             <option value="">เลือกประเภท</option>
             <option value="bustudent">นักศึกษามหาวิทยาลัยกรุงเทพ</option>
@@ -93,7 +109,7 @@ function Form() {
             value={acceptPrivacy}
             onChange={(e) => setAcceptPrivacy(e.target.value)}
             required
-            className="w-full px-3 py-1.5 text-base border border-purple-300 rounded-md focus:outline-none focus:border-purple-500"
+            className="w-full px-3 py-1.5 text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
           >
             <option value="">เลือกคำตอบ</option>
             <option value="yes">ยินยอม</option>
@@ -102,7 +118,7 @@ function Form() {
         </div>
         <button
           type="submit"
-          className="w-full px-4 py-2 text-base font-medium text-white bg-purple-500 rounded-md hover:bg-purple-600 focus:outline-none focus:bg-purple-600"
+          className="w-full px-4 py-2 text-base font-medium text-white bg-purple-600 rounded-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition-colors"
         >
           ส่งข้อมูล
         </button>

@@ -3,7 +3,7 @@ import { gsap } from 'gsap';
 import { useNavigate, useParams } from 'react-router-dom';
 import caronstreet from './assets/caronstreet.gif';
 import { db } from './firebase';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
 
 const textShadowStyle = { textShadow: '2px 2px 8px rgba(0, 0, 0, 0.8)' };
 
@@ -35,12 +35,91 @@ const InputWrapper = ({ question, value, setter, handleTextInputSubmit, nextStep
   </div>
 );
 
+// --- เพิ่ม: ตารางคะแนนสำหรับการ์ด ---
+const CARD_SCORES = {
+  selectedChoice: {
+    'ที่หน้าต่างของบ้าน ที่มองเห็นฝนโปรยปรายอย่างไม่ขาดสาย': { 'ผู้รับมือ': 1 },
+    'ที่เตียงนอนอันนุ่มสงบกับบรรยากาศที่แอบสบาย ๆ แบบนี้': { 'ผู้ฟื้นพลัง': 2 },
+    'ที่ห้องใดห้องหนึ่ง อาจเป็นห้องครัว หรือเป็นห้องน้ำ': { 'ผู้รับมือ': 1 },
+    'ที่มุมอับ ๆ มืด ๆ อาจมีอะไรอยู่ตรงนั้นหรือเปล่านะ': { 'ผู้เผชิญหน้า': 1, 'ผู้ฟื้นพลัง': 1 }
+  },
+  selectedAction: {
+    'พยายามทำความเข้าใจ หาคำตอบว่าเกิดอะไรขึ้น': { 'ผู้เผชิญหน้า': 3, 'ผู้รับมือ': 2 },
+    'คงทำอะไรไม่ได้แล้ว อะไรจะเกิดก็เกิดเถอะ': { 'ผู้รับมือ': 3, 'ผู้ฟื้นพลัง': 1 },
+    'แปลก ๆ นะ แต่ลองเอามือไปจับแสงสีขาวนั้นดู': { 'ผู้เผชิญหน้า': 2 },
+    'เจอแสงและเสียงประหลาดในห้องขนาดนี้ หนีสิรออะไรอยู่ล่ะ': {}
+  },
+  reactionChoice: {
+    'เข้าไปหาอีกฝ่ายด้วยความสงสัย แต่ยังเว้นระยะห่าง': { 'ผู้เผชิญหน้า': 2, 'ผู้รับมือ': 1 },
+    'ลองสัมผัสที่ตัวเขาว่าเขามีลักษณะ เป็นอย่างไร (เขาอาจอยากให้ช่วยเหลือ)': { 'ผู้เยียวยา': 3 },
+    'รู้สึกตกใจ กลัว พยายามถอยห่างเผื่อเตรียมหนี': {},
+    'ไถ่ถามให้อีกฝ่ายตอบถึงสถานการณ์ตอนนี้ และให้อีกฝ่ายอธิบายทั้งหมด': { 'ผู้เผชิญหน้า': 1 }
+  },
+  confidence: {
+    'มั่นใจ': { 'ผู้เผชิญหน้า': 2, 'ผู้สร้างแรงบันดาลใจ': 2 },
+    'ไม่มั่นใจ': { 'ผู้รับมือ': 1 }
+  },
+  compliment: {
+    'คุณทำได้ดีเลย เรามาพยายามไปพร้อมกันนะ': { 'ผู้เยียวยา': 3, 'ผู้สร้างแรงบันดาลใจ': 2 },
+    '(ขอบคุณอีกฝ่ายในใจ)': { 'ผู้เยียวยา': 1 },
+    '(เขาจะพาเราไปไหนกันนะ เตรียมตัวไว้ดีกว่า)': { 'ผู้เผชิญหน้า': 1 },
+    '(เงียบเฉย ไม่ได้สนใจ)': {}
+  },
+  feelingAfterTruth: {
+    'สิ้นหวังและหมดหนทาง': { 'ผู้ฟื้นพลัง': 1 },
+    'ผิดหวังในตัวเองอย่างรุนแรง': { 'ผู้ฟื้นพลัง': 1 },
+    'โกรธที่ควบคุมไม่ได้จากการต่อว่าว่าล้มเหลว': { 'ผู้เผชิญหน้า': 1 },
+    'รู้สึกชาและว่างเปล่า': { 'ผู้ฟื้นพลัง': 2 },
+    'สับสนที่ไม่อาจเข้าใจ': { 'ผู้รับมือ': 1 }
+  },
+  reactionToTruth: {
+    'โกรธกับคำพูดนั้น ไม่เชื่อว่าตัวเองไร้ค่า และจะไม่มีวันเปลี่ยนแปลงอะไรไม่ได้': { 'ผู้เผชิญหน้า': 4 },
+    'คำพูดนั้นมันเจ็บปวด...แต่มันคือความจริงใช่ไหม...ก็ควรจะยอมรับมันดีกว่า': { 'ผู้รับมือ': 3, 'ผู้เยียวยา': 1 },
+    'สับสน ไม่รู้จะเชื่ออะไรดี เรามีค่าจริงๆ ใช่ไหม? อยากให้ใครซักคนมายืนยันสิ่งนั้น': { 'ผู้เยียวยา': 2 },
+    'เสียใจกับตัวเองที่ต้องมาได้ยินอะไรแบบนี้ และหมดกำลังใจที่จะทำอะไรต่อแล้ว': { 'ผู้ฟื้นพลัง': 1 }
+  },
+  responseToFatigue: {
+    'จะยอมหยุดพักจากทุกสิ่ง...': { 'ผู้ฟื้นพลัง': 3 },
+    'จะหาทางระบายความรู้สึกนั้นออกมา...': { 'ผู้เยียวยา': 2 },
+    'จะเผชิญหน้ากับความรู้สึกนั้น...': { 'ผู้เผชิญหน้า': 2 },
+    'เรียนรู้ที่จะปฏิเสธในสิ่งที่ไม่ไหว...': { 'ผู้สร้างแรงบันดาลใจ': 1, 'ผู้รับมือ': 1 }
+  },
+  energySource: {
+    'ได้อยู่ท่ามกลางธรรมชาติ...': { 'ผู้ฟื้นพลัง': 2, 'ผู้รับมือ': 1 },
+    'ได้กลับไปทำสิ่งที่รัก...': { 'ผู้สร้างแรงบันดาลใจ': 2 },
+    'การได้ระบายหรือพูดคุยกับคนที่ไว้ใจ...': { 'ผู้เยียวยา': 2 },
+    'การได้อยู่เงียบๆ คนเดียว...': { 'ผู้ฟื้นพลัง': 3 }
+  },
+  helpForWhiteFigure: {
+    'เพียงแค่ได้รับการโอบกอดอย่างอ่อนโยน...': { 'ผู้เยียวยา': 3 },
+    'ต้องการใครสักคนมายืนยันว่าเเรายังมีคุณค่า...': { 'ผู้สร้างแรงบันดาลใจ': 1 },
+    'ต้องการคำแนะนำที่ชัดเจน...': { 'ผู้เผชิญหน้า': 1 },
+    'อยากได้รับโอกาสในการให้อภัยตัวเอง...': { 'ผู้เยียวยา': 2 }
+  },
+  messageToPastSelf: {
+    "อยากจะบอกว่า 'ให้อภัยคุณแล้ว... เรายอมรับในทุกสิ่งที่เป็น...'": { 'ผู้เยียวยา': 3, 'ผู้รับมือ': 2 },
+    "อยากจะบอกว่า 'คุณมีค่าเสมอ... ไม่จำเป็นต้องพิเศษ... เรารักคุณในแบบที่คุณเป็น'": { 'ผู้เยียวยา': 4, 'ผู้สร้างแรงบันดาลใจ': 2 },
+    "อยากจะบอกว่า 'คุณเข้มแข็งมากที่ผ่านเรื่องราวมาได้ถึงตรงนี้... จงเติบโตไปข้างหน้าด้วยกันนะ'": { 'ผู้สร้างแรงบันดาลใจ': 3, 'ผู้เผชิญหน้า': 2 },
+    "ฉันอยากจะบอกว่า 'เราเข้าใจทุกความเจ็บปวดของคุณ... เราจะอยู่เคียงข้างคุณเสมอ...'": { 'ผู้เยียวยา': 3, 'ผู้ฟื้นพลัง': 1 }
+  },
+  creativeUseOfPower: {
+    'อยากใช้เรื่องราวและประสบการณ์ที่ได้เรียนรู้ มาเป็นแรงบันดาลใจให้ผู้อื่น...': { 'ผู้สร้างแรงบันดาลใจ': 4 },
+    'อยากนำพลังและความสุขที่ได้กลับมานี้ ไปสร้างสรรค์ผลงานใหม่ๆ...': { 'ผู้สร้างแรงบันดาลใจ': 3 },
+    'อยากนำความเข้าใจในตัวเองไปใช้กับการดูแลความสัมพันธ์...': { 'ผู้เยียวยา': 2 },
+    'อยากใช้พลังทั้งหมดนี้ เพื่อก้าวไปสู่เป้าหมายที่แท้จริงของชีวิต...': { 'ผู้สร้างแรงบันดาลใจ': 4, 'ผู้เผชิญหน้า': 2 }
+  }
+};
 
 function Story() {
   const storyContainerRef = useRef(null);
   const textContentRef = useRef(null);
   const whiteFlashRef = useRef(null);
   
+  const [childFeelingGuess, setChildFeelingGuess] = useState('');
+  const [dreamAnswer, setDreamAnswer] = useState('');
+  const [happinessAnswer, setHappinessAnswer] = useState('');
+  const [messageToChildSelf, setMessageToChildSelf] = useState('');
+
   const [step, setStep] = useState(1);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const navigate = useNavigate();
@@ -70,10 +149,50 @@ function Story() {
   const [helpForWhiteFigure, setHelpForWhiteFigure] = useState('');
   const [messageToPastSelf, setMessageToPastSelf] = useState('');
   const [creativeUseOfPower, setCreativeUseOfPower] = useState('');
-  const [childFeelingGuess, setChildFeelingGuess] = useState('');
-  const [dreamAnswer, setDreamAnswer] = useState('');
-  const [happinessAnswer, setHappinessAnswer] = useState('');
-  const [messageToChildSelf, setMessageToChildSelf] = useState('');
+
+  // --- เพิ่ม: ฟังก์ชันคำนวณการ์ด ---
+  const calculateCardType = useCallback(() => {
+    let scores = {
+      "ผู้เผชิญหน้า": 0,
+      "ผู้เยียวยา": 0,
+      "ผู้ฟื้นพลัง": 0,
+      "ผู้สร้างแรงบันดาลใจ": 0,
+      "ผู้รับมือ": 0
+    };
+
+    const userChoices = {
+      selectedChoice, selectedAction, reactionChoice, confidence, compliment,
+      feelingAfterTruth, reactionToTruth, responseToFatigue, energySource,
+      helpForWhiteFigure, messageToPastSelf, creativeUseOfPower
+    };
+
+    for (const key in userChoices) {
+      const selectedAnswer = userChoices[key];
+      if (CARD_SCORES[key] && CARD_SCORES[key][selectedAnswer]) {
+        const scoreToAdd = CARD_SCORES[key][selectedAnswer];
+        for (const cardType in scoreToAdd) {
+          if (scores.hasOwnProperty(cardType)) {
+            scores[cardType] += scoreToAdd[cardType];
+          }
+        }
+      }
+    }
+
+    let maxScore = -1;
+    let finalCardType = "ผู้รับมือ"; // Default card
+    for (const type in scores) {
+      if (scores[type] > maxScore) {
+        maxScore = scores[type];
+        finalCardType = type;
+      }
+    }
+    
+    return finalCardType;
+  }, [
+    selectedChoice, selectedAction, reactionChoice, confidence, compliment,
+    feelingAfterTruth, reactionToTruth, responseToFatigue, energySource,
+    helpForWhiteFigure, messageToPastSelf, creativeUseOfPower
+  ]);
 
   // Effect to fetch user data (age and name)
   useEffect(() => {
@@ -191,13 +310,11 @@ function Story() {
         if ([75, 85, 95, 105].includes(step)) nextStep = 110;
         if (step === 196) nextStep = 200;
 
-        if (nextStep <= TOTAL_STEPS) {
-          advanceToNextStep(nextStep);
+        if (nextStep > TOTAL_STEPS) {
+          const finalCardType = calculateCardType();
+          navigate(`/result/${id}?cardType=${encodeURIComponent(finalCardType)}`);
         } else {
-          gsap.to(container, {
-            opacity: 0, duration: 1,
-            onComplete: () => navigate(`/postsurvey/${id}`)
-          });
+          advanceToNextStep(nextStep);
         }
       };
       container.addEventListener('click', handleClick);
@@ -511,14 +628,16 @@ function Story() {
       case 244: return <p className={`${textBaseStyle} italic`} style={fluidTextStyle}>'แล้วจำเป็นต้องเป็นคนพิเศษด้วยหรอ'</p>;
       case 245: return <p className={`${textBaseStyle} italic`} style={fluidTextStyle}>'ก็ไม่หรอก แต่ถ้าเป็นคนที่พิเศษก็คงจะดีกว่านี้ ได้รับการชื่นชม ได้มีคุณค่า และได้การยอมรับ'</p>;
       case 246: return <p className={textBaseStyle} style={fluidTextStyle}>ร่างสีขาวยืนนิ่งแล้วหันมาบอกคุณ</p>;
-      case 247: return (
-        <div className="text-center">
-          <p className={`${textBaseStyle} italic`} style={fluidTextStyle}>'การเป็นคนธรรมดา... ก็ไม่ได้หมายความว่าไร้ซึ่งความหมาย...'</p>
-          <p className={`${textBaseStyle} italic`} style={{...fluidTextStyle, marginTop: '0.5rem'}}>'ท้องฟ้าที่กว้างใหญ่... ก็ประกอบจากหยดน้ำฝนที่แสนธรรมดา...'</p>
-          <p className={`${textBaseStyle} italic`} style={{...fluidTextStyle, marginTop: '0.5rem'}}>'ผืนป่าที่อุดมสมบูรณ์... ก็เริ่มต้นจากเมล็ดพันธุ์เล็กๆ...'</p>
-          <p className={`${textBaseStyle} italic`} style={{...fluidTextStyle, marginTop: '0.5rem'}}>'หรือเครื่องจักรที่ยิ่งใหญ่... ก็ต้องการฟันเฟืองแต่ละน้อยชิ้น'</p>
-        </div>
-      );
+      case 247: {
+        return (
+          <div className="text-center">
+            <p className={`${textBaseStyle} italic`} style={fluidTextStyle}>'การเป็นคนธรรมดา... ก็ไม่ได้หมายความว่าไร้ซึ่งความหมาย...'</p>
+            <p className={`${textBaseStyle} italic`} style={{...fluidTextStyle, marginTop: '0.5rem'}}>'ท้องฟ้าที่กว้างใหญ่... ก็ประกอบจากหยดน้ำฝนที่แสนธรรมดา...'</p>
+            <p className={`${textBaseStyle} italic`} style={{...fluidTextStyle, marginTop: '0.5rem'}}>'ผืนป่าที่อุดมสมบูรณ์... ก็เริ่มต้นจากเมล็ดพันธุ์เล็กๆ...'</p>
+            <p className={`${textBaseStyle} italic`} style={{...fluidTextStyle, marginTop: '0.5rem'}}>'หรือเครื่องจักรที่ยิ่งใหญ่... ก็ต้องการฟันเฟืองแต่ละน้อยชิ้น'</p>
+          </div>
+        );
+      }
       case 248: return (
         <div className="text-center">
           <p className={`${textBaseStyle} italic`} style={fluidTextStyle}>'คุณน่ะมีค่า ไม่จำเป็นต้องพิเศษถึงมีค่า แต่เพราะเราเป็นคนเราจึงมีค่า'</p>
@@ -569,14 +688,15 @@ function Story() {
       case 275: return <p className={textBaseStyle} style={fluidTextStyle}>...</p>;
       case 276: return <p className={textBaseStyle} style={fluidTextStyle}>แสงเรืองรองรอบกายคุณก็สว่างเจิดจ้ายิ่งขึ้น จนคุณรู้สึกเหมือนกำลังยืนอยู่ใน 'วงกลมแห่งพลัง' ที่มั่นคงและอบอุ่น</p>;
       case 277: return <p className={textBaseStyle} style={fluidTextStyle}>ความสงบและพลังงานไหลเวียนอยู่ในตัวคุณอย่างเต็มเปี่ยม</p>;
-      case 278: return (
+      case 278: {
+        return (
               <div className="text-center">
                 <p className={`${textBaseStyle} italic`} style={fluidTextStyle}>"ยอดเยี่ยม ท่านได้พบ 'แหล่งพลัง' ของตัวเองแล้ว"</p>
                 <p className={`${textBaseStyle} italic`} style={{...fluidTextStyle, marginTop: '0.5rem'}}>"พลังที่จะช่วยฟื้นฟูจิตใจและทำให้ท่าน 'ยืนหยัด' ได้แม้ในยามที่จิตใจมืดมิด"</p>
                 <p className={`${textBaseStyle} italic`} style={{...fluidTextStyle, marginTop: '0.5rem'}}>"ภารกิจ 'การควบคุมอารมณ์ตนเอง' ได้สำเร็จแล้ว"</p>
               </div>
-            );
-      // ...existing>"ยอดเยี่ยม ท่านได้พบ 'แหล่งพลัง' ของตัวเองแล้ว พลังที่จะช่วยฟื้นฟูจิตใจและทำให้ท่าน 'ยืนหยัด' ได้แม้ในยามที่จิตใจมืดมิด ภารกิจ 'การควบคุมอารมณ์ตนเอง' ได้สำเร็จแล้ว"</p>;
+              );
+            }
       case 279: return <QuestionWrapper question=""><button className={singleChoiceButtonStyle} onClick={() => advanceToNextStep(280)}>"แล้วการควบคุมอารมณ์ตัวเองเกี่ยวอะไรกับสิ่งที่เราต้องทำอะ"</button></QuestionWrapper>;
       case 280: return <p className={`${textBaseStyle} italic`} style={fluidTextStyle}>"การควบคุมอารมณ์ตัวเองก็เปรียบเสมือนการเข้าถึงตัวตนท่านเอง หากต้องการพลังที่จะเปลี่ยนแปลง ก็ต้องเริ่มที่ตัวท่าน จากข้างใน"</p>;
       case 281: return <p className={textBaseStyle} style={fluidTextStyle}>คุณเริ่มดำดิ่งไปเรื่อย ๆ กับสถานการณ์รอบข้างที่เริ่มเปลี่ยนแปลง</p>;
@@ -681,7 +801,7 @@ function Story() {
       case 355: return <p className={textBaseStyle} style={fluidTextStyle}>ในตอนนั้นเอง คุณได้รู้สึกว่ามีกระดาษอะไรอยู่ที่มือ</p>;
       case 356: return <p className={textBaseStyle} style={fluidTextStyle}>เป็นกระดาษสีแปลก ๆ มีข้อความข้างใน</p>;
       case 357: return <p className={textBaseStyle} style={fluidTextStyle}>คุณเลยหยิบขึ้นมาอ่าน</p>;
-      // The story ends here, the click handler will navigate to the next page.
+      // The story ends here, the click handler will navigate to the next page
       
       default:
         // Fallback for any missing case to avoid blank screen
@@ -718,10 +838,13 @@ function Story() {
       )}
       {/* --- ปุ่มข้ามสำหรับ Development --- */}
       <button
-        onClick={() => navigate(`/postsurvey/${id}`)}
+        onClick={() => {
+          const finalCardType = calculateCardType();
+          navigate(`/result/${id}?cardType=${encodeURIComponent(finalCardType)}`);
+        }}
         className="fixed bottom-5 left-5 z-[9999] px-4 py-2 bg-black/50 text-white border border-white/50 rounded-lg backdrop-blur-sm hover:bg-white/20 transition-colors"
       >
-        ข้ามไป Post-Survey
+        ข้ามไป Result Card
       </button>
     </div>
   );

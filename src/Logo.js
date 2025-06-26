@@ -3,15 +3,20 @@ import { useNavigate } from 'react-router-dom';
 import gsap from 'gsap';
 // import './Logo.css'; // ลบการ import นี้ทิ้ง
 import bulogo from './assets/bulogo.png';
+import projectLogo from './assets/ProjectLogo.png'; // เพิ่มโลโก้โปรเจกต์
 
 function Logo() {
   const logoRef = useRef(null);
   const navigate = useNavigate();
-  const [imageLoaded, setImageLoaded] = useState(false);
+  // const [imageLoaded, setImageLoaded] = useState(false);
+  const [buLogoLoaded, setBuLogoLoaded] = useState(false);
+  const [projectLogoLoaded, setProjectLogoLoaded] = useState(false);
+
+  const allImagesLoaded = buLogoLoaded && projectLogoLoaded;
 
   useEffect(() => {
-    if (imageLoaded) {
-      console.log('Image loaded, starting animation');
+    if (allImagesLoaded) {
+      console.log('All images loaded, starting animation');
       
       gsap.fromTo(logoRef.current,
         { opacity: 0 },
@@ -38,7 +43,7 @@ function Logo() {
 
       return () => clearTimeout(timer);
     }
-  }, [imageLoaded, navigate]);
+  }, [allImagesLoaded, navigate]);
 
   const handleClick = () => {
     console.log('Logo clicked, navigating to /form');
@@ -46,19 +51,30 @@ function Logo() {
   };
 
   return (
-    // เปลี่ยนมาใช้ Tailwind Classes
+    // ปรับ layout ให้รองรับ 2 โลโก้ และจัดกลาง
     <div 
-      className="w-full h-full flex justify-center items-center bg-white cursor-pointer" 
+      className="w-screen h-screen flex justify-center items-center bg-white cursor-pointer p-4" 
       onClick={handleClick}
     >
-      <img 
-        src={bulogo} 
-        alt="BU Logo" 
-        className="max-w-[250px] h-auto" // ลดขนาดโลโก้ลงเล็กน้อย
+      <div 
         ref={logoRef}
-        onLoad={() => setImageLoaded(true)} 
-        onError={() => console.error('Failed to load image')}
-      />
+        className="flex flex-col sm:flex-row items-center justify-center gap-8 sm:gap-12"
+      >
+        <img 
+          src={bulogo} 
+          alt="BU Logo" 
+          className="max-w-[150px] sm:max-w-[200px] h-auto"
+          onLoad={() => setBuLogoLoaded(true)} 
+          onError={() => console.error('Failed to load BU logo')}
+        />
+        <img 
+          src={projectLogo} 
+          alt="Project Logo" 
+          className="max-w-[150px] sm:max-w-[200px] h-auto"
+          onLoad={() => setProjectLogoLoaded(true)} 
+          onError={() => console.error('Failed to load Project logo')}
+        />
+      </div>
     </div>
   );
 }
