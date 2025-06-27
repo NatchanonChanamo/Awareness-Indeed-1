@@ -1,15 +1,22 @@
 {
   "files": {
-    "main.css": "/Awareness-Indeed-1/static/css/main.f44c86e9.css",
-    "main.js": "/Awareness-Indeed-1/static/js/main.9ca801dc.js",
+    "main.css": "/Awareness-Indeed-1/static/css/main.ce6879b7.css",
+    "main.js": "/Awareness-Indeed-1/static/js/main.a048843e.js",
+    "static/media/LoginBG.png": "/Awareness-Indeed-1/static/media/LoginBG.caacf7ae4e0f63628770.png",
     "static/media/caronstreet.gif": "/Awareness-Indeed-1/static/media/caronstreet.368cffa93155b93ce072.gif",
+    "static/media/MCard5.png": "/Awareness-Indeed-1/static/media/MCard5.ace9d9829d64b0d991c7.png",
+    "static/media/MCard2.png": "/Awareness-Indeed-1/static/media/MCard2.70a81a2cd02eb5924ff1.png",
+    "static/media/MCard4.png": "/Awareness-Indeed-1/static/media/MCard4.161a56212d4126615db1.png",
+    "static/media/MCard1.png": "/Awareness-Indeed-1/static/media/MCard1.fc6af58eefce4d3937d9.png",
+    "static/media/MCard3.png": "/Awareness-Indeed-1/static/media/MCard3.2d7af42dd600b3616539.png",
+    "static/media/ProjectLogo.png": "/Awareness-Indeed-1/static/media/ProjectLogo.c0330d1e49436740710b.png",
     "static/media/bulogo.png": "/Awareness-Indeed-1/static/media/bulogo.e8442173d3f64edea1a0.png",
     "index.html": "/Awareness-Indeed-1/index.html",
-    "main.f44c86e9.css.map": "/Awareness-Indeed-1/static/css/main.f44c86e9.css.map",
-    "main.9ca801dc.js.map": "/Awareness-Indeed-1/static/js/main.9ca801dc.js.map"
+    "main.ce6879b7.css.map": "/Awareness-Indeed-1/static/css/main.ce6879b7.css.map",
+    "main.a048843e.js.map": "/Awareness-Indeed-1/static/js/main.a048843e.js.map"
   },
   "entrypoints": [
-    "static/css/main.f44c86e9.css",
-    "static/js/main.9ca801dc.js"
+    "static/css/main.ce6879b7.css",
+    "static/js/main.a048843e.js"
   ]
 }
