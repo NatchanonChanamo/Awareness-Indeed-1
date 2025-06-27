@@ -53,7 +53,7 @@ function Logo() {
   return (
     // ปรับ layout ให้รองรับ 2 โลโก้ และจัดกลาง
     <div 
-      className="w-screen h-screen flex justify-center items-center bg-white cursor-pointer p-4" 
+      className="w-full h-full flex justify-center items-center bg-white cursor-pointer p-4" 
       onClick={handleClick}
     >
       <div 

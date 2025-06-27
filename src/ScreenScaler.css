@@ -1,30 +1,69 @@
-.scaler-wrapper {
-  /* ทำให้ wrapper คลุมเต็มหน้าจอจริงและจัด content ให้อยู่กลาง */
-  width: 100vw;
-  height: 100vh;
+/* .screen-scaler-container คือพื้นหลังที่คลุมเต็มหน้าจอจริง */
+.screen-scaler-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  
+  /* --- FIX: เปลี่ยนจากพื้นหลังสีดำเป็นรูปภาพที่สวยงาม --- */
+  background-image: url('./assets/LoginBG.png'); /* ใช้รูปพื้นหลังหลักของแอป */
+  background-size: cover;
+  background-position: center;
+  
   display: flex;
   justify-content: center;
   align-items: center;
-  overflow: hidden; /* ซ่อนส่วนที่อาจจะล้นออกไป */
-  background-color: #f0f0f0; /* สีพื้นหลังรอบๆ (เลือกสีที่ต้องการ) */
+  overflow: hidden;
 }
 
-.scaler-content {
-  /* นี่คือหน้าจอเสมือนของเรา */
-  width: 390px;
-  height: 844px;
-  
-  /* หัวใจสำคัญ: ใช้ CSS Variable ที่เราคำนวณจาก Javascript มาสั่ง scale */
-  transform: scale(var(--scale-factor, 1));
-  transform-origin: center center; /* กำหนดให้ซูมจากตรงกลาง */
-  
-  /* ทำให้การเปลี่ยนขนาดสมูทขึ้น */
-  transition: transform 0.2s ease-out;
+/* --- เพิ่ม: สร้างเลเยอร์สำหรับเบลอพื้นหลัง --- */
+.screen-scaler-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  /* เบลอและลดความสว่างพื้นหลังเพื่อขับให้เนื้อหาหลักเด่นขึ้น */
+  backdrop-filter: blur(10px) brightness(0.7); 
+  z-index: 1; /* ให้อยู่หลัง scaled-content */
+}
 
-  /* ตกแต่งเพิ่มเติม */
-  background-color: white;
-  overflow-y: auto; /* ทำให้สามารถ scroll ได้ถ้าเนื้อหายาวเกิน */
-  overflow-x: hidden;
+/* .scaled-content คือ "หน้าจอเสมือน" ของแอปพลิเคชัน */
+.scaled-content {
+  /* 1. กำหนดขนาดของหน้าจอเสมือน (อ้างอิงจาก iPhone 14 Pro Max) */
+  width: 430px;
+  height: 932px;
+  
   position: relative;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+  z-index: 2; /* --- เพิ่ม: ทำให้ scaled-content อยู่เหนือเลเยอร์ที่เบลอ --- */
+  background-color: #fff; /* สีพื้นหลังเริ่มต้นของแอป */
+  overflow-x: hidden;
+  overflow-y: auto; /* ทำให้สามารถ scroll ได้ถ้าเนื้อหายาวเกิน */
+  
+  /* 2. สั่งให้ย่อ/ขยาย จากจุดกึ่งกลางเสมอ */
+  transform-origin: center center;
+  transform: scale(var(--scale-factor, 1));
+  
+  /* ตกแต่งเพิ่มเติมให้ดูเหมือนอุปกรณ์จริง */
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+}
+
+/* --- 3. ตรรกะการคำนวณขนาดด้วย CSS เท่านั้น --- */
+
+/* สำหรับหน้าจอที่ "สูงกว่า" อัตราส่วนของจอเสมือน (เช่น มือถือแนวตั้ง) */
+/* จะคำนวณ scale จาก "ความกว้าง" ของหน้าจอจริง */
+@media (max-aspect-ratio: 430/932) {
+  .scaled-content {
+    --scale-factor: calc(100vw / 430);
+  }
+}
+
+/* สำหรับหน้าจอที่ "กว้างกว่า" อัตราส่วนของจอเสมือน (เช่น จอคอม, แท็บเล็ต) */
+/* จะคำนวณ scale จาก "ความสูง" ของหน้าจอจริง */
+@media (min-aspect-ratio: 430/932) {
+  .scaled-content {
+    --scale-factor: calc(100vh / 932);
+  }
 }

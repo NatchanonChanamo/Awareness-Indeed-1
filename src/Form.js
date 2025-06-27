@@ -35,7 +35,7 @@ function Form() {
   return (
     // --- ปรับปรุง Container หลัก ---
     <div 
-      className="flex flex-col items-center justify-center min-h-screen bg-cover bg-center p-4"
+      className="flex flex-col items-center justify-center min-h-full bg-cover bg-center p-4"
       style={{ backgroundImage: `url(${LoginBG})` }}
     >
       {/* --- เพิ่มโลโก้คู่ --- */}

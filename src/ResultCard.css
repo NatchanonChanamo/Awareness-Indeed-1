@@ -5,12 +5,10 @@
   flex-direction: column;
   align-items: center;
   justify-content: space-between;
-  min-height: 100vh;
+  min-height: 100%; /* เปลี่ยนจาก 100vh */
   background-color: #fdf2f8; /* Match pre-survey background */
   padding: 2rem 1rem;
   width: 100%;
-  max-width: 500px;
-  margin: 0 auto;
   box-sizing: border-box;
   font-family: 'Prompt', sans-serif;
   text-align: center;

@@ -5,15 +5,13 @@
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-  min-height: 100vh; /* แก้เป็น min-height เพื่อให้รองรับเนื้อหาที่ยาวขึ้น */
-  background-color: #fdf2f8; /* ปรับสีพื้นหลังให้อ่อนลง */
-  padding: 2rem 1rem; /* ปรับ padding ให้เหมาะสม */
+  min-height: 100%; /* เปลี่ยนจาก 100vh */
+  background-color: #fdf2f8;
+  padding: 2rem 1rem;
   width: 100%;
-  max-width: 768px; /* *** กำหนดความกว้างสูงสุดที่ 768px *** */
-  margin: 0 auto; /* *** จัดให้อยู่กึ่งกลางจอเสมอ *** */
   box-sizing: border-box;
   font-family: 'Prompt', sans-serif;
-  opacity: 0; 
+  opacity: 0;
 }
 
 .presurvey-header {
@@ -58,8 +56,12 @@
 }
 
 .presurvey-field {
-  margin-bottom: 1.5rem;
+  margin-bottom: 2rem;
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
 }
 
 .presurvey-field:last-child {
@@ -76,46 +78,81 @@
   text-wrap: balance; /* *** ช่วยตัดคำให้สวยงาม *** */
 }
 
-.options {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 0.75rem; /* ปรับระยะห่าง */
+.presurvey-field .question-text {
+  display: block;
+  font-size: 1rem;
+  color: #1f2937;
+  font-weight: 400;
+  line-height: 1.6;
+  text-align: center;
+  width: 100%;
 }
 
-.options label {
+.rating-scale-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem; /* ปรับลดระยะห่างหลัก */
+  width: 100%;
+}
+
+.scale-label-start,
+.scale-label-end {
+  font-size: 0.8rem; /* ปรับลดขนาดตัวอักษรเล็กน้อย */
+  color: #4b5563;
+  flex-shrink: 0;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.options {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: center;
+  gap: 0.3rem; /* ปรับลดระยะห่างระหว่างปุ่ม */
+}
+
+.options .option-label {
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 400;
-  font-size: 0.9rem;
-  padding: 0.5rem 1rem;
-  border: 1px solid #fbcfe8;
-  border-radius: 20px;
   cursor: pointer;
+  border: 1px solid #fbcfe8;
+  border-radius: 50%;
+  width: 38px; /* ปรับลดขนาดปุ่ม */
+  height: 38px; /* ปรับลดขนาดปุ่ม */
   transition: all 0.2s ease-in-out;
 }
 
 .options input[type="radio"] {
-  /* FIX: Visually hide the input but keep it focusable for validation */
   position: absolute;
   opacity: 0;
   width: 0;
   height: 0;
-  pointer-events: none;
 }
 
-.options input[type="radio"]:checked + span {
-  /* ไม่ต้องใช้ span แล้ว */
+.options .option-value {
+  font-weight: 500;
+  font-size: 1rem;
+  color: #be185d;
 }
 
-.options label:has(input[type="radio"]:checked) {
+.options .option-label:has(input[type="radio"]:checked) {
   background-color: #be185d;
-  color: white;
   border-color: #be185d;
 }
 
+.options .option-label:has(input[type="radio"]:checked) .option-value {
+  color: white;
+}
+
+.options .option-label:hover {
+  background-color: #fce7f3;
+}
+
 button[type="submit"] {
+  display: block;
   margin-top: 1rem;
   padding: 0.75rem 2rem;
   font-size: 1rem;

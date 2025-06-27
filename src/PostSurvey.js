@@ -2,59 +2,59 @@ import React, { useState, useEffect } from 'react';
 import './PostSurvey.css'; // ใช้ CSS ของตัวเอง
 import { db } from './firebase';
 import { doc, setDoc } from 'firebase/firestore';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom'; // <-- เพิ่ม useLocation
 import { gsap } from 'gsap';
 
 const surveySections = [
   {
-    title: 'ส่วนที่ 1: สภาวะโดยรวมและความเป็นอยู่ที่ดี',
+    title: 'ส่วนที่ 1: ความรู้สึกในชีวิตประจำวัน',
     questions: [
-      { id: 'posts_s1_q1', text: 'ในแต่ละวัน ฉันรู้สึกเหนื่อยล้าทั้งทางร่างกายและจิตใจ น้อยลงกว่าเดิมมาก' },
-      { id: 'posts_s1_q2', text: 'ฉันรู้สึกมีความหวังและมองเห็นทางออกในปัญหาชีวิตได้ดีขึ้น' },
-      { id: 'posts_s1_q3', text: 'ฉันรู้สึกว่าการใช้ชีวิตตอนนี้มีความสมดุลและจัดการได้ดีขึ้น' },
-      { id: 'posts_s1_q4', text: 'ฉันรู้สึกว่าตัวเองมีคุณค่าและมีความหมายในแบบที่ฉันเป็น' },
-      { id: 'posts_s1_q5', text: 'ฉันรู้สึกยอมรับในตัวเองที่เป็นคนธรรมดา แต่มีคุณค่าในแบบของตัวเอง' },
+      { id: 'posts_s1_q1', text: 'ในแต่ละวัน ฉันรู้สึกกระตือรือร้น' },
+      { id: 'posts_s1_q2', text: 'ฉันรู้สึกมองเห็นโอกาสในการแก้ไขปัญหาชีวิต' },
+      { id: 'posts_s1_q3', text: 'ฉันรู้สึกว่าการใช้ชีวิตในตอนนี้เป็นเรื่องที่ฉันสามารถจัดการได้' },
+      { id: 'posts_s1_q4', text: 'ฉันเชื่อว่าตัวเองมีคุณค่า มีความหมายในชีวิต' },
+      { id: 'posts_s1_q5', text: 'ฉันรู้สึกว่าตัวเองเป็นคนที่มีคุณค่าในแบบของตัวเอง' },
     ]
   },
   {
     title: 'ส่วนที่ 2: การรู้จักอารมณ์ตนเอง (Self-awareness)',
     questions: [
-      { id: 'posts_s2_q1', text: 'เมื่อรู้สึกแย่ ฉันสามารถระบุและเข้าใจได้ดีว่าตัวเองกำลังรู้สึกอะไรอยู่' },
-      { id: 'posts_s2_q2', text: 'ฉันรู้ว่าอารมณ์ของฉันส่งผลต่อร่างกายและความคิดอย่างไรอย่างชัดเจน' },
-      { id: 'posts_s2_q3', text: 'ฉันสามารถโต้แย้งความคิดเชิงลบเกี่ยวกับตัวเองได้ดีขึ้น (เช่น "ฉันไม่เอาไหน" หรือ "ฉันไม่คู่ควร")' },
-      { id: 'posts_s2_q4', text: 'ฉันกล้าที่จะรับรู้และเผชิญหน้ากับความรู้สึกที่รุนแรงของตัวเองได้ดีขึ้น' },
+      { id: 'posts_s2_q1', text: 'เมื่อมีอารมณ์เกิดขึ้น ฉันจะเข้าใจได้ว่าตัวเองกำลังรู้สึกอะไร' },
+      { id: 'posts_s2_q2', text: 'ฉันตระหนักดีว่าอารมณ์ของฉันส่งผลต่อความคิดของฉันอย่างไร' },
+      { id: 'posts_s2_q3', text: 'ฉันมีความคิดเชิงบวกเกี่ยวกับตัวเอง' },
+      { id: 'posts_s2_q4', text: 'ฉันสามารถรับรู้ความรู้สึกที่รุนแรงของตัวเองได้' },
     ]
   },
   {
     title: 'ส่วนที่ 3: การควบคุมอารมณ์ตนเอง (Self-regulation)',
     questions: [
-      { id: 'posts_s3_q1', text: 'เมื่อเผชิญกับอารมณ์ด้านลบ ฉันรู้สึกว่าตัวเองสามารถควบคุมและจัดการมันได้ดีขึ้น' },
-      { id: 'posts_s3_q2', text: 'ฉันสามารถเลือกวิธีตอบสนองต่อความรู้สึกไม่ดี เพื่อไม่ให้มันฉุดรั้งฉันไว้ได้' },
-      { id: 'posts_s3_q3', text: 'ฉันรู้ว่าควรจะดูแลหรือเติมพลังให้ตัวเองอย่างไรเมื่อรู้สึกอ่อนเพลีย' },
+      { id: 'posts_s3_q1', text: 'เมื่อเผชิญกับอารมณ์ที่ท้าทาย ฉันรู้สึกว่าตัวเองสามารถจัดการมันได้ดี' },
+      { id: 'posts_s3_q2', text: 'ฉันสามารถเปลี่ยนความรู้สึกไม่ดีให้เป็นพลังในการก้าวเดินต่อไปได้' },
+      { id: 'posts_s3_q3', text: 'ฉันรู้ว่าควรจะเติมพลังให้ตัวเองอย่างไร เมื่อรู้สึกอ่อนเพลีย' },
     ]
   },
   {
     title: 'ส่วนที่ 4: แรงจูงใจและเป้าหมายในชีวิต (Motivation)',
     questions: [
-      { id: 'posts_s4_q1', text: 'ฉันรู้สึกมีแรงจูงใจและเป้าหมายที่ชัดเจนในการใช้ชีวิตมากกว่าเมื่อก่อน' },
-      { id: 'posts_s4_q2', text: 'ความฝันในวัยเด็กของฉันได้กลับมาเป็นแรงบันดาลใจและมีความหมายกับฉันอีกครั้ง' },
-      { id: 'posts_s4_q3', text: 'ฉันรู้สึกอยากสร้างสรรค์หรือเปลี่ยนแปลงสิ่งดีๆ ในชีวิตมากขึ้น' },
+      { id: 'posts_s4_q1', text: 'ฉันรู้สึกมีเป้าหมายที่ชัดเจนในการใช้ชีวิต' },
+      { id: 'posts_s4_q2', text: 'ความฝันในวัยเด็กของฉันยังคงเป็นแรงบันดาลใจให้กับฉันในตอนนี้' },
+      { id: 'posts_s4_q3', text: 'ฉันมีความรู้สึกอยากสร้างสรรค์สิ่งดีๆ ในชีวิต' },
     ]
   },
   {
     title: 'ส่วนที่ 5: การเข้าใจตนเองและผู้อื่น (Empathy)',
     questions: [
-      { id: 'posts_s5_q1', text: 'ฉันสามารถมีเมตตาและเข้าใจ \'ตัวตนที่บอบบาง\' ของฉันเองได้มากขึ้น' },
-      { id: 'posts_s5_q2', text: 'ฉันสามารถให้อภัยตัวเองในข้อผิดพลาดที่เคยเกิดขึ้นได้ดีกว่าเมื่อก่อน' },
-      { id: 'posts_s5_q3', text: 'ฉันรู้สึกถึงความรักและความเข้าใจต่อตัวเองในวัยเด็กและตัวฉันในปัจจุบัน' },
+      { id: 'posts_s5_q1', text: 'ฉันสามารถให้ความเข้าใจกับตัวเองเมื่อทำผิดพลาด' },
+      { id: 'posts_s5_q2', text: 'ฉันมีเมตตาและเข้าใจ \'ตัวตนที่บอบบาง\' ของฉันเอง (เช่น เมื่อรู้สึกอ่อนแอหรือล้มเหลว)' },
+      { id: 'posts_s5_q3', text: 'ฉันสามารถให้อภัยตัวเองในข้อผิดพลาดที่เคยเกิดขึ้นได้' },
     ]
   },
   {
     title: 'ส่วนที่ 6: การมีปฏิสัมพันธ์ทางสังคมกับตนเอง (Social Skills)',
     questions: [
-      { id: 'posts_s6_q1', text: 'ฉันสามารถบอกปฎิเสธในสิ่งที่ไม่อยากทำเพื่อผู้อื่นได้โดยไม่รู้สึกผิด' },
-      { id: 'posts_s6_q2', text: 'ฉันจัดสรรเวลาเพื่อดูแลสุขภาพใจและร่างกายของตัวเองอย่างสม่ำเสมอ' },
-      { id: 'posts_s6_q3', text: 'ฉันรู้สึกว่าตัวเองสามารถยืนหยัดเพื่อความต้องการและขอบเขตของตัวเองได้ดีขึ้น' },
+      { id: 'posts_s6_q1', text: 'ฉันสามารถปฏิเสธในสิ่งที่ไม่อยากทำเพื่อผู้อื่นได้อย่างสบายใจ' },
+      { id: 'posts_s6_q2', text: 'ฉันจัดสรรเวลาเพื่อดูแลสุขภาพใจของตัวเองอย่างจริงจัง' },
+      { id: 'posts_s6_q3', text: 'ฉันสามารถยืนหยัดเพื่อความต้องการของตัวเองได้ดี' },
     ]
   },
   {
@@ -84,6 +84,7 @@ const ratingOptions = [
 function PostSurvey() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation(); // <-- เพิ่มเพื่ออ่าน URL params
   const [responses, setResponses] = useState(initialResponses);
 
   useEffect(() => {
@@ -108,7 +109,10 @@ function PostSurvey() {
         opacity: 0,
         duration: 1,
         onComplete: () => {
-          navigate(`/result/${id}`); // <-- แก้ไขบรรทัดนี้
+          // --- FIX: Pass cardType to ResultCard ---
+          const queryParams = new URLSearchParams(location.search);
+          const cardType = queryParams.get('cardType');
+          navigate(`/result/${id}?cardType=${encodeURIComponent(cardType || 'ผู้รับมือ')}`);
         }
       });
     } catch (error) {
@@ -134,21 +138,25 @@ function PostSurvey() {
             <h3>{section.title}</h3>
             {section.questions.map((question) => (
               <div className="postsurvey-field" key={question.id}>
-                <label>{question.text}</label>
-                <div className="options">
-                  {ratingOptions.map((option) => (
-                    <label key={option.value}>
-                      <input
-                        type="radio"
-                        name={question.id}
-                        value={option.value}
-                        checked={responses[question.id] === option.value}
-                        onChange={handleChange}
-                        required
-                      />
-                      {option.label}
-                    </label>
-                  ))}
+                <label className="question-text">{question.text}</label>
+                <div className="rating-scale-container">
+                  <span className="scale-label-start">เป็นจริงอย่างยิ่ง</span>
+                  <div className="options">
+                    {ratingOptions.map((option) => (
+                      <label key={option.value} className="option-label">
+                        <input
+                          type="radio"
+                          name={question.id}
+                          value={option.value}
+                          checked={responses[question.id] === option.value}
+                          onChange={handleChange}
+                          required
+                        />
+                        <span className="option-value">{option.label}</span>
+                      </label>
+                    ))}
+                  </div>
+                  <span className="scale-label-end">ไม่เป็นจริงเลย</span>
                 </div>
               </div>
             ))}
