@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  # ตั้งชื่อ Service ของเรา (ตั้งเป็นอะไรก็ได้)
+  awareness-indeed-web:
+    # บอกให้สร้าง Image จาก Dockerfile ในโฟลเดอร์ปัจจุบัน (.)
+    build: .
+    # ตั้งชื่อให้ Container ที่จะรันขึ้นมา
+    container_name: awareness_indeed_app
+    # ตั้งค่าการเชื่อมต่อ Port
+    ports:
+      # Map Port 8080 ของเครื่องคอมพิวเตอร์เรา (ซ้าย)
+      # ไปยัง Port 80 ของ Nginx ที่อยู่ใน Container (ขวา)
+      # ทำให้เราสามารถเปิดเว็บได้ที่ http://localhost:8080
+      - '8080:80'

@@ -6,6 +6,8 @@ import gsap from 'gsap';
 
 // --- BG IMAGES ---
 import carOnStreetBg from './assets/caronstreet.gif';
+import opendoor1 from './assets/opendoor1.png';
+import opendoor2 from './assets/opendoor2.png';
 
 // --- Helper Components ---
 const InputWrapper = ({ question, value, setter, handleTextInputSubmit, nextStep, placeholder }) => {
@@ -100,26 +102,47 @@ function Story() {
   }, [id]);
 
   useEffect(() => {
-    let newBg = '';
+    let newBg = null; // ใช้ null เพื่อบอกว่า "ไม่ต้องเปลี่ยน"
+
     if (step >= 1 && step <= 8) {
       newBg = carOnStreetBg;
-    } else {
-      newBg = ''; // No background after step 8
+    } else if (step === 9) {
+      newBg = ''; // ทำให้พื้นหลังหายไปใน step 9 ก่อนเข้าบ้าน
+    } else if (step === 10) {
+      newBg = opendoor1;
+    } else if (step === 11) {
+      newBg = opendoor2;
     }
 
-    if (newBg !== backgroundImage) {
-      gsap.to(bgRef.current, {
-        opacity: 0,
-        duration: 0.8,
-        onComplete: () => {
-          setBackgroundImage(newBg);
-          if (newBg) {
-            gsap.to(bgRef.current, { opacity: 1, duration: 0.8 });
-          }
-        }
-      });
+    // ถ้า newBg เป็น null (คือไม่ใช่ฉากที่ต้องเปลี่ยน) ก็ไม่ต้องทำอะไร
+    if (newBg === null) {
+      return;
     }
-  }, [step, backgroundImage]);
+
+    // ถ้า newBg ไม่เหมือนกับภาพปัจจุบัน ให้ทำการเปลี่ยน
+    if (newBg !== backgroundImage) {
+      const isInstantChange = step === 11 && stepHistory.length > 0 && stepHistory[stepHistory.length - 1] === 10;
+
+      if (isInstantChange) {
+        // เปลี่ยนภาพทันทีสำหรับ step 11
+        setBackgroundImage(newBg);
+        gsap.set(bgRef.current, { opacity: 1 });
+      } else {
+        // ใช้เอฟเฟคเลือนภาพสำหรับกรณีอื่น
+        gsap.to(bgRef.current, {
+          opacity: 0,
+          duration: 0.8,
+          onComplete: () => {
+            setBackgroundImage(newBg);
+            gsap.to(bgRef.current, {
+              opacity: newBg ? 1 : 0,
+              duration: 0.8
+            });
+          }
+        });
+      }
+    }
+  }, [step, backgroundImage, stepHistory]);
 
   const advanceToNextStep = useCallback((nextStep) => {
     if (isTransitioning) return;
@@ -324,7 +347,7 @@ function Story() {
       }
       case 80: return <p className={`${textBaseStyle} italic`}>“งั้นเองสินะ เราก็เหมือนกันเลย เราก็รู้สึก {feelingWhenStressed || 'แบบนั้น'} เหมือนกัน”</p>;
       case 81: return <p className={`${textBaseStyle} italic`}>“นี่ คุณพอจะช่วยเราได้มั้ย …ช่วยฟื้นฟูที่แห่งนี้ได้หรือเปล่า” ร่างนั้นค่อย ๆ ถามด้วยเสียงแผ่วเบา</p>;
-      case 82: return <QuestionWrapper question="“จะให้เราช่วยคุณอย่างไร เราเป็นแค่คนธรรมดา” คุณบอกร่างนั้นไป แม้ใจจะมีอยากช่วยบ้าง แต่ก็ทั้งนึกไม่ออกและไม่รู้จะช่วยอะไรได้"><button className={choiceButtonStyle} onClick={() => handleChoice(null, null, 83)}>บอกเขาไป</button></QuestionWrapper>;
+      case 82: return <QuestionWrapper question={"“จะให้เราช่วยคุณอย่างไร เราเป็นแค่คนธรรมดา” คุณบอกร่างนั้นไป แม้ใจจะมีอยากช่วยบ้าง แต่ก็ทั้งนึกไม่ออกและไม่รู้จะช่วยอะไรได้"}><button className={choiceButtonStyle} onClick={() => handleChoice(null, null, 83)}>บอกเขาไป</button></QuestionWrapper>;
       case 83: return <p className={`${textBaseStyle} italic`}>“เป็นคนธรรมดาก็ไม่ได้แปลว่าจะทำอะไรไม่ได้นี่หน่า”</p>;
       case 84: return <QuestionWrapper question="“ที่จักรวาลเรา เราก็แค่คนธรรมดาที่ไม่ได้พิเศษอะไร”"><button className={choiceButtonStyle} onClick={() => handleChoice(null, null, 85)}>พูดต่อไป</button></QuestionWrapper>;
       case 85: return <p className={`${textBaseStyle} italic`}>“แล้วจำเป็นต้องเป็นคนพิเศษด้วยหรอ” ร่างนั้นตอบกลับคุณทันที</p>;
@@ -366,8 +389,9 @@ function Story() {
       case 115: return <p className={`${textBaseStyle} italic`}>“แล้วทำไมคุณไม่รักตัวเองล่ะ” เด็กคนนั้นโพล่งถามออกไป</p>;
       case 116: return <p className={`${textBaseStyle} italic`}>“มั-น ดู แอบเห็นแก่ตัวล่ะมั้-“</p>;
       case 117: return <p className={`${textBaseStyle} italic`}>“รักตัวเองไม่เท่ากับเห็นแก่ตัวซักหน่อย รักตัวเองได้ดี ก็จะรักคนอื่นได้ดีเช่นกัน”</p>;
+      case 118: return <p className={`${textBaseStyle} italic`}>“แต่เราไม่รู้สึกว่าตัวเองมีค่าเลย เราไม่เคยรู้สึกว่าตัวเองมีคุณค่าเลย”</p>
       case 118: return <p className={`${textBaseStyle} italic`}>“เราขอโทษที่ทำให้ผิดหวังนะ เราพยายามแล้ว”</p>;
-      case 119: return <QuestionWrapper question="“ไม่ว่าอะไรจะเกิด แต่คุณก็ยังคงเป็นคุณเสมอ” คุณกล่าวซ้ำไป"><button className={choiceButtonStyle} onClick={() => handleChoice(null, null, 120)}>กล่าวซ้ำไป</button></QuestionWrapper>;
+      case 119: return <QuestionWrapper question={"“ไม่ว่าอะไรจะเกิด แต่คุณก็ยังคงเป็นคุณเสมอ” คุณกล่าวซ้ำไป"}><button className={choiceButtonStyle} onClick={() => handleChoice(null, null, 120)}>กล่าวซ้ำไป</button></QuestionWrapper>;
       case 120: return <p className={textBaseStyle}>สิ้นเสียงคุณ ร่างนั้นเริ่มกลับมาดีขึ้นบ้าง แม้จะยังกระพริบไปมา ระหว่างร่างโปร่งแสงปกติ กับร่างโปร่งใสของเมื่อกี้</p>;
       case 121: {
         const choices = ["เพียงแค่ได้รับการโอบกอดอย่างอ่อนโยน และมีใครสักคนรับฟังความเจ็บปวด โดยไม่ตัดสิน", "ต้องการใครสักคนมายืนยันว่าเรายังมีคุณค่า ไม่ว่าเราจะเคยทำอะไรผิดพลาดมาแค่ไหนก็ตาม", "ต้องการคำแนะนำที่ชัดเจนว่าจะต้องทำอย่างไร เพื่อให้หลุดพ้นจากความทุกข์ทรมานนี้", "อยากได้รับโอกาสในการให้อภัยตัวเอง และโอกาสในการเริ่มต้นชีวิตใหม่ที่ดีกว่า"];
@@ -440,8 +464,8 @@ function Story() {
       {/* Background Image */}
       <div
         ref={bgRef}
-        className="absolute inset-0 w-full h-full bg-cover bg-center transition-opacity duration-1000"
-        style={{ backgroundImage: backgroundImage ? `url(${backgroundImage})` : 'none', opacity: backgroundImage ? 1 : 0 }}
+        className="absolute inset-0 w-full h-full bg-cover bg-center"
+        style={{ backgroundImage: backgroundImage ? `url(${backgroundImage})` : 'none' }}
       />
       {/* Dark Overlay */}
       <div className="absolute inset-0 w-full h-full bg-black/50" />
