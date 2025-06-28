@@ -196,7 +196,7 @@ function Story() {
       newBg = whiteman5;
     } else if (step === 93) {
       newBg = whiteman3;
-    } else if (step >= 94 && step <= 108) {
+    } else if (step >= 94 && step <= 111) {
       newBg = nature3;
     } else if ([112, 114, 116, 118, 120, 122, 124, 126, 128].includes(step)) {
       newBg = whiteman6;
@@ -216,10 +216,11 @@ function Story() {
       newBg = ''; // พื้นหลังสีขาว
     } else if (step >= 155 && step <= 167) {
       newBg = comehome;
-    } else if (step >= 168 && step <= 169) {
+    } else if (step >= 168) {
       newBg = result;
     } else {
-      newBg = '';
+      // ถ้าไม่ตรงเงื่อนไขไหน ใช้ภาพล่าสุดที่มี
+      newBg = backgroundImage || '';
     }
 
     // จัดการเพลงพื้นหลัง bgmusic1 (case 1-17)
@@ -350,10 +351,22 @@ function Story() {
                               (step === 15 && stepHistory.length > 0 && stepHistory[stepHistory.length - 1] === 14) ||
                               (step >= 24 && step <= 48) || // ไม่เฟดระหว่าง light1, light2, light3
                               (step >= 49 && step <= 55) ||
-                              (step >= 60 && step !== 152); // ไม่เฟดตั้งแต่ case 60 ยกเว้น case 152
+                              (step >= 60); // ไม่เฟดตั้งแต่ case 60 เป็นต้นไป (รวม case 62+)
       
       if (isInstantChange) {
         setBackgroundImage(newBg);
+        // Force reset opacity และ filter สำหรับ case 60+
+        if (step >= 60 && bgRef.current) {
+          // ใช้ setTimeout เพื่อให้ทำหลังจาก setBackgroundImage
+          setTimeout(() => {
+            if (bgRef.current) {
+              gsap.set(bgRef.current, { 
+                opacity: newBg ? 1 : 0, 
+                filter: 'brightness(1)' 
+              });
+            }
+          }, 50);
+        }
       } else {
         gsap.to(bgRef.current, {
           opacity: 0,
@@ -361,11 +374,16 @@ function Story() {
           onComplete: () => {
             setBackgroundImage(newBg);
             gsap.to(bgRef.current, {
-              opacity: newBg ? 1 : 0,
+              opacity: newBg !== '' ? 1 : 0,
               duration: 0.8
             });
           }
         });
+      }
+      
+      // Debug log
+      if (step >= 60 && step <= 70) {
+        console.log(`Step ${step}: Changing from "${backgroundImage}" to "${newBg}"`);
       }
     }
   }, [step, backgroundImage, stepHistory, isMuted]);
@@ -707,6 +725,23 @@ function Story() {
     }
   }, [step, advanceToNextStep]);
 
+  // Force opacity สำหรับ case 60+ ที่มีปัญหา
+  useEffect(() => {
+    if (step >= 60 && bgRef.current && backgroundImage) {
+      // Force set opacity เป็น 1 สำหรับ case ที่มีภาพ
+      const timer = setTimeout(() => {
+        if (bgRef.current) {
+          gsap.set(bgRef.current, { 
+            opacity: 1, 
+            filter: 'brightness(1)' 
+          });
+        }
+      }, 100);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [step, backgroundImage]);
+
   const { name = '', age = '' } = userData || {};
   const textBaseStyle = "text-white font-light text-2xl md:text-3xl lg:text-4xl text-center text-balance leading-relaxed";
   const choiceButtonStyle = "w-full max-w-md p-3 bg-black/20 border-2 border-white/50 rounded-lg text-white text-center text-base md:text-lg hover:bg-white/30 transition-colors duration-300 backdrop-blur-sm";
@@ -948,13 +983,24 @@ function Story() {
         className="absolute inset-0 w-full h-full bg-cover bg-center"
         style={{ 
           backgroundImage: backgroundImage ? `url(${backgroundImage})` : 'none',
-          backgroundColor: (step >= 56 && step <= 61) || (step >= 153 && step <= 154) ? 'white' : 'transparent'
+          backgroundColor: (step >= 56 && step <= 61) || (step >= 153 && step <= 154) ? 'white' : 'black'
         }}
       />
-      {/* Dark Overlay */}
+      {/* Dark Overlay - ปิดสำหรับ case 60+ */}
       <div className="absolute inset-0 w-full h-full bg-black/50" style={{
         display: step >= 60 ? 'none' : 'block'
       }} />
+      
+      {/* Debug Info */}
+      {step >= 60 && step <= 70 && (
+        <div className="absolute top-20 left-5 z-50 text-red-500 bg-white p-2 text-xs">
+          Step: {step}<br/>
+          BG: {backgroundImage ? 'YES' : 'NO'}<br/>
+          File: {String(backgroundImage).split('/').pop()}<br/>
+          Opacity: {bgRef.current?.style.opacity || 'unknown'}<br/>
+          Filter: {bgRef.current?.style.filter || 'none'}
+        </div>
+      )}
       
       {/* Top Control Buttons */}
       <div className="absolute top-5 right-5 z-20 flex gap-3">
