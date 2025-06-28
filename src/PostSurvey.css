@@ -5,16 +5,16 @@
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-  height: auto; /* เปลี่ยนเป็น auto */
-  background-color: #f5f3ff; /* สีพื้นหลังโทนม่วง */
-  padding: 2rem 1rem 4rem 1rem; /* เพิ่ม padding ด้านล่าง */
+  height: auto;
+  background-color: #f5f3ff;
+  padding: 2rem 1rem 4rem 1rem;
   width: 100%;
-  max-width: 800px; /* จำกัดความกว้างสูงสุด */
-  margin: 0 auto; /* จัดกึ่งกลาง */
+  max-width: 800px;
+  margin: 0 auto;
   box-sizing: border-box;
   font-family: 'Prompt', sans-serif;
   opacity: 0; 
-  position: relative; /* เพิ่มเพื่อให้ scroll indicator ทำงาน */
+  position: relative;
 }
 
 .postsurvey-header {
@@ -22,12 +22,12 @@
   text-align: center;
   margin-bottom: 2rem;
   padding-bottom: 1.5rem;
-  border-bottom: 2px solid #ddd6fe; /* สีเส้นขอบโทนม่วง */
+  border-bottom: 2px solid #ddd6fe;
 }
 
 .postsurvey-header h2 {
   font-size: 1.5rem;
-  color: #7c3aed; /* สีหัวข้อหลักโทนม่วง */
+  color: #7c3aed;
   font-weight: 600;
   margin-bottom: 1rem;
 }
@@ -52,7 +52,7 @@
 .survey-section h3 {
   font-size: 1.2rem;
   font-weight: 500;
-  color: #6d28d9; /* สีหัวข้อย่อยโทนม่วง */
+  color: #6d28d9;
   margin-bottom: 1.5rem;
   padding-bottom: 0.75rem;
   border-bottom: 1px solid #ede9fe;
@@ -80,25 +80,34 @@
 .rating-scale-container {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 0.75rem; /* ปรับลดระยะห่างหลัก */
+  justify-content: space-between; /* เปลี่ยนเป็น space-between */
   width: 100%;
+  max-width: 500px; /* จำกัดความกว้าง */
+  gap: 1rem;
 }
 
-.scale-label-start,
-.scale-label-end {
-  font-size: 0.8rem; /* ปรับลดขนาดตัวอักษรเล็กน้อย */
+/* --- FIX: Label อยู่ข้างปุ่มที่ถูกต้อง --- */
+.scale-label-start {
+  font-size: 0.75rem;
   color: #4b5563;
-  flex-shrink: 0;
   text-align: center;
   white-space: nowrap;
+  order: 1; /* อยู่ข้างปุ่ม 5 */
+}
+
+.scale-label-end {
+  font-size: 0.75rem;
+  color: #4b5563;
+  text-align: center;
+  white-space: nowrap;
+  order: 3; /* อยู่ข้างปุ่ม 1 */
 }
 
 .options {
   display: flex;
-  flex-wrap: nowrap;
   justify-content: center;
-  gap: 0.3rem; /* ปรับลดระยะห่างระหว่างปุ่ม */
+  gap: 0.5rem;
+  order: 2; /* อยู่กลาง */
 }
 
 .options .option-label {
@@ -109,9 +118,10 @@
   cursor: pointer;
   border: 1px solid #ddd6fe;
   border-radius: 50%;
-  width: 38px; /* ปรับลดขนาดปุ่ม */
-  height: 38px; /* ปรับลดขนาดปุ่ม */
+  width: 40px;
+  height: 40px;
   transition: all 0.2s ease-in-out;
+  flex-shrink: 0;
 }
 
 .options input[type="radio"] {
@@ -123,7 +133,7 @@
 
 .options .option-value {
   font-weight: 500;
-  font-size: 1rem;
+  font-size: 0.9rem;
   color: #7c3aed;
 }
 
@@ -142,31 +152,30 @@
 
 .postsurvey-field textarea {
   width: 100%;
-  padding: 0.75rem;
-  font-size: 1rem;
+  min-height: 80px;
+  padding: 1rem;
   border: 1px solid #ddd6fe;
   border-radius: 8px;
-  box-sizing: border-box;
-  background-color: #f5f3ff;
+  font-family: 'Prompt', sans-serif;
+  font-size: 0.9rem;
   color: #1f2937;
   resize: vertical;
-  min-height: 120px;
-  font-family: 'Prompt', sans-serif;
 }
 
 .postsurvey-field textarea:focus {
-  border-color: #7c3aed;
   outline: none;
-  box-shadow: 0 0 0 2px #c4b5fd;
+  border-color: #7c3aed;
+  box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.1);
 }
 
 button[type="submit"] {
   display: block;
-  margin: 1rem auto 0;
-  padding: 0.75rem 2rem;
-  font-size: 1rem;
+  margin: 3rem auto 2rem;
+  padding: 1rem 3rem;
+  font-size: 1.1rem;
+  font-weight: 500;
   color: #FFFFFF;
-  background-color: #8b5cf6; /* สีปุ่มส่งโทนม่วง */
+  background-color: #9333ea;
   border: none;
   border-radius: 8px;
   cursor: pointer;
@@ -176,5 +185,65 @@ button[type="submit"] {
 }
 
 button[type="submit"]:hover {
-  background-color: #7c3aed; /* สีปุ่มส่งเมื่อ hover โทนม่วง */
+  background-color: #7c3aed;
+}
+
+/* Media Queries สำหรับ responsive */
+@media (max-width: 768px) {
+  .postsurvey-container {
+    padding: 1rem 0.5rem 3rem 0.5rem;
+  }
+  
+  .survey-section {
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .postsurvey-header h2 {
+    font-size: 1.25rem;
+  }
+  
+  .rating-scale-container {
+    max-width: 100%;
+    gap: 0.5rem;
+  }
+  
+  .scale-label-start,
+  .scale-label-end {
+    font-size: 0.65rem;
+  }
+  
+  .options {
+    gap: 0.3rem;
+  }
+  
+  .options .option-label {
+    width: 35px;
+    height: 35px;
+  }
+  
+  .options .option-value {
+    font-size: 0.8rem;
+  }
+}
+
+/* สำหรับหน้าจอเล็กมาก */
+@media (max-width: 480px) {
+  .rating-scale-container {
+    gap: 0.3rem;
+  }
+  
+  .scale-label-start,
+  .scale-label-end {
+    font-size: 0.6rem;
+  }
+  
+  .options .option-label {
+    width: 32px;
+    height: 32px;
+  }
+  
+  .options .option-value {
+    font-size: 0.75rem;
+  }
 }

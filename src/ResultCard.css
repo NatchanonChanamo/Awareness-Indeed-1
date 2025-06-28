@@ -4,36 +4,51 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-between;
-  min-height: 100vh; /* เปลี่ยนกลับเป็น 100vh */
-  background-color: #fdf2f8; /* Match pre-survey background */
+  justify-content: flex-start;
+  /* --- FIX: ให้เลื่อนได้ --- */
+  height: auto; /* ไม่จำกัดความสูง */
+  min-height: 100vh; 
+  background-color: #fdf2f8;
   padding: 2rem 1rem;
   width: 100%;
   box-sizing: border-box;
   font-family: 'Prompt', sans-serif;
   text-align: center;
+  
+  /* --- เอาออก: ไม่ต้องใส่ overflow ใน container --- */
+  /* overflow จะอยู่ที่ body แทน */
+}
+
+.result-header {
+  width: 100%;
+  margin-bottom: 2rem;
+  flex-shrink: 0;
 }
 
 .result-header h1 {
   font-size: 1.8rem;
   font-weight: 600;
-  color: #be185d; /* Match pre-survey color */
+  color: #be185d;
   margin-bottom: 1.5rem;
 }
 
 .card-area {
-  flex-grow: 1;
+  flex-grow: 0; /* เปลี่ยนจาก 1 เป็น 0 */
   display: flex;
   align-items: center;
   justify-content: center;
   width: 100%;
   padding: 1rem 0;
+  /* --- ลบ min-height ที่ฟิกซ์ --- */
 }
 
 .covenant-card {
   width: 100%;
-  max-width: 400px;
-  aspect-ratio: 3 / 4.5;
+  max-width: 350px; /* ลดขนาดกว้างเล็กน้อย */
+  
+  /* --- FIX: ปรับ aspect-ratio ให้เหมาะกับการ์ดยาว --- */
+  aspect-ratio: 2.5 / 4; /* เปลี่ยนจาก 3/4.5 เป็น 2.5/4 ให้ยาวขึ้น */
+  
   background-color: white;
   border-radius: 15px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
@@ -41,19 +56,28 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 0; /* ปรับ padding เป็น 0 */
+  padding: 0;
   color: #555;
   font-size: 1.2rem;
   border: 1px solid #fbcfe8;
-  overflow: hidden; /* เพิ่ม overflow hidden */
+  overflow: hidden;
+  
+  /* --- เพิ่ม: ให้การ์ดปรับขนาดตามเนื้อหา --- */
+  min-height: 500px; /* ความสูงขั้นต่ำ */
+  max-height: 800px; /* ความสูงสูงสุด */
+  
+  /* --- เพิ่ม: ป้องกันการหดตัว --- */
+  flex-shrink: 0;
 }
 
 /* --- เพิ่ม: สไตล์สำหรับรูปภาพการ์ด --- */
 .card-image {
   width: 100%;
-  height: auto;
+  height: 100%;
   display: block;
-  object-fit: cover;
+  object-fit: contain; /* ใช้ contain เพื่อให้เห็นการ์ดเต็ม */
+  object-position: center; /* จัดให้อยู่กึ่งกลาง */
+  border-radius: 15px; /* ให้มุมโค้งตามการ์ด */
 }
 
 .result-footer {
@@ -63,37 +87,38 @@
   align-items: center;
   gap: 1.5rem;
   margin-top: 2rem;
+  flex-shrink: 0;
+  padding-bottom: 2rem;
 }
 
 .download-button {
-  padding: 0.75rem 2.5rem;
-  font-size: 1rem;
-  font-weight: 600;
-  color: #FFFFFF;
-  background: linear-gradient(135deg, #A77BCA, #8B5A9F);
+  padding: 12px 32px;
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: white;
+  background: linear-gradient(135deg, #be185d, #7c3aed);
   border: none;
   border-radius: 25px;
   cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(190, 24, 93, 0.3);
 }
 
 .download-button:hover {
   transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(167, 123, 202, 0.4);
+  box-shadow: 0 6px 20px rgba(190, 24, 93, 0.4);
 }
 
 .footer-links {
   display: flex;
-  justify-content: center;
   gap: 1rem;
-  width: 100%;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 .footer-button {
-  flex: 1;
-  padding: 1rem;
-  font-size: 1.1rem;
-  font-weight: 600;
+  padding: 8px 16px;
+  font-size: 0.9rem;
   text-decoration: none;
   color: #be185d;
   background-color: #fce7f3;
@@ -129,8 +154,73 @@
   align-items: center;
   justify-content: center;
   min-height: 400px;
-  background-color: #f0f0f0;
-  border-radius: 10px;
-  color: #666;
+  color: #9ca3af;
   font-size: 1.1rem;
+}
+
+/* --- เพิ่ม: Responsive สำหรับหน้าจอเล็ก --- */
+@media (max-width: 480px) {
+  .result-container {
+    padding: 1rem 0.5rem;
+    /* --- เพิ่ม: padding-bottom เพิ่มขึ้นในมือถือ --- */
+    padding-bottom: 3rem;
+  }
+  
+  .covenant-card {
+    max-width: 300px;
+    min-height: 450px;
+  }
+  
+  .result-header h1 {
+    font-size: 1.5rem;
+  }
+  
+  .card-type-title {
+    font-size: 1.5rem;
+  }
+  
+  /* --- เพิ่ม: เว้นระยะให้เพียงพอในมือถือ --- */
+  .result-footer {
+    padding-bottom: 3rem;
+  }
+}
+
+/* --- เพิ่ม: Responsive สำหรับหน้าจอใหญ่ --- */
+@media (min-width: 768px) {
+  .covenant-card {
+    max-width: 400px;
+    min-height: 600px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .covenant-card {
+    max-width: 450px;
+    min-height: 650px;
+  }
+}
+
+/* --- เพิ่ม: สำหรับหน้าจอแนวนอน --- */
+@media (orientation: landscape) and (max-height: 700px) {
+  .result-container {
+    padding: 1rem;
+  }
+  
+  .covenant-card {
+    min-height: 400px;
+    max-height: 500px;
+  }
+  
+  .result-header h1 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+  }
+  
+  .card-type-title {
+    font-size: 1.5rem;
+  }
+  
+  .card-subtitle {
+    margin-bottom: 1rem;
+  }
 }

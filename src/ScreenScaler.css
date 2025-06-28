@@ -1,147 +1,118 @@
-/* .screen-scaler-container คือพื้นหลังที่คลุมเต็มหน้าจอจริง */
+/* ScreenScaler แบบ Fixed Aspect Ratio Layout */
+
 .screen-scaler-container {
-  position: fixed;
-  top: 0;
-  left: 0;
   width: 100vw;
   height: 100vh;
-  
-  background-image: url('./assets/LoginBG.png');
-  background-size: cover;
-  background-position: center;
-  
+  background-color: #000;
+  overflow: hidden;
   display: flex;
   justify-content: center;
   align-items: center;
-  overflow: hidden;
-}
-
-/* เลเยอร์เบลอพื้นหลัง */
-.screen-scaler-container::before {
-  content: '';
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
-  right: 0;
-  bottom: 0;
-  backdrop-filter: blur(8px) brightness(0.6);
-  z-index: 1;
 }
 
-/* หน้าจอเสมือน ขนาดคงที่ 430x932 */
 .scaled-content {
-  width: 430px;
-  height: 932px;
-  
-  position: relative;
-  z-index: 2;
+  /* ขนาดคงที่ตามการออกแบบ */
+  width: 680px;
+  height: 844px;
   background-color: #fff;
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
+  position: relative;
   
-  /* จัดให้ขยาย/ย่อจากจุดกึ่งกลาง */
-  transform-origin: center center;
-  
-  /* เงาให้ดูเหมือนอุปกรณ์จริง */
-  box-shadow: 
-    0 0 30px rgba(0, 0, 0, 0.3),
-    0 0 60px rgba(0, 0, 0, 0.2);
-  border-radius: 12px;
-  
-  /* ขนาดตัวอักษรพื้นฐาน - ไม่เปลี่ยนแปลง */
-  font-size: 16px;
-  
-  /* --- เพิ่ม: การจัดการตัดคำและการแสดงผลข้อความ --- */
-  /* ใช้ hyphenation เพื่อตัดคำให้สวย */
-  -webkit-hyphens: auto;
-  -moz-hyphens: auto;
-  -ms-hyphens: auto;
-  hyphens: auto;
-  
-  /* ป้องกันการแตกหักของคำไทย */
-  word-break: keep-all;
-  overflow-wrap: break-word;
-  
-  /* การจัดข้อความให้สมดุล */
-  text-wrap: balance;
-  
-  /* เพิ่มความนุ่มนวลในการแสดงผล */
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-/* --- เพิ่ม: การปรับปรุงการตัดคำสำหรับ elements ต่าง ๆ --- */
-.scaled-content p,
-.scaled-content h1,
-.scaled-content h2,
-.scaled-content h3,
-.scaled-content span,
-.scaled-content div {
-  /* การตัดคำภาษาไทยที่ดีขึ้น */
-  word-break: keep-all;
-  overflow-wrap: break-word;
-  text-wrap: balance;
-  
-  /* เว้นบรรทัดให้สวยงาม */
+  /* ฟอนต์และการแสดงผล */
+  font-family: 'Prompt', sans-serif;
+  font-size: 16px; /* ขนาดฟอนต์พื้นฐาน */
   line-height: 1.6;
   
-  /* ป้องกันการ orphan และ widow */
-  orphans: 2;
-  widows: 2;
-}
-
-/* การปรับปรุงเฉพาะ button และ input */
-.scaled-content button,
-.scaled-content input,
-.scaled-content textarea {
+  /* การตัดคำภาษาไทย */
   word-break: keep-all;
   overflow-wrap: break-word;
   text-wrap: balance;
   
-  /* ปรับ line-height ให้เหมาะสม */
-  line-height: 1.4;
-}
-
-/* ปรับปรุงการแสดงผลสำหรับข้อความยาว */
-.scaled-content .story-content p,
-.scaled-content .question-wrapper p {
-  /* เพิ่มการจัดการข้อความยาวเป็นพิเศษ */
-  text-align: justify;
-  text-justify: inter-word;
+  /* การแสดงผลฟอนต์ */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: none;
+  text-size-adjust: none;
   
-  /* เว้นบรรทัดที่เหมาะสม */
-  line-height: 1.7;
+  /* สำหรับการเลื่อนใน iOS */
+  -webkit-overflow-scrolling: touch;
   
-  /* การจัดระยะห่างระหว่างย่อหน้า */
-  margin-bottom: 1.2em;
-}
-
-/* ลบขอบมนในมือถือ */
-@media screen and (max-width: 768px) {
-  .scaled-content {
-    border-radius: 0;
-  }
-}
-
-/* --- เพิ่ม: การปรับปรุงเฉพาะสำหรับภาษาไทย --- */
-.scaled-content {
-  /* ใช้ font-feature-settings เพื่อปรับปรุงการแสดงผลภาษาไทย */
-  font-feature-settings: "liga", "kern";
+  /* --- ป้องกันการ blur เมื่อ scale --- */
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
   
-  /* ปรับ letter-spacing ให้เหมาะกับภาษาไทย */
-  letter-spacing: 0.02em;
+  /* --- เพิ่ม: ให้ scaling ทำงานได้ดีขึ้น --- */
+  will-change: transform;
+  backface-visibility: hidden;
+  perspective: 1000px;
 }
 
-/* การจัดการตัวอักษรขนาดใหญ่ */
-.scaled-content h1,
-.scaled-content h2 {
-  letter-spacing: 0.01em;
-  word-spacing: 0.1em;
+/* ขนาดองค์ประกอบต่างๆ - ออกแบบสำหรับ 680px เป็นพื้นฐาน */
+.scaled-content h1 { 
+  font-size: 28px;
+  font-weight: 600;
+  margin: 0 0 20px 0;
 }
 
-/* การจัดการข้อความใน buttons */
-.scaled-content button {
+.scaled-content h2 { 
+  font-size: 24px;
+  font-weight: 500;
+  margin: 0 0 16px 0;
+}
+
+.scaled-content h3 { 
+  font-size: 20px;
+  font-weight: 500;
+  margin: 0 0 12px 0;
+}
+
+.scaled-content p { 
+  font-size: 16px;
+  font-weight: 300;
+  margin: 0 0 16px 0;
+}
+
+.scaled-content button { 
+  font-size: 16px;
+  font-weight: 400;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
   white-space: normal;
   word-wrap: break-word;
   text-align: center;
-  padding: 0.75em 1em;
 }
+
+.scaled-content input,
+.scaled-content textarea,
+.scaled-content select { 
+  font-size: 16px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-family: inherit;
+}
+
+.scaled-content label { 
+  font-size: 14px;
+  font-weight: 400;
+}
+
+/* เอฟเฟค */
+.scaled-content button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.scaled-content button:active {
+  transform: translateY(0);
+}
+
+/* ลบ Media Queries ทั้งหมด - ให้ JavaScript จัดการ scaling แต่เพียงอย่างเดียว */
+/* ทุกอุปกรณ์จะแสดงผลเหมือนกันแค่ใหญ่/เล็กต่างกัน */

@@ -2,46 +2,56 @@ import React, { useEffect, useState } from 'react';
 import './ScreenScaler.css';
 
 /**
- * คอมโพเนนต์นี้จะสร้างกรอบ "หน้าจอเสมือน" ขนาด 430x932
- * และปรับขนาดให้พอดีกับหน้าจอของแต่ละอุปกรณ์
- * ง่าย ๆ เล็กก็ขยาย ใหญ่ก็ย่อ
+ * ScreenScaler แบบ Fixed Aspect Ratio Layout
+ * - ออกแบบสำหรับ 680x844px เป็นฐาน
+ * - Scale ให้เต็มหน้าจอโดยรักษาสัดส่วน
+ * - ไม่เล็กกว่า 100% ของหน้าจอ
  */
 const ScreenScaler = ({ children }) => {
   const [scale, setScale] = useState(1);
   
   useEffect(() => {
     const calculateScale = () => {
+      // ขนาดต้นแบบ
+      const DESIGN_WIDTH = 680;
+      const DESIGN_HEIGHT = 844;
+      
+      // ขนาดหน้าจอจริง
       const windowWidth = window.innerWidth;
       const windowHeight = window.innerHeight;
-      const targetWidth = 430;  // ขนาดพื้นฐาน
-      const targetHeight = 932; // ขนาดพื้นฐาน
       
-      // คำนวณ scale ที่จะทำให้พอดีหน้าจอ
-      const scaleX = windowWidth / targetWidth;
-      const scaleY = windowHeight / targetHeight;
+      // คำนวณ scale ratio ทั้งสองทิศทาง
+      const scaleX = windowWidth / DESIGN_WIDTH;
+      const scaleY = windowHeight / DESIGN_HEIGHT;
       
-      // เลือก scale ที่เล็กกว่าเพื่อให้ไม่เกินขอบหน้าจอ
-      let newScale = Math.min(scaleX, scaleY);
+      // --- FIX: ใช้ scale ที่ใหญ่กว่า เพื่อให้เต็มหน้าจอ ---
+      let finalScale;
       
-      // ปรับ scale ให้เหมาะสมกับแต่ละอุปกรณ์
-      const isDesktop = windowWidth >= 1200;
-      const isTablet = windowWidth >= 768 && windowWidth < 1200;
-      
-      if (isDesktop) {
-        // คอม - ลดขนาดลง (เพิ่มแค่ 5% แทน 20%)
-        newScale = Math.min(newScale * 1.05, 1.4); // ไม่เกิน 140%
-      } else if (isTablet) {
-        // แท็บเล็ต - ให้ขนาดใหญ่ขึ้นเล็กน้อย (เพิ่ม 10%)
-        newScale = Math.min(newScale * 1.1, 1.3); // ไม่เกิน 130%
+      if (windowWidth <= 480) {
+        // มือถือ: ให้เต็มความกว้างแล้วให้สูงตาม
+        finalScale = scaleX;
+      } else if (windowWidth <= 768) {
+        // แท็บเล็ต: เลือก scale ที่ทำให้เต็มหน้าจอมากที่สุด
+        finalScale = Math.max(scaleX, scaleY);
       } else {
-        // มือถือ - ขนาดปกติตาม scale ที่คำนวณได้
-        // ไม่ปรับเพิ่ม เอาขนาดที่คำนวณได้ตรง ๆ
+        // คอม: เลือก scale ที่เหมาะสม (ไม่ให้ใหญ่เกินไป)
+        finalScale = Math.min(scaleX * 0.9, scaleY * 0.9);
       }
       
-      // จำกัดขนาดต่ำสุด
-      newScale = Math.max(newScale, 0.3);
+      // ขั้นต่ำ 80% สูงสุด 300%
+      finalScale = Math.max(0.8, Math.min(finalScale, 3.0));
       
-      setScale(newScale);
+      setScale(finalScale);
+      
+      console.log('Scale calculation:', {
+        deviceType: windowWidth <= 480 ? 'mobile' : windowWidth <= 768 ? 'tablet' : 'desktop',
+        windowSize: `${windowWidth}x${windowHeight}`,
+        designSize: `${DESIGN_WIDTH}x${DESIGN_HEIGHT}`,
+        scaleX: scaleX.toFixed(2),
+        scaleY: scaleY.toFixed(2),
+        finalScale: finalScale.toFixed(2),
+        actualSize: `${Math.round(DESIGN_WIDTH * finalScale)}x${Math.round(DESIGN_HEIGHT * finalScale)}`
+      });
     };
     
     // คำนวณครั้งแรก
@@ -62,9 +72,10 @@ const ScreenScaler = ({ children }) => {
   return (
     <div className="screen-scaler-container">
       <div 
-        className="scaled-content" 
+        className="scaled-content"
         style={{ 
           transform: `scale(${scale})`,
+          transformOrigin: 'center center',
           transition: 'transform 0.3s ease-out'
         }}
       >

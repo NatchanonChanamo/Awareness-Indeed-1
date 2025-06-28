@@ -20,13 +20,36 @@ function ResultCard() {
   const [cardImage, setCardImage] = useState(MCard5); // เริ่มต้นด้วย fallback
 
   useEffect(() => {
-    // โหลดรูปการ์ดตาม URL parameter
+    console.log('=== ResultCard Debug ===');
+    console.log('URL cardImageSrc:', cardImageSrc);
+    console.log('URL cardType:', cardType);
+    console.log('URL cardTitle:', cardTitle);
+    
+    // ลองหาข้อมูลจาก localStorage ก่อน (กรณี direct access)
+    const storedCardData = localStorage.getItem('userCardData');
+    if (storedCardData) {
+      try {
+        const parsedData = JSON.parse(storedCardData);
+        console.log('Found localStorage data:', parsedData);
+        if (parsedData.cardImage) {
+          setCardImage(parsedData.cardImage);
+          console.log('Using cardImage from localStorage:', parsedData.cardImage);
+          return;
+        }
+      } catch (error) {
+        console.error('Error parsing localStorage data:', error);
+      }
+    }
+    
+    // ถ้าไม่มีใน localStorage ให้ใช้จาก URL parameter
     if (cardImageSrc && cardImageSrc !== 'undefined' && cardImageSrc !== '') {
       setCardImage(cardImageSrc);
+      console.log('Using cardImage from URL:', cardImageSrc);
     } else {
       setCardImage(MCard5); // ใช้ fallback image
+      console.log('Using fallback cardImage:', MCard5);
     }
-  }, [cardImageSrc]);
+  }, [cardImageSrc, cardType, cardTitle]);
 
   useEffect(() => {
     if (cardRef.current) {
@@ -69,11 +92,25 @@ function ResultCard() {
       <main className="card-area">
         <div ref={cardRef} className="covenant-card">
           {cardImage ? (
-            <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ 
+              width: '100%', 
+              height: '100%', 
+              display: 'flex', 
+              flexDirection: 'column', 
+              alignItems: 'center', 
+              justifyContent: 'center',
+              position: 'relative' /* เพิ่ม relative positioning */
+            }}>
               <img 
                 src={cardImage} 
                 alt={`${cardType} - ${cardTitle}`} 
                 className="card-image"
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'contain', /* เปลี่ยนเป็น contain เพื่อให้เห็นการ์ดเต็ม */
+                  objectPosition: 'center'
+                }}
                 onError={(e) => {
                   e.target.style.display = 'none';
                   e.target.nextElementSibling.style.display = 'block';

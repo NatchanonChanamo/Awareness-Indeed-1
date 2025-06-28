@@ -254,6 +254,23 @@ function Story() {
     
     const cardTitle = cardTypeToThai[selectedCardType];
     
+    // --- FIX: แปลง cardType ให้ถูกต้องตามเพศและชนิดการ์ด ---
+    const genderToCardType = {
+      'ชาย': `ผู้${selectedCardType === 'pathfinder' ? 'เผชิญหน้า' : 
+                selectedCardType === 'healer' ? 'เยียวยา' :
+                selectedCardType === 'recharger' ? 'ฟื้นพลัง' :
+                selectedCardType === 'creator' ? 'สร้างแรงบันดาลใจ' :
+                selectedCardType === 'creator' ? 'สร้างแรงบันดาลใจ' : 'รับมือ'}`,
+      'หญิง': `ผู้${selectedCardType === 'pathfinder' ? 'เผชิญหน้า' : 
+                 selectedCardType === 'healer' ? 'เยียวยา' :
+                 selectedCardType === 'recharger' ? 'ฟื้นพลัง' :
+                 selectedCardType === 'creator' ? 'สร้างแรงบันดาลใจ' : 'รับมือ'}`,
+      'ไม่ระบุ': `ผู้${selectedCardType === 'pathfinder' ? 'เผชิญหน้า' : 
+                   selectedCardType === 'healer' ? 'เยียวยา' :
+                   selectedCardType === 'recharger' ? 'ฟื้นพลัง' :
+                   selectedCardType === 'creator' ? 'สร้างแรงบันดาลใจ' : 'รับมือ'}`
+    };
+    
     // เลือกไฟล์ภาพการ์ดตามเพศ
     let cardImageUrl;
     if (gender === 'ชาย') {
@@ -267,11 +284,31 @@ function Story() {
       cardImageUrl = nonBinaryCards[cardNumber - 1];
     }
     
-    return {
-      cardType: gender === 'ชาย' ? 'ผู้รับฟัง' : 
-                gender === 'หญิง' ? 'ผู้รับฟัง' : 'ผู้รับฟัง',
+    // --- FIX: แปลง imported image เป็น URL string ---
+    let imageUrlString;
+    if (cardImageUrl) {
+      // สำหรับ React import, imported image จะเป็น string URL โดยตรง
+      imageUrlString = cardImageUrl;
+    } else {
+      // fallback เป็น MCard5
+      imageUrlString = MCard5;
+    }
+    
+    console.log('Final Card Calculation:', {
+      gender,
+      selectedCardType,
+      cardNumber,
       cardTitle,
-      cardImage: cardImageUrl || MCard5 // fallback ถ้าไม่มีรูป
+      cardScores: JSON.stringify(cardScores),
+      maxScore: Math.max(...Object.values(cardScores)),
+      cardImageUrl,
+      imageUrlString
+    });
+    
+    return {
+      cardType: genderToCardType[gender] || 'ผู้รับฟัง',
+      cardTitle,
+      cardImage: imageUrlString
     };
   }, [cardScores, userData]);
 
@@ -580,13 +617,20 @@ function Story() {
     
     // ตรวจสอบถ้าจบเรื่องแล้ว ให้ไปหน้า PostSurvey พร้อมข้อมูลการ์ด
     if (nextStep > TOTAL_STEPS) {
+      console.log('Game finished! Calculating final card...');
+      console.log('Current cardScores:', cardScores);
+      
       const finalCard = calculateFinalCard();
+      console.log('Final card result:', finalCard);
+      
       // ส่งข้อมูลการ์ดไปยัง PostSurvey ผ่าน localStorage เพื่อให้ PostSurvey ส่งต่อไป ResultCard
       localStorage.setItem('userCardData', JSON.stringify({
         cardType: finalCard.cardType,
         cardTitle: finalCard.cardTitle,
         cardImage: finalCard.cardImage
       }));
+      
+      console.log('Saved to localStorage:', localStorage.getItem('userCardData'));
       navigate(`/postsurvey/${id}`);
       return;
     }
@@ -644,13 +688,17 @@ function Story() {
     if (step === 28) {
       if (value === 'พยายามทำความเข้าใจ') {
         addCardScore('pathfinder', 2); // กล้าหาญ, เผชิญความจริง
+        console.log('Step 28: Added 2 points to pathfinder');
       } else if (value === 'ยอมจำนน') {
         addCardScore('adaptor', 2); // ยอมรับความจริง
+        console.log('Step 28: Added 2 points to adaptor');
       } else if (value === 'สัมผัส') {
         addCardScore('pathfinder', 1);
         addCardScore('creator', 1); // ลองของใหม่
+        console.log('Step 28: Added 1 point to pathfinder and creator');
       } else if (value === 'หลบหนี') {
         addCardScore('recharger', 1); // รู้จักพักหลบภัย
+        console.log('Step 28: Added 1 point to recharger');
       }
     }
     
@@ -755,6 +803,13 @@ function Story() {
         addCardScore('pathfinder', 2);
         addCardScore('creator', 1);
       }
+    }
+    
+    // --- Debug: แสดงคะแนนปัจจุบันหลังตอบคำถาม ---
+    if ([28, 74, 79, 82, 84, 98, 103, 105, 119, 121, 126, 133, 137, 141, 144, 149].includes(step)) {
+      setTimeout(() => {
+        console.log(`Current card scores after step ${step}:`, cardScores);
+      }, 100);
     }
     
     advanceToNextStep(nextStep);
@@ -876,8 +931,8 @@ function Story() {
           onComplete: () => {
             const nextStep = storyJumps[step] || step + 1;
             if (nextStep > TOTAL_STEPS) {
-              // เมื่อจบเรื่องแล้วให้ไปหน้า PostSurvey แทน
-              navigate(`/postsurvey/${id}`);
+              // เมื่อจบเรื่องแล้วให้ใช้ advanceToNextStep เพื่อคำนวณการ์ดและไปหน้า PostSurvey
+              advanceToNextStep(nextStep);
             } else {
               advanceToNextStep(nextStep);
               setTimeout(() => {
@@ -896,8 +951,8 @@ function Story() {
       // สำหรับ case อื่นๆ ทำงานตามปกติ
       const nextStep = storyJumps[step] || step + 1;
       if (nextStep > TOTAL_STEPS) {
-        // เมื่อจบเรื่องแล้วให้ไปหน้า PostSurvey แทน
-        navigate(`/postsurvey/${id}`);
+        // เมื่อจบเรื่องแล้วให้ใช้ advanceToNextStep เพื่อคำนวณการ์ดและไปหน้า PostSurvey
+        advanceToNextStep(nextStep);
       } else {
         advanceToNextStep(nextStep);
       }
