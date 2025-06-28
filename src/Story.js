@@ -5,9 +5,46 @@ import { doc, getDoc } from 'firebase/firestore';
 import gsap from 'gsap';
 
 // --- BG IMAGES ---
+// --- BG IMAGES ---
 import carOnStreetBg from './assets/caronstreet.gif';
 import opendoor1 from './assets/opendoor1.png';
 import opendoor2 from './assets/opendoor2.png';
+import darkroom1 from './assets/darkroom1.gif';
+import rain1 from './assets/rain1.jpg';
+import rain2 from './assets/rain2.jpg';
+import rain3 from './assets/rain3.jpg';
+import room1 from './assets/room1.jpg';
+import room2 from './assets/room2.jpg';
+import room3 from './assets/room3.jpg';
+import room4 from './assets/room4.jpg';
+import light1 from './assets/light1.png';
+import light2 from './assets/light2.jpg';
+import light3 from './assets/light3.jpg';
+import nature1 from './assets/nature1.png';
+import nature3 from './assets/nature3.png';
+import nature5 from './assets/nature5.png';
+import whiteman1 from './assets/whiteman1.png';
+import whiteman1gif from './assets/whiteman1.gif';
+import whiteman3 from './assets/whiteman3.png';
+import whiteman4 from './assets/whiteman4.png';
+import whiteman5 from './assets/whiteman5.png';
+import whiteman6 from './assets/whiteman6.png';
+import whiteman7 from './assets/whiteman7.png';
+import whiteman8 from './assets/whiteman8.png';
+import whiteman9 from './assets/whiteman9.png';
+import whiteman10 from './assets/whiteman10.png';
+import whiteman11 from './assets/whiteman11.png';
+import whiteman12 from './assets/whiteman12.png';
+import comehome from './assets/comehome.png';
+import result from './assets/result.png';
+import bgmusic1 from './assets/bgmusic1.mp3'; // หรือ .wav ตามนามสกุลไฟล์จริง
+import bgmusic2 from './assets/bgmusic2.mp3';
+import bgmusic3 from './assets/bgmusic3.mp3';
+import rainsound from './assets/rainsound.mp3';
+import lightningsound from './assets/lightningsound.mp3';
+import warpdoorsound from './assets/warpdoorsound.mp3';
+import warpsound from './assets/warpsound.mp3';
+import windsound from './assets/Windsound.mp3';
 
 // --- Helper Components ---
 const InputWrapper = ({ question, value, setter, handleTextInputSubmit, nextStep, placeholder }) => {
@@ -55,6 +92,7 @@ function Story() {
   const [userData, setUserData] = useState(null);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [backgroundImage, setBackgroundImage] = useState(carOnStreetBg);
+  const [isMuted, setIsMuted] = useState(false);
 
   // --- Story State Variables ---
   const [userAnswerDay, setUserAnswerDay] = useState('');
@@ -63,8 +101,8 @@ function Story() {
   const [locationGuess, setLocationGuess] = useState('');
   const [initialReactionToWhiteFigure, setInitialReactionToWhiteFigure] = useState('');
   const [feelingWhenStressed, setFeelingWhenStressed] = useState('');
-  const [howToHelp, setHowToHelp] = useState(''); // This seems unused in the new script but kept for safety
-  const [ordinaryFeeling, setOrdinaryFeeling] = useState(''); // This seems unused in the new script but kept for safety
+  const [howToHelp, setHowToHelp] = useState('');
+  const [ordinaryFeeling, setOrdinaryFeeling] = useState('');
   const [childFeelingGuess, setChildFeelingGuess] = useState('');
   const [howToManageStress, setHowToManageStress] = useState('');
   const [energySource, setEnergySource] = useState('');
@@ -77,6 +115,12 @@ function Story() {
   const textContentRef = useRef(null);
   const containerRef = useRef(null);
   const bgRef = useRef(null);
+  const audioRef = useRef(null);
+  const windAudioRef = useRef(null);
+  const bgMusicRef = useRef(null); // เพิ่ม ref สำหรับเพลงพื้นหลัง
+  const rainAudioRef = useRef(null); // เพิ่ม ref สำหรับเสียงฝน
+  const lightningAudioRef = useRef(null); // เพิ่ม ref สำหรับเสียงฟ้าร้อง
+  const warpAudioRef = useRef(null); // เพิ่ม ref สำหรับเสียง warp
 
   const TOTAL_STEPS = 169;
   const interactiveSteps = [5, 8, 28, 65, 74, 79, 82, 84, 98, 103, 105, 119, 121, 126, 133, 137, 141, 144, 149];
@@ -102,33 +146,215 @@ function Story() {
   }, [id]);
 
   useEffect(() => {
-    let newBg = null; // ใช้ null เพื่อบอกว่า "ไม่ต้องเปลี่ยน"
+    let newBg = '';
 
     if (step >= 1 && step <= 8) {
       newBg = carOnStreetBg;
-    } else if (step === 9) {
-      newBg = ''; // ทำให้พื้นหลังหายไปใน step 9 ก่อนเข้าบ้าน
     } else if (step === 10) {
       newBg = opendoor1;
     } else if (step === 11) {
       newBg = opendoor2;
+    } else if (step === 12) {
+      newBg = darkroom1;
+    } else if (step === 13) {
+      newBg = rain1;
+    } else if (step === 14) {
+      newBg = rain3;
+    } else if (step === 15) {
+      newBg = rain2;
+    } else if (step === 18) {
+      newBg = room4;
+    } else if (step >= 19 && step <= 20) {
+      newBg = room3;
+    } else if (step === 21) {
+      newBg = room1;
+    } else if (step >= 22 && step <= 23) {
+      newBg = room2;
+    } else if (step >= 24 && step <= 26) {
+      newBg = light1;
+    } else if (step >= 27 && step <= 48) {
+      newBg = light2;
+    } else if (step >= 49 && step <= 55) {
+      newBg = light3;
+    } else if (step >= 56 && step <= 61) {
+      newBg = ''; // พื้นหลังสีขาวหลัง case 55
+    } else if (step >= 62 && step <= 66) {
+      newBg = nature1;
+    } else if (step >= 67 && step <= 70) {
+      newBg = nature3;
+    } else if (step >= 71 && step <= 74) {
+      newBg = nature5;
+    } else if (step === 75) {
+      newBg = whiteman1;
+    } else if ([76, 77, 78, 79, 82, 83, 84, 85, 86, 87, 88, 89, 109, 110, 111].includes(step)) {
+      newBg = whiteman1gif;
+    } else if (step === 80) {
+      newBg = whiteman4;
+    } else if (step === 81) {
+      newBg = whiteman1;
+    } else if (step >= 90 && step <= 92) {
+      newBg = whiteman5;
+    } else if (step === 93) {
+      newBg = whiteman3;
+    } else if (step >= 94 && step <= 108) {
+      newBg = nature3;
+    } else if ([112, 114, 116, 118, 120, 122, 124, 126, 128].includes(step)) {
+      newBg = whiteman6;
+    } else if ([113, 115, 117, 119, 121, 123, 125, 127, 129, 130].includes(step)) {
+      newBg = whiteman7;
+    } else if (step >= 131 && step <= 139) {
+      newBg = whiteman8;
+    } else if (step >= 140 && step <= 147) {
+      newBg = whiteman9;
+    } else if (step >= 148 && step <= 149) {
+      newBg = whiteman10;
+    } else if (step >= 150 && step <= 151) {
+      newBg = whiteman11;
+    } else if (step === 152) {
+      newBg = whiteman12;
+    } else if (step >= 153 && step <= 154) {
+      newBg = ''; // พื้นหลังสีขาว
+    } else if (step >= 155 && step <= 167) {
+      newBg = comehome;
+    } else if (step >= 168 && step <= 169) {
+      newBg = result;
+    } else {
+      newBg = '';
     }
 
-    // ถ้า newBg เป็น null (คือไม่ใช่ฉากที่ต้องเปลี่ยน) ก็ไม่ต้องทำอะไร
-    if (newBg === null) {
-      return;
+    // จัดการเพลงพื้นหลัง bgmusic1 (case 1-17)
+    if (step === 1) {
+      if (bgMusicRef.current) {
+        bgMusicRef.current.src = bgmusic1;
+        bgMusicRef.current.loop = true;
+        bgMusicRef.current.volume = isMuted ? 0 : 0.3;
+        bgMusicRef.current.play().catch(console.error);
+      }
+    } else if (step === 18) {
+      if (bgMusicRef.current) {
+        bgMusicRef.current.pause();
+        bgMusicRef.current.currentTime = 0;
+      }
+    }
+
+    // จัดการเพลงพื้นหลัง bgmusic2 (case 83-152)
+    if (step === 83) {
+      if (bgMusicRef.current) {
+        bgMusicRef.current.src = bgmusic2;
+        bgMusicRef.current.loop = true;
+        bgMusicRef.current.volume = isMuted ? 0 : 0.3;
+        bgMusicRef.current.play().catch(console.error);
+      }
+    } else if (step === 153) {
+      if (bgMusicRef.current) {
+        bgMusicRef.current.pause();
+        bgMusicRef.current.currentTime = 0;
+      }
+    }
+
+    // จัดการเพลงพื้นหลัง bgmusic3 (case 155-169)
+    if (step === 155) {
+      if (bgMusicRef.current) {
+        bgMusicRef.current.src = bgmusic3;
+        bgMusicRef.current.loop = true;
+        bgMusicRef.current.volume = isMuted ? 0 : 0.3;
+        bgMusicRef.current.play().catch(console.error);
+      }
+    } else if (step === 170) {
+      if (bgMusicRef.current) {
+        bgMusicRef.current.pause();
+        bgMusicRef.current.currentTime = 0;
+      }
+    }
+
+    // จัดการเสียงฝน rainsound (case 15-16)
+    if (step === 15) {
+      if (rainAudioRef.current) {
+        rainAudioRef.current.src = rainsound;
+        rainAudioRef.current.loop = true;
+        rainAudioRef.current.volume = isMuted ? 0 : 0.25;
+        rainAudioRef.current.play().catch(console.error);
+      }
+    } else if (step === 17) {
+      if (rainAudioRef.current) {
+        rainAudioRef.current.pause();
+        rainAudioRef.current.currentTime = 0;
+      }
+    }
+
+    // จัดการเสียงฟ้าร้อง lightningsound (case 3, 13-14)
+    if (step === 3) {
+      if (lightningAudioRef.current) {
+        lightningAudioRef.current.src = lightningsound;
+        lightningAudioRef.current.volume = isMuted ? 0 : 0.4;
+        lightningAudioRef.current.play().catch(console.error);
+      }
+    }
+
+    // จัดการเสียง warpdoorsound (case 18-48 และ case 135-152)
+    if (step === 18) {
+      if (audioRef.current) {
+        audioRef.current.src = warpdoorsound;
+        audioRef.current.loop = true;
+        audioRef.current.volume = isMuted ? 0 : 0.15;
+        audioRef.current.play().catch(console.error);
+      }
+    } else if (step === 49) {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
+      }
+    } else if (step === 135) {
+      // เริ่มเล่น warpdoorsound อีกครั้งที่ case 135-152
+      if (audioRef.current) {
+        audioRef.current.src = warpdoorsound;
+        audioRef.current.loop = true;
+        audioRef.current.volume = isMuted ? 0 : 0.15;
+        audioRef.current.play().catch(console.error);
+      }
+    } else if (step === 153) {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
+      }
+    }
+
+    // จัดการเสียง warpsound (case 56 และ case 152) - ไม่วนลูป
+    if (step === 56 || step === 152) {
+      if (warpAudioRef.current) {
+        warpAudioRef.current.src = warpsound;
+        warpAudioRef.current.volume = isMuted ? 0 : 0.35;
+        warpAudioRef.current.play().catch(console.error);
+      }
+    }
+
+    // จัดการเสียง windsound
+    if (step === 22) {
+      if (windAudioRef.current) {
+        windAudioRef.current.src = windsound;
+        windAudioRef.current.loop = true;
+        windAudioRef.current.volume = isMuted ? 0 : 0.2;
+        windAudioRef.current.play().catch(console.error);
+      }
+    } else if (step === 56) {
+      if (windAudioRef.current) {
+        windAudioRef.current.pause();
+        windAudioRef.current.currentTime = 0;
+      }
     }
 
     // ถ้า newBg ไม่เหมือนกับภาพปัจจุบัน ให้ทำการเปลี่ยน
     if (newBg !== backgroundImage) {
-      const isInstantChange = step === 11 && stepHistory.length > 0 && stepHistory[stepHistory.length - 1] === 10;
-
+      const isInstantChange = (step === 11 && stepHistory.length > 0 && stepHistory[stepHistory.length - 1] === 10) ||
+                              (step === 14 && stepHistory.length > 0 && stepHistory[stepHistory.length - 1] === 13) ||
+                              (step === 15 && stepHistory.length > 0 && stepHistory[stepHistory.length - 1] === 14) ||
+                              (step >= 24 && step <= 48) || // ไม่เฟดระหว่าง light1, light2, light3
+                              (step >= 49 && step <= 55) ||
+                              (step >= 60 && step !== 152); // ไม่เฟดตั้งแต่ case 60 ยกเว้น case 152
+      
       if (isInstantChange) {
-        // เปลี่ยนภาพทันทีสำหรับ step 11
         setBackgroundImage(newBg);
-        gsap.set(bgRef.current, { opacity: 1 });
       } else {
-        // ใช้เอฟเฟคเลือนภาพสำหรับกรณีอื่น
         gsap.to(bgRef.current, {
           opacity: 0,
           duration: 0.8,
@@ -142,8 +368,30 @@ function Story() {
         });
       }
     }
-  }, [step, backgroundImage, stepHistory]);
+  }, [step, backgroundImage, stepHistory, isMuted]);
 
+  // จัดการเสียงเมื่อ mute status เปลี่ยน
+  useEffect(() => {
+    if (bgMusicRef.current && ((step >= 1 && step <= 17) || (step >= 83 && step <= 152) || (step >= 155 && step <= 169))) {
+      bgMusicRef.current.volume = isMuted ? 0 : 0.3;
+    }
+    if (rainAudioRef.current && step >= 15 && step <= 16) {
+      rainAudioRef.current.volume = isMuted ? 0 : 0.25;
+    }
+    if (lightningAudioRef.current) {
+      lightningAudioRef.current.volume = isMuted ? 0 : 0.4;
+    }
+    if (warpAudioRef.current) {
+      warpAudioRef.current.volume = isMuted ? 0 : 0.35;
+    }
+    if (audioRef.current && ((step >= 18 && step <= 48) || (step >= 135 && step <= 152))) {
+      audioRef.current.volume = isMuted ? 0 : 0.15;
+    }
+    if (windAudioRef.current && step >= 22 && step <= 55) {
+      windAudioRef.current.volume = isMuted ? 0 : 0.2;
+    }
+  }, [isMuted, step]);
+  
   const advanceToNextStep = useCallback((nextStep) => {
     if (isTransitioning) return;
     setIsTransitioning(true);
@@ -199,11 +447,136 @@ function Story() {
     advanceToNextStep(nextStep);
   };
 
+  // ฟังก์ชันสำหรับปุ่มปิด/เปิดเสียง
+  const toggleMute = () => {
+    setIsMuted(!isMuted);
+  };
+
+  // ฟังก์ชันสำหรับปุ่มออกไปหน้า Caution
+  const exitToHome = () => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+    }
+    navigate('/');
+  };
+
+  // Flash effect for step 58
+  useEffect(() => {
+    if (step === 58) {
+        const timer = setTimeout(() => {
+            advanceToNextStep(59);
+        }, 500);
+        return () => clearTimeout(timer);
+    }
+  }, [step, advanceToNextStep]);
+
+  // Lightning effect when transitioning from step 13 to 14
   useEffect(() => {
     const handleStoryClick = (e) => {
       if (interactiveSteps.includes(step) || e.target.closest('form, button') || isTransitioning) {
         return;
       }
+      
+      // พิเศษสำหรับ case 13 -> 14: เอฟเฟคแสงกระพริบก่อนเปลี่ยนฉาก
+      if (step === 13) {
+        // เล่นเสียงฟ้าร้อง
+        if (lightningAudioRef.current) {
+          lightningAudioRef.current.src = lightningsound;
+          lightningAudioRef.current.volume = isMuted ? 0 : 0.4;
+          lightningAudioRef.current.play().catch(console.error);
+        }
+        
+        gsap.to(bgRef.current, {
+          filter: 'brightness(6)',
+          duration: 0.08,
+          ease: "power2.inOut",
+          yoyo: true,
+          repeat: 1,
+          onComplete: () => {
+            setTimeout(() => {
+              gsap.to(bgRef.current, {
+                filter: 'brightness(8)',
+                duration: 0.12,
+                ease: "power2.inOut",
+                yoyo: true,
+                repeat: 1,
+                onComplete: () => {
+                  gsap.to(bgRef.current, {
+                    filter: 'brightness(15)',
+                    duration: 0.3,
+                    ease: "power2.out",
+                    onComplete: () => {
+                      gsap.to(bgRef.current, {
+                        filter: 'brightness(0)',
+                        duration: 0.4,
+                        ease: "power2.in",
+                        onComplete: () => {
+                          advanceToNextStep(14);
+                          setTimeout(() => {
+                            gsap.set(bgRef.current, { filter: 'brightness(1)' });
+                          }, 100);
+                        }
+                      });
+                    }
+                  });
+                }
+              });
+            }, 150);
+          }
+        });
+        return;
+      }
+
+      // พิเศษสำหรับ case 14: เฟดสว่างแล้วดำไปหน้า 15
+      if (step === 14) {
+        gsap.to(bgRef.current, {
+          filter: 'brightness(10)',
+          duration: 0.4,
+          ease: "power2.out",
+          onComplete: () => {
+            gsap.to(bgRef.current, {
+              filter: 'brightness(0)',
+              duration: 0.5,
+              ease: "power2.in",
+              onComplete: () => {
+                advanceToNextStep(15);
+                setTimeout(() => {
+                  gsap.set(bgRef.current, { filter: 'brightness(1)' });
+                }, 100);
+              }
+            });
+          }
+        });
+        return;
+      }
+
+      // พิเศษสำหรับ case 15: เฟดดำไปหน้าต่อไป
+      if (step === 15) {
+        gsap.to(bgRef.current, {
+          filter: 'brightness(0)',
+          duration: 0.8,
+          ease: "power2.inOut",
+          onComplete: () => {
+            const nextStep = storyJumps[step] || step + 1;
+            if (nextStep > TOTAL_STEPS) {
+              navigate(`/postsurvey/${id}?cardType=ผู้รับฟัง`);
+            } else {
+              advanceToNextStep(nextStep);
+              setTimeout(() => {
+                gsap.to(bgRef.current, {
+                  filter: 'brightness(1)',
+                  duration: 0.8,
+                  ease: "power2.out"
+                });
+              }, 300);
+            }
+          }
+        });
+        return;
+      }
+      
+      // สำหรับ case อื่นๆ ทำงานตามปกติ
       const nextStep = storyJumps[step] || step + 1;
       if (nextStep > TOTAL_STEPS) {
         navigate(`/postsurvey/${id}?cardType=ผู้รับฟัง`);
@@ -221,18 +594,118 @@ function Story() {
         currentContainer.removeEventListener('click', handleStoryClick);
       }
     };
-  }, [step, navigate, id, advanceToNextStep, isTransitioning, interactiveSteps, storyJumps]);
-
-  // Flash effect for step 58
+  }, [step, navigate, id, advanceToNextStep, isTransitioning, interactiveSteps, storyJumps, isMuted]);
+  // เอฟเฟคกระพริบรัวๆ สำหรับ step 14
   useEffect(() => {
-    if (step === 58) {
-        const timer = setTimeout(() => {
-            advanceToNextStep(59);
-        }, 500); // Flash duration
-        return () => clearTimeout(timer);
+    if (step === 14) {
+      const flickerEffect = () => {
+        gsap.to(bgRef.current, {
+          filter: 'brightness(2.5)',
+          duration: 0.06,
+          ease: "power2.inOut",
+          yoyo: true,
+          repeat: 5,
+        });
+      };
+      
+      const timer = setTimeout(flickerEffect, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [step]);
+
+  // เอฟเฟคสั่นไหวสำหรับ step 49-55
+  useEffect(() => {
+    if (step >= 49 && step <= 55) {
+      const shakeAnimation = gsap.to(containerRef.current, {
+        x: () => Math.random() * 4 - 2,
+        y: () => Math.random() * 4 - 2,
+        duration: 0.1,
+        repeat: -1,
+        ease: "none"
+      });
+
+      return () => {
+        shakeAnimation.kill();
+        gsap.set(containerRef.current, { x: 0, y: 0 });
+      };
+    }
+  }, [step]);
+
+  // เอฟเฟคแสงกระพริบเมื่อคลิกจาก case 23 ไป 24
+  useEffect(() => {
+    const handleBrightFlash = (e) => {
+      if (step !== 23 || interactiveSteps.includes(step) || e.target.closest('form, button') || isTransitioning) {
+        return;
+      }
+      
+      // เอฟเฟคแฟลชสว่างเมื่อเปลี่ยนจาก case 23 ไป 24
+      gsap.to(bgRef.current, {
+        filter: 'brightness(8)',
+        duration: 0.15,
+        ease: "power2.out",
+        yoyo: true,
+        repeat: 1,
+        onComplete: () => {
+          gsap.to(bgRef.current, {
+            filter: 'brightness(12)',
+            duration: 0.2,
+            ease: "power2.inOut",
+            yoyo: true,
+            repeat: 1,
+            onComplete: () => {
+              // เปลี่ยนไปหน้า 24 พร้อมแฟลชขาว
+              gsap.to(bgRef.current, {
+                filter: 'brightness(20)',
+                duration: 0.3,
+                ease: "power2.out",
+                onComplete: () => {
+                  advanceToNextStep(24);
+                  setTimeout(() => {
+                    gsap.set(bgRef.current, { filter: 'brightness(1)' });
+                  }, 100);
+                }
+              });
+            }
+          });
+        }
+      });
+    };
+    
+    const currentContainer = containerRef.current;
+    if (currentContainer && step === 23) {
+      currentContainer.addEventListener('click', handleBrightFlash);
+    }
+    return () => {
+      if (currentContainer) {
+        currentContainer.removeEventListener('click', handleBrightFlash);
+      }
+    };
+  }, [step, advanceToNextStep, isTransitioning, interactiveSteps]);
+
+  // เอฟเฟคแสงส่องเต็มหน้าจอสำหรับ step 55
+  useEffect(() => {
+    if (step === 55) {
+      const timer = setTimeout(() => {
+        // แสงส่องเต็มหน้าจอ
+        gsap.to(bgRef.current, {
+          filter: 'brightness(20)',
+          duration: 1.5,
+          ease: "power2.out",
+          onComplete: () => {
+            // เปลี่ยนไปหน้าถัดไป
+            advanceToNextStep(56);
+            // รีเซ็ตความสว่างและหยุดสั่นไหว
+            setTimeout(() => {
+              gsap.set(bgRef.current, { filter: 'brightness(1)' });
+              gsap.set(containerRef.current, { x: 0, y: 0 });
+            }, 100);
+          }
+        });
+      }, 2000); // รอ 2 วินาทีก่อนเริ่มแสงส่อง
+
+      return () => clearTimeout(timer);
     }
   }, [step, advanceToNextStep]);
-
 
   const { name = '', age = '' } = userData || {};
   const textBaseStyle = "text-white font-light text-2xl md:text-3xl lg:text-4xl text-center text-balance leading-relaxed";
@@ -354,7 +827,7 @@ function Story() {
       case 86: return <p className={textBaseStyle}>”ก็ไม่หรอก แต่ถ้าเป็นคนที่พิเศษก็คงจะดีกว่านี้ ได้รับการชื่นชม ได้มีคุณค่า และได้การยอมรับ”</p>;
       case 87: return <p className={textBaseStyle}>ร่างสีขาวยืนนิ่งแล้วหันมาบอกคุณอย่างมั่นใจ</p>;
       case 88: return <p className={`${textBaseStyle} italic`}>“การเป็นคนธรรมดา... ก็ไม่ได้หมายความว่าไร้ซึ่งความหมาย... ท้องฟ้าที่กว้างใหญ่... ก็ประกอบจากหยดน้ำฝนที่แสนธรรมดา... ผืนป่าที่อุดมสมบูรณ์... ก็เริ่มต้นจากเมล็ดพันธุ์เล็กๆ... หรือเครื่องจักรที่ยิ่งใหญ่... ก็ต้องการฟันเฟืองแต่ละน้อยชิ้น”</p>;
-      case 89: return <p className={`${textBaseStyle} italic`}>“คุณน่ะมีค่า ไม่จำเป็นต้องพิเศษถึงมีค่า แต่เพราะเราเป็นคนเราจึงมีค่า” “แค่คุณยังมีชีวิตอยู่ไปซื้อหมูปิ้งหน้าบ้านคุณก็มีค่าต่อแม่ค้า คนเลี้ยงหมู รวมถึงระบบเศรษฐกิจแล้วล่ะ”</p>;
+      case 89: return <p className={`${textBaseStyle} italic`}>“คุณน่ะมีค่า ไม่จำเป็นต้องพิเศษถึงมีค่า แต่เพราะเรา</p>
       case 90: return <p className={`${textBaseStyle} italic`}>“คุณน่ะประเมินค่าตัวเองต่ำเกินกว่าที่เป็น เอาเถอะนะ เพราะถึงแม้คุณจะไม่สามารถช่วยพวกเราได้ คุณก็ยังคงมีค่าเสมอ”</p>;
       case 91: return <p className={textBaseStyle}>ร่างนั้นบอก แม้จะไม่เห็นหน้าเขา แต่ก็พอสัมผัสได้ว่าเขายิ้มอ่อน ๆ ให้คุณ</p>;
       case 92: return <p className={textBaseStyle}>เมฆทมิฬด้านบนเริ่มขยับเล็กน้อย สภาพแวดล้อมมีกลิ่นอายบางอย่างที่เปลี่ยนแปลง</p>;
@@ -385,7 +858,7 @@ function Story() {
       case 111: return <p className={`${textBaseStyle} italic`}>“เขาอยู่ตรงนั้นไม่ยอมไปไหนเลย แต่คุณทำได้ เป็นเรื่องที่ดีแล้—-“</p>;
       case 112: return <p className={textBaseStyle}>ก่อนที่ร่างนั้นจะพูดจบ ร่างสีขาวที่ประกายแสง กลับเริ่มมีร่างที่โปร่งใส คล้ายจะสลายหายไปเอง ประดังน้ำระเหยเป็นไอแก๊ส</p>;
       case 113: return <p className={`${textBaseStyle} italic`}>“เกิดอะไรขึ้นน่ะ ทำไมยังเป็นแบบนี้กันล่ะ” เด็กคนนั้นพูดด้วยความตกใจ</p>;
-      case 114: return <p className={`${textBaseStyle} italic`}>“ตะ-ตลอดเวลาที่ผ่านมา เราไม่เคยรักตัวเองเลย ภายในจึงอ่อนแอ เลยโดนผลกระทบจากการ-สะ—สลายของที่แห่งนี้ไปด้—ว-ย” ร่างสีขาวเริ่มพูดติด ๆ ขัด ๆ</p>;
+      case 114: return <p className={`${textBaseStyle} italic`}>“ตะ-ตลอดเวลาที่ผ่านมา เราไม่เคยรักตัวเองเลย ภายในจึงอ่อนแอ เลยโดนผลกระทบจากการ-สะ—สลายของที่แห่งนี้</p>;
       case 115: return <p className={`${textBaseStyle} italic`}>“แล้วทำไมคุณไม่รักตัวเองล่ะ” เด็กคนนั้นโพล่งถามออกไป</p>;
       case 116: return <p className={`${textBaseStyle} italic`}>“มั-น ดู แอบเห็นแก่ตัวล่ะมั้-“</p>;
       case 117: return <p className={`${textBaseStyle} italic`}>“รักตัวเองไม่เท่ากับเห็นแก่ตัวซักหน่อย รักตัวเองได้ดี ก็จะรักคนอื่นได้ดีเช่นกัน”</p>;
@@ -438,13 +911,13 @@ function Story() {
       // --- บทสรุป: การกลับมา ---
       case 153: return <p className={textBaseStyle}>.....</p>;
       case 154: return <p className={textBaseStyle}>06.58</p>;
-      case 155: return <p className={textBaseStyle}>06.59</p>;
-      case 156: return <p className={textBaseStyle}>07.00</p>;
-      case 157: return <p className={textBaseStyle}>เสียงนาฬิกาปลุกดังขึ้น กับเช้าวันใหม่ที่ผ่านไปอย่างรวดเร็ว</p>;
-      case 158: return <p className={textBaseStyle}>วันนี้คือวันศุกร์ และคุณยังคงมีเรื่องที่คุณต้องทำ</p>;
-      case 159: return <p className={textBaseStyle}>สรุปแล้วนี่คงเป็นฝันที่ยาวนานที่สุดที่คุณเคยฝัน มันทั้งเหมือนจริงและเหมือนคุณอยู่ที่นั้นจริง ๆ</p>;
-      case 160: return <p className={textBaseStyle}>แต่ถึงจะแค่ฝัน คุณก็รู้เริ่มสบายภายใน 'ตัวตน' ขึ้นมาบ้าง</p>;
-      case 161: return <p className={textBaseStyle}>คุณค่าต่าง ๆ ที่ได้รับในฝัน มันเริ่มปรับเปลี่ยนมุมมองคุณ ทีละน้อย ทีละน้อย ทีละน้อย</p>;
+      case 155: return <p className={textBaseStyle}>เสียงนาฬิกาปลุกดังขึ้น... คุณค่อย ๆ ลืมตาตื่นจากฝันที่ยาวนาน</p>;
+      case 156:return <p className={textBaseStyle}>วันนี้คือวันศุกร์... และยังมีบางสิ่งที่คุณต้องรับมือในโลกแห่งความจริง</p>;
+      case 157:return <p className={textBaseStyle}>คุณยังคงจำความฝันนั้นได้... มันทั้งชัดเจนและเหมือนจริงอย่างน่าประหลาด</p>;
+      case 158:return <p className={textBaseStyle}>คุณค่าต่าง ๆ ที่คุณได้รับจากในฝัน... มันยังคงก้องอยู่ในใจ</p>;
+      case 159:return <p className={textBaseStyle}>ความรู้สึกบางอย่างเริ่มเปลี่ยนไป... คุณเริ่มสบายใจกับ 'ตัวตน' ของคุณมากขึ้น</p>;
+      case 160:return <p className={textBaseStyle}>แม้จะเป็นเพียงแค่ความฝัน... แต่มันได้หล่อหลอมบางสิ่งในใจคุณไว้แล้ว</p>;
+      case 161:return <p className={textBaseStyle}>คุณลุกขึ้นจากเตียง... พร้อมจะก้าวออกไปสู่วันใหม่ ด้วยใจที่แข็งแกร่งกว่าเดิม</p>;
       case 162: return <p className={textBaseStyle}>วันนี้คุณคิดว่าเสร็จทุกอย่างแล้ว คุณอาจจะไปหาอะไรทำ</p>;
       case 163: return <p className={textBaseStyle}>ไปเที่ยวซักที่ในวันหยุดที่จะถึง</p>;
       case 164: return <p className={textBaseStyle}>พบปะผู้คนบ้าง</p>;
@@ -461,20 +934,62 @@ function Story() {
 
   return (
     <div ref={containerRef} className="fixed inset-0 bg-black overflow-hidden">
+      {/* Audio Elements */}
+      <audio ref={audioRef} preload="auto" />
+      <audio ref={windAudioRef} preload="auto" />
+      <audio ref={bgMusicRef} preload="auto" />
+      <audio ref={rainAudioRef} preload="auto" />
+      <audio ref={lightningAudioRef} preload="auto" />
+      <audio ref={warpAudioRef} preload="auto" />
+      
       {/* Background Image */}
       <div
         ref={bgRef}
         className="absolute inset-0 w-full h-full bg-cover bg-center"
-        style={{ backgroundImage: backgroundImage ? `url(${backgroundImage})` : 'none' }}
+        style={{ 
+          backgroundImage: backgroundImage ? `url(${backgroundImage})` : 'none',
+          backgroundColor: (step >= 56 && step <= 61) || (step >= 153 && step <= 154) ? 'white' : 'transparent'
+        }}
       />
       {/* Dark Overlay */}
-      <div className="absolute inset-0 w-full h-full bg-black/50" />
+      <div className="absolute inset-0 w-full h-full bg-black/50" style={{
+        display: step >= 60 ? 'none' : 'block'
+      }} />
+      
+      {/* Top Control Buttons */}
+      <div className="absolute top-5 right-5 z-20 flex gap-3">
+        {/* Mute/Unmute Button */}
+        <button 
+          onClick={toggleMute}
+          className={`p-2 bg-white/10 border border-white/30 rounded-lg hover:bg-white/20 transition-colors backdrop-blur-sm ${
+            step >= 60 ? 'text-black' : 'text-white'
+          }`}
+          disabled={isTransitioning}
+          title={isMuted ? "เปิดเสียง" : "ปิดเสียง"}
+        >
+          {isMuted ? "🔇" : "🔊"}
+        </button>
+        
+        {/* Exit Button */}
+        <button 
+          onClick={exitToHome}
+          className={`p-2 bg-white/10 border border-white/30 rounded-lg hover:bg-white/20 transition-colors backdrop-blur-sm ${
+            step >= 60 ? 'text-black' : 'text-white'
+          }`}
+          disabled={isTransitioning}
+          title="ออกจากเกม"
+        >
+          ✕
+        </button>
+      </div>
       
       {/* Back Button */}
       {step > 1 && step !== 58 && (
         <button 
           onClick={goBack} 
-          className="absolute top-5 left-5 z-20 px-4 py-2 bg-white/10 border border-white/30 rounded-lg text-white hover:bg-white/20 transition-colors backdrop-blur-sm"
+          className={`absolute top-5 left-5 z-20 px-4 py-2 bg-white/10 border border-white/30 rounded-lg hover:bg-white/20 transition-colors backdrop-blur-sm ${
+            step >= 60 ? 'text-black' : 'text-white'
+          }`}
           disabled={isTransitioning}
         >
           ย้อนกลับ
