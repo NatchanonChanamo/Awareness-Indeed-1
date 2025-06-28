@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './PostSurvey.css'; // ใช้ CSS ของตัวเอง
 import { db } from './firebase';
 import { doc, setDoc } from 'firebase/firestore';
-import { useParams, useNavigate, useLocation } from 'react-router-dom'; // <-- เพิ่ม useLocation
+import { useParams, useNavigate } from 'react-router-dom'; // เพิ่ม useNavigate
 import { gsap } from 'gsap';
 
 const surveySections = [
@@ -83,8 +83,7 @@ const ratingOptions = [
 
 function PostSurvey() {
   const { id } = useParams();
-  const navigate = useNavigate();
-  const location = useLocation(); // <-- เพิ่มเพื่ออ่าน URL params
+  const navigate = useNavigate(); // เพิ่มบรรทัดนี้
   const [responses, setResponses] = useState(initialResponses);
 
   useEffect(() => {
@@ -101,32 +100,62 @@ function PostSurvey() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log("PostSurvey handleSubmit called");
+    
     try {
       await setDoc(doc(db, "formdata", id), { postsurvey: responses }, { merge: true });
       console.log("Post-survey data added to document with ID: ", id);
       
+      // รับข้อมูลการ์ดจาก localStorage ที่ Story.js ส่งมา
+      const userCardData = localStorage.getItem('userCardData');
+      console.log("Retrieved userCardData from localStorage:", userCardData);
+      
+      let cardParams = '';
+      
+      if (userCardData) {
+        const cardData = JSON.parse(userCardData);
+        console.log("Parsed cardData:", cardData);
+        cardParams = `?cardType=${encodeURIComponent(cardData.cardType)}&cardTitle=${encodeURIComponent(cardData.cardTitle)}&cardImage=${encodeURIComponent(cardData.cardImage)}`;
+        // ลบข้อมูลออกจาก localStorage หลังใช้งานแล้ว
+        localStorage.removeItem('userCardData');
+      } else {
+        console.log("No userCardData found, using fallback");
+        // fallback ถ้าไม่มีข้อมูลการ์ด
+        cardParams = `?cardType=ผู้รับฟัง&cardTitle=ผู้รับมือ&cardImage=`;
+      }
+      
+      const targetUrl = `/resultcard/${id}${cardParams}`;
+      console.log("Navigating to:", targetUrl);
+      
+      // เปลี่ยนจาก window.location เป็น navigate ที่ทำงานได้ถูกต้อง
       gsap.to('.postsurvey-container', {
         opacity: 0,
-        duration: 1,
+        y: -20,
+        duration: 0.7,
+        ease: 'power3.in',
         onComplete: () => {
-          // --- FIX: Pass cardType to ResultCard ---
-          const queryParams = new URLSearchParams(location.search);
-          const cardType = queryParams.get('cardType');
-          navigate(`/result/${id}?cardType=${encodeURIComponent(cardType || 'ผู้รับมือ')}`);
+          navigate(targetUrl); // ใช้ navigate แทน window.location
         }
       });
+      
     } catch (error) {
       console.error("Error adding document: ", error);
     }
   };
 
   return (
-    <div className="postsurvey-container">
-      <div className="postsurvey-header">
-        <h2>แบบประเมินหลังกิจกรรม: การประเมินผลการตระหนักรู้และการเปลี่ยนแปลงภายใน</h2>
-        <div className="instructions">
-          <p><strong>คำแนะนำสำหรับผู้เล่น:</strong> "ยินดีด้วย! คุณได้เสร็จสิ้นการเดินทางอันน่ามหัศจรรย์นี้แล้ว โปรดอ่านแต่ละข้อความด้านล่าง และเลือกตัวเลือกที่ตรงกับความรู้สึกหรือความคิดของคุณใน 'ปัจจุบัน' (หลังจากการเดินทางนี้) มากที่สุด เพื่อให้เราได้เห็นถึงการเปลี่ยนแปลงที่เกิดขึ้นกับคุณ"</p>
-        </div>
+    <div style={{ 
+      height: '100vh', 
+      overflowY: 'auto', 
+      overflowX: 'hidden',
+      backgroundColor: '#f5f3ff'
+    }}>
+      <div className="postsurvey-container">
+        <div className="postsurvey-header">
+          <h2>แบบประเมินหลังกิจกรรม: การประเมินผลการตระหนักรู้และการเปลี่ยนแปลงภายใน</h2>
+          <div className="instructions">
+            <p><strong>คำแนะนำสำหรับผู้เล่น:</strong> "ยินดีด้วย! คุณได้เสร็จสิ้นการเดินทางอันน่ามหัศจรรย์นี้แล้ว โปรดอ่านแต่ละข้อความด้านล่าง และเลือกตัวเลือกที่ตรงกับความรู้สึกหรือความคิดของคุณใน 'ปัจจุบัน' (หลังจากการเดินทางนี้) มากที่สุด เพื่อให้เราได้เห็นถึงการเปลี่ยนแปลงที่เกิดขึ้นกับคุณ"</p>
+          </div>
         <div className="scale-guide">
           <p><strong>มาตรวัด:</strong> 5 = เป็นจริงอย่างยิ่ง, 4 = ค่อนข้างเป็นจริง, 3 = เป็นจริงปานกลาง, 2 = ไม่ค่อยเป็นจริง, 1 = ไม่เป็นจริงเลย</p>
         </div>
@@ -178,6 +207,7 @@ function PostSurvey() {
 
         <button type="submit">เสร็จสิ้นการเดินทาง</button>
       </form>
+      </div>
     </div>
   );
 }

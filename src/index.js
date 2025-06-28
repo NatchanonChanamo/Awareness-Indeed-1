@@ -17,6 +17,7 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   // 3. ครอบแอปทั้งหมดด้วย ScreenScaler
     <Router>
+      <ScreenScaler>
       <Routes>
         <Route path="/" element={<Caution />} />
         <Route path="/logo" element={<Logo />} />
@@ -24,7 +25,8 @@ root.render(
         <Route path="/presurvey/:id" element={<PreSurvey />} />
         <Route path="/story/:id" element={<Story />} />
         <Route path="/postsurvey/:id" element={<PostSurvey />} />
-        <Route path="/result/:id" element={<ResultCard />} />
+        <Route path="/resultcard/:id" element={<ResultCard />} /> {/* เพิ่มบรรทัดนี้ */}
       </Routes>
+      </ScreenScaler>
     </Router>
 );

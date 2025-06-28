@@ -6,6 +6,7 @@ import Form from './Form';
 import PreSurvey from './PreSurvey';
 import Story from './Story';
 import PostSurvey from './PostSurvey';
+import ResultCard from './ResultCard';
 import './App.css';
 
 function App() {
@@ -18,6 +19,7 @@ function App() {
         <Route path="/presurvey/:id" element={<PreSurvey />} />
         <Route path="/story/:id" element={<Story />} />
         <Route path="/postsurvey/:id" element={<PostSurvey />} />
+        <Route path="/resultcard/:id" element={<ResultCard />} />
       </Routes>
     </div>
   );

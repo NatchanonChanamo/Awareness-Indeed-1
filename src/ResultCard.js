@@ -1,50 +1,54 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { useParams, useLocation } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
 import { toPng } from 'html-to-image';
 import { gsap } from 'gsap';
 import './ResultCard.css';
 
-// --- เพิ่ม: Import รูปภาพการ์ด ---
-import MCard1 from './assets/MCard1.png'; // ผู้เผชิญหน้า
-import MCard2 from './assets/MCard2.png'; // ผู้เยียวยา
-import MCard3 from './assets/MCard3.png'; // ผู้ฟื้นพลัง
-import MCard4 from './assets/MCard4.png'; // ผู้สร้างแรงบันดาลใจ
-import MCard5 from './assets/MCard5.png'; // ผู้รับมือ
-
-// --- เพิ่ม: Map ประเภทการ์ดไปยังรูปภาพ ---
-const cardImageMap = {
-  'ผู้เผชิญหน้า': MCard1,
-  'ผู้เยียวยา': MCard2,
-  'ผู้ฟื้นพลัง': MCard3,
-  'ผู้สร้างแรงบันดาลใจ': MCard4,
-  'ผู้รับมือ': MCard5,
-};
+// Default card image (fallback)
+import MCard5 from './assets/Mcard5.png';
 
 function ResultCard() {
   const { id } = useParams();
-  const location = useLocation();
+  const [searchParams] = useSearchParams();
   const cardRef = useRef(null);
-  const [cardImage, setCardImage] = useState(null);
-  const [cardTitle, setCardTitle] = useState('');
+  
+  // รับข้อมูลการ์ดจาก URL parameters
+  const cardType = searchParams.get('cardType') || 'ผู้รับฟัง';
+  const cardTitle = searchParams.get('cardTitle') || 'ผู้รับมือ';
+  const cardImageSrc = searchParams.get('cardImage') || '';
+  
+  const [cardImage, setCardImage] = useState(MCard5); // เริ่มต้นด้วย fallback
 
   useEffect(() => {
-    gsap.fromTo('.result-container', { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 1, ease: 'power3.out' });
+    // โหลดรูปการ์ดตาม URL parameter
+    if (cardImageSrc && cardImageSrc !== 'undefined' && cardImageSrc !== '') {
+      setCardImage(cardImageSrc);
+    } else {
+      setCardImage(MCard5); // ใช้ fallback image
+    }
+  }, [cardImageSrc]);
 
-    const queryParams = new URLSearchParams(location.search);
-    const type = queryParams.get('cardType') || 'ผู้รับมือ'; // Default to 'ผู้รับมือ'
-    setCardTitle(type);
-    setCardImage(cardImageMap[type]);
-  }, [location]);
+  useEffect(() => {
+    if (cardRef.current) {
+      gsap.fromTo(cardRef.current, 
+        { opacity: 0, scale: 0.8, y: 50 },
+        { opacity: 1, scale: 1, y: 0, duration: 1, ease: "back.out(1.7)" }
+      );
+    }
+  }, [cardImage]);
 
   const handleDownload = () => {
-    if (cardRef.current === null) {
-      return;
-    }
-
-    toPng(cardRef.current, { cacheBust: true, backgroundColor: '#ffffff' })
+    if (!cardRef.current) return;
+    
+    toPng(cardRef.current, { 
+      cacheBust: true,
+      pixelRatio: 2,
+      width: cardRef.current.offsetWidth,
+      height: cardRef.current.offsetHeight,
+    })
       .then((dataUrl) => {
         const link = document.createElement('a');
-        link.download = `covenant-card-${id}.png`;
+        link.download = `covenant-card-${cardTitle}-${id}.png`;
         link.href = dataUrl;
         link.click();
       })
@@ -58,15 +62,35 @@ function ResultCard() {
     <div className="result-container">
       <header className="result-header">
         <h1>กระดาษพันธสัญญาของตัวคุณ</h1>
+        <h2 className="card-type-title">{cardType}</h2>
+        <h3 className="card-subtitle">{cardTitle}</h3>
       </header>
 
       <main className="card-area">
-        {/* This is the card that will be downloaded */}
         <div ref={cardRef} className="covenant-card">
           {cardImage ? (
-            <img src={cardImage} alt={cardTitle} className="card-image" />
+            <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+              <img 
+                src={cardImage} 
+                alt={`${cardType} - ${cardTitle}`} 
+                className="card-image"
+                onError={(e) => {
+                  e.target.style.display = 'none';
+                  e.target.nextElementSibling.style.display = 'block';
+                }}
+              />
+              <div style={{ display: 'none', textAlign: 'center', padding: '2rem' }}>
+                <h3 style={{ color: '#7c3aed', marginBottom: '1rem' }}>{cardTitle}</h3>
+                <p style={{ color: '#6b7280' }}>{cardType}</p>
+                <p style={{ fontSize: '0.8rem', color: '#9ca3af', marginTop: '1rem' }}>
+                  รูปภาพไม่สามารถโหลดได้
+                </p>
+              </div>
+            </div>
           ) : (
-            <p>กำลังโหลดการ์ด...</p>
+            <div className="card-placeholder">
+              <p>กำลังโหลดการ์ด...</p>
+            </div>
           )}
         </div>
       </main>

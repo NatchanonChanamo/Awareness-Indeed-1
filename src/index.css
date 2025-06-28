@@ -1,10 +1,25 @@
 body {
   margin: 0;
+  padding: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-y: auto; /* เพิ่มการเลื่อนแนวตั้ง */
+  overflow-x: hidden; /* ซ่อนการเลื่อนแนวนอน */
+  background-color: #f5f3ff; /* เพิ่มสีพื้นหลังเดียวกับ PostSurvey */
+}
+
+html {
+  height: 100%;
+  overflow-y: auto; /* เพิ่มการเลื่อนแนวตั้ง */
+  overflow-x: hidden; /* ซ่อนการเลื่อนแนวนอน */
+}
+
+#root {
+  min-height: 100vh; /* เปลี่ยนเป็น min-height */
+  overflow-y: visible; /* เปลี่ยนเป็น visible */
 }
 
 code {

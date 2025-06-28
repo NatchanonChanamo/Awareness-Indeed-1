@@ -1,5 +1,8 @@
 .App {
   text-align: center;
+  height: 100vh; /* เปลี่ยนเป็น height แทน min-height */
+  overflow-y: auto; /* เพิ่มการเลื่อนแนวตั้ง */
+  overflow-x: hidden; /* ซ่อนการเลื่อนแนวนอน */
 }
 
 .App-logo {

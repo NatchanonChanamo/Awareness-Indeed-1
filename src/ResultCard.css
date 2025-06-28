@@ -5,7 +5,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: space-between;
-  min-height: 100%; /* เปลี่ยนจาก 100vh */
+  min-height: 100vh; /* เปลี่ยนกลับเป็น 100vh */
   background-color: #fdf2f8; /* Match pre-survey background */
   padding: 2rem 1rem;
   width: 100%;
@@ -32,11 +32,11 @@
 
 .covenant-card {
   width: 100%;
-  max-width: 350px;
+  max-width: 400px;
   aspect-ratio: 3 / 4.5;
   background-color: white;
-  border-radius: 16px;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1), 0 6px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -51,7 +51,8 @@
 /* --- เพิ่ม: สไตล์สำหรับรูปภาพการ์ด --- */
 .card-image {
   width: 100%;
-  height: 100%;
+  height: auto;
+  display: block;
   object-fit: cover;
 }
 
@@ -67,17 +68,18 @@
 .download-button {
   padding: 0.75rem 2.5rem;
   font-size: 1rem;
-  font-weight: 500;
+  font-weight: 600;
   color: #FFFFFF;
-  background-color: #db2777; /* Match pre-survey button color */
+  background: linear-gradient(135deg, #A77BCA, #8B5A9F);
   border: none;
-  border-radius: 8px;
+  border-radius: 25px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .download-button:hover {
-  background-color: #be185d;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(167, 123, 202, 0.4);
 }
 
 .footer-links {
@@ -105,4 +107,30 @@
   background-color: #fbcfe8;
   transform: translateY(-2px);
   box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* เพิ่มสไตล์สำหรับชื่อการ์ด */
+.card-type-title {
+  font-size: 1.8rem;
+  color: #A77BCA;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.card-subtitle {
+  font-size: 1.2rem;
+  color: #666;
+  margin-bottom: 2rem;
+  font-style: italic;
+}
+
+.card-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  background-color: #f0f0f0;
+  border-radius: 10px;
+  color: #666;
+  font-size: 1.1rem;
 }

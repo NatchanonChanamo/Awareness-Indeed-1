@@ -5,13 +5,16 @@
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-  min-height: 100%; /* เปลี่ยนจาก 100vh */
+  height: auto; /* เปลี่ยนเป็น auto */
   background-color: #f5f3ff; /* สีพื้นหลังโทนม่วง */
-  padding: 2rem 1rem;
+  padding: 2rem 1rem 4rem 1rem; /* เพิ่ม padding ด้านล่าง */
   width: 100%;
+  max-width: 800px; /* จำกัดความกว้างสูงสุด */
+  margin: 0 auto; /* จัดกึ่งกลาง */
   box-sizing: border-box;
   font-family: 'Prompt', sans-serif;
   opacity: 0; 
+  position: relative; /* เพิ่มเพื่อให้ scroll indicator ทำงาน */
 }
 
 .postsurvey-header {

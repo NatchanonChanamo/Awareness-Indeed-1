@@ -1,10 +1,9 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { db } from './firebase';
 import { doc, getDoc } from 'firebase/firestore';
 import gsap from 'gsap';
 
-// --- BG IMAGES ---
 // --- BG IMAGES ---
 import carOnStreetBg from './assets/caronstreet.gif';
 import opendoor1 from './assets/opendoor1.png';
@@ -37,7 +36,9 @@ import whiteman11 from './assets/whiteman11.png';
 import whiteman12 from './assets/whiteman12.png';
 import comehome from './assets/comehome.png';
 import result from './assets/result.png';
-import bgmusic1 from './assets/bgmusic1.mp3'; // หรือ .wav ตามนามสกุลไฟล์จริง
+
+// --- AUDIO FILES ---
+import bgmusic1 from './assets/bgmusic1.mp3';
 import bgmusic2 from './assets/bgmusic2.mp3';
 import bgmusic3 from './assets/bgmusic3.mp3';
 import rainsound from './assets/rainsound.mp3';
@@ -47,6 +48,28 @@ import warpsound from './assets/warpsound.mp3';
 import windsound from './assets/Windsound.mp3';
 import dooropen from './assets/dooropen.mp3';
 import alarm from './assets/alarm.mp3';
+
+// --- CARD IMAGES ---
+// Male Cards
+import MCard1 from './assets/Mcard1.png';
+import MCard2 from './assets/Mcard2.png';
+import MCard3 from './assets/Mcard3.png';
+import MCard4 from './assets/Mcard4.png';
+import MCard5 from './assets/Mcard5.png';
+
+// Female Cards
+import FMCard1 from './assets/FMcard1.png';
+import FMCard2 from './assets/FMcard2.png';
+import FMCard3 from './assets/FMcard3.png';
+import FMCard4 from './assets/FMcard4.png';
+import FMCard5 from './assets/FMcard5.png';
+
+// Non-binary Cards
+import NCard1 from './assets/Ncard1.png';
+import NCard2 from './assets/Ncard2.png';
+import NCard3 from './assets/Ncard3.png';
+import NCard4 from './assets/Ncard4.png';
+import NCard5 from './assets/Ncard5.png';
 
 // --- Helper Components ---
 const InputWrapper = ({ question, value, setter, handleTextInputSubmit, nextStep, placeholder, step }) => {
@@ -149,37 +172,108 @@ function Story() {
 
   // --- Story State Variables ---
   const [userAnswerDay, setUserAnswerDay] = useState('');
-  const [feelingWhenTired, setFeelingWhenTired] = useState('');
-  const [reactionToStrangeLight, setReactionToStrangeLight] = useState('');
   const [locationGuess, setLocationGuess] = useState('');
-  const [initialReactionToWhiteFigure, setInitialReactionToWhiteFigure] = useState('');
+  const [feelingWhenTired, setFeelingWhenTired] = useState(''); // eslint-disable-line no-unused-vars
+  const [reactionToStrangeLight, setReactionToStrangeLight] = useState(''); // eslint-disable-line no-unused-vars
+  const [initialReactionToWhiteFigure, setInitialReactionToWhiteFigure] = useState(''); // eslint-disable-line no-unused-vars
   const [feelingWhenStressed, setFeelingWhenStressed] = useState('');
-  const [howToHelp, setHowToHelp] = useState('');
-  const [ordinaryFeeling, setOrdinaryFeeling] = useState('');
-  const [childFeelingGuess, setChildFeelingGuess] = useState('');
-  const [howToManageStress, setHowToManageStress] = useState('');
-  const [energySource, setEnergySource] = useState('');
-  const [helpForWhiteFigure, setHelpForWhiteFigure] = useState('');
+  const [howToManageStress, setHowToManageStress] = useState(''); // eslint-disable-line no-unused-vars
+  const [energySource, setEnergySource] = useState(''); // eslint-disable-line no-unused-vars
+  const [helpForWhiteFigure, setHelpForWhiteFigure] = useState(''); // eslint-disable-line no-unused-vars
   const [messageToPastSelf, setMessageToPastSelf] = useState('');
-  const [creativeUseOfPower, setCreativeUseOfPower] = useState('');
+  const [creativeUseOfPower, setCreativeUseOfPower] = useState(''); // eslint-disable-line no-unused-vars
+  const [childFeelingGuess, setChildFeelingGuess] = useState('');
   const [childDreamQuestion, setChildDreamQuestion] = useState('');
   const [messageToChildSelf, setMessageToChildSelf] = useState('');
+
+  // --- Card Scoring System ---
+  const [cardScores, setCardScores] = useState({
+    pathfinder: 0,    // ผู้เผชิญหน้า - กล้าหาญ, เผชิญความจริง
+    healer: 0,        // ผู้เยียวยา - ให้อภัย, เมตตา, เข้าใจความเจ็บปวด
+    recharger: 0,     // ผู้ฟื้นพลัง - ฟังตัวเอง, รู้จักหยุดพัก
+    creator: 0,       // ผู้สร้างแรงบันดาลใจ - มองไกล, พลังงานบวก
+    adaptor: 0        // ผู้รับมือ - ปรับตัวเก่ง, ยืดหยุ่น, ยอมรับความจริง
+  });
 
   const textContentRef = useRef(null);
   const containerRef = useRef(null);
   const bgRef = useRef(null);
   const audioRef = useRef(null);
   const windAudioRef = useRef(null);
-  const bgMusicRef = useRef(null); // เพิ่ม ref สำหรับเพลงพื้นหลัง
-  const rainAudioRef = useRef(null); // เพิ่ม ref สำหรับเสียงฝน
-  const lightningAudioRef = useRef(null); // เพิ่ม ref สำหรับเสียงฟ้าร้อง
-  const warpAudioRef = useRef(null); // เพิ่ม ref สำหรับเสียง warp
-  const doorAudioRef = useRef(null); // เพิ่ม ref สำหรับเสียง dooropen  
-  const alarmAudioRef = useRef(null); // เพิ่ม ref สำหรับเสียง alarm
+  const bgMusicRef = useRef(null);
+  const rainAudioRef = useRef(null);
+  const lightningAudioRef = useRef(null);
+  const warpAudioRef = useRef(null);
+  const doorAudioRef = useRef(null);
+  const alarmAudioRef = useRef(null);
 
   const TOTAL_STEPS = 169;
-  const interactiveSteps = [5, 8, 28, 65, 74, 79, 82, 84, 98, 103, 105, 119, 121, 126, 133, 137, 141, 144, 149];
-  const storyJumps = { 33: 49, 38: 49, 43: 49, 48: 49 };
+  const interactiveSteps = useMemo(() => [5, 8, 28, 65, 74, 79, 82, 84, 98, 103, 105, 119, 121, 126, 133, 137, 141, 144, 149], []);
+  const storyJumps = useMemo(() => ({ 33: 49, 38: 49, 43: 49, 48: 49 }), []);
+
+  // ฟังก์ชันเพิ่มคะแนนการ์ด
+  const addCardScore = useCallback((cardType, points = 1) => {
+    setCardScores(prev => ({
+      ...prev,
+      [cardType]: prev[cardType] + points
+    }));
+  }, []);
+
+  // ฟังก์ชันคำนวณการ์ดที่ได้รับ
+  const calculateFinalCard = useCallback(() => {
+    const gender = userData?.gender || 'ไม่ระบุ';
+    
+    // หาการ์ดที่มีคะแนนสูงสุด
+    const maxScore = Math.max(...Object.values(cardScores));
+    const topCards = Object.entries(cardScores)
+      .filter(([_, score]) => score === maxScore)
+      .map(([cardType, _]) => cardType);
+    
+    // ถ้ามีหลายการ์ดที่คะแนนเท่ากัน ให้สุ่มเลือก
+    const selectedCardType = topCards[Math.floor(Math.random() * topCards.length)];
+    
+    // แปลงชื่อการ์ดเป็นหมายเลข
+    const cardTypeToNumber = {
+      pathfinder: 1,
+      healer: 2,
+      recharger: 3,
+      creator: 4,
+      adaptor: 5
+    };
+    
+    const cardNumber = cardTypeToNumber[selectedCardType];
+    
+    // แปลงชื่อการ์ดเป็นชื่อไทย
+    const cardTypeToThai = {
+      pathfinder: 'ผู้เผชิญหน้า',
+      healer: 'ผู้เยียวยา',
+      recharger: 'ผู้ฟื้นพลัง',
+      creator: 'ผู้สร้างแรงบันดาลใจ',
+      adaptor: 'ผู้รับมือ'
+    };
+    
+    const cardTitle = cardTypeToThai[selectedCardType];
+    
+    // เลือกไฟล์ภาพการ์ดตามเพศ
+    let cardImageUrl;
+    if (gender === 'ชาย') {
+      const maleCards = [MCard1, MCard2, MCard3, MCard4, MCard5];
+      cardImageUrl = maleCards[cardNumber - 1];
+    } else if (gender === 'หญิง') {
+      const femaleCards = [FMCard1, FMCard2, FMCard3, FMCard4, FMCard5];
+      cardImageUrl = femaleCards[cardNumber - 1];
+    } else {
+      const nonBinaryCards = [NCard1, NCard2, NCard3, NCard4, NCard5];
+      cardImageUrl = nonBinaryCards[cardNumber - 1];
+    }
+    
+    return {
+      cardType: gender === 'ชาย' ? 'ผู้รับฟัง' : 
+                gender === 'หญิง' ? 'ผู้รับฟัง' : 'ผู้รับฟัง',
+      cardTitle,
+      cardImage: cardImageUrl || MCard5 // fallback ถ้าไม่มีรูป
+    };
+  }, [cardScores, userData]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -370,7 +464,6 @@ function Story() {
         audioRef.current.currentTime = 0;
       }
     } else if (step === 135) {
-      // เริ่มเล่น warpdoorsound อีกครั้งที่ case 135-152
       if (audioRef.current) {
         audioRef.current.src = warpdoorsound;
         audioRef.current.loop = true;
@@ -484,6 +577,20 @@ function Story() {
   
   const advanceToNextStep = useCallback((nextStep) => {
     if (isTransitioning) return;
+    
+    // ตรวจสอบถ้าจบเรื่องแล้ว ให้ไปหน้า PostSurvey พร้อมข้อมูลการ์ด
+    if (nextStep > TOTAL_STEPS) {
+      const finalCard = calculateFinalCard();
+      // ส่งข้อมูลการ์ดไปยัง PostSurvey ผ่าน localStorage เพื่อให้ PostSurvey ส่งต่อไป ResultCard
+      localStorage.setItem('userCardData', JSON.stringify({
+        cardType: finalCard.cardType,
+        cardTitle: finalCard.cardTitle,
+        cardImage: finalCard.cardImage
+      }));
+      navigate(`/postsurvey/${id}`);
+      return;
+    }
+    
     setIsTransitioning(true);
     gsap.to(textContentRef.current, {
       opacity: 0,
@@ -502,7 +609,7 @@ function Story() {
         });
       },
     });
-  }, [isTransitioning, step]);
+  }, [isTransitioning, step, calculateFinalCard, navigate, id]);
 
   const goBack = () => {
     if (isTransitioning || stepHistory.length === 0) return;
@@ -530,6 +637,126 @@ function Story() {
 
   const handleChoice = (setter, value, nextStep) => {
     if (setter) setter(value);
+    
+    // --- เพิ่มคะแนนการ์ดตามคำตอบ ---
+    
+    // Case 28: การเผชิญหน้ากับแสงประหลาด
+    if (step === 28) {
+      if (value === 'พยายามทำความเข้าใจ') {
+        addCardScore('pathfinder', 2); // กล้าหาญ, เผชิญความจริง
+      } else if (value === 'ยอมจำนน') {
+        addCardScore('adaptor', 2); // ยอมรับความจริง
+      } else if (value === 'สัมผัส') {
+        addCardScore('pathfinder', 1);
+        addCardScore('creator', 1); // ลองของใหม่
+      } else if (value === 'หลบหนี') {
+        addCardScore('recharger', 1); // รู้จักพักหลบภัย
+      }
+    }
+    
+    // Case 74: การตอบสนองต่อร่างสีขาว
+    if (step === 74) {
+      if (value.includes('สงสัย แต่ยังเว้นระยะห่าง')) {
+        addCardScore('pathfinder', 2); // ระมัดระวังแต่กล้าหาญ
+      } else if (value.includes('ลองสัมผัส')) {
+        addCardScore('healer', 2); // เข้าใจและช่วยเหลือ
+      } else if (value.includes('ถอยห่าง')) {
+        addCardScore('recharger', 2); // รู้จักป้องกันตัวเอง
+      } else if (value.includes('ไถ่ถาม')) {
+        addCardScore('adaptor', 2); // พยายามเข้าใจสถานการณ์
+      }
+    }
+    
+    // Case 79: ความรู้สึกเมื่อเครียด
+    if (step === 79) {
+      if (value.includes('โศกเศร้า สิ้นหวัง')) {
+        addCardScore('healer', 2); // เข้าใจความเจ็บปวด
+      } else if (value.includes('ผิดหวังในตัวเอง')) {
+        addCardScore('healer', 1);
+        addCardScore('recharger', 1);
+      } else if (value.includes('โกรธที่ควบคุมไม่ได้')) {
+        addCardScore('pathfinder', 2); // แสดงความรู้สึกตรงไปตรงมา
+      } else if (value.includes('อ่อนแอ ว่างเปล่า')) {
+        addCardScore('healer', 2);
+      } else if (value.includes('งงงวย สับสน')) {
+        addCardScore('adaptor', 2); // ยอมรับความไม่แน่นอน
+      }
+    }
+    
+    // Case 103: วิธีจัดการเรื่องไม่ดี
+    if (step === 103) {
+      if (value.includes('หยุดพักจากทุกสิ่ง')) {
+        addCardScore('recharger', 3); // รู้จักหยุดพัก
+      } else if (value.includes('หาทางระบาย')) {
+        addCardScore('creator', 2); // สร้างสรรค์วิธีระบาย
+        addCardScore('healer', 1);
+      } else if (value.includes('เผชิญหน้ากับความรู้สึก')) {
+        addCardScore('pathfinder', 3); // กล้าเผชิญความจริง
+      } else if (value.includes('เรียนรู้ที่จะปฏิเสธ')) {
+        addCardScore('recharger', 2);
+        addCardScore('adaptor', 1);
+      }
+    }
+    
+    // Case 105: แหล่งพลังงาน
+    if (step === 105) {
+      if (value.includes('ธรรมชาติ สัมผัสแสงแดด')) {
+        addCardScore('recharger', 3); // ฟื้นฟูจากธรรมชาติ
+      } else if (value.includes('ทำสิ่งที่รัก')) {
+        addCardScore('creator', 3); // สร้างสรรค์จากความรัก
+      } else if (value.includes('ระบายหรือพูดคุย')) {
+        addCardScore('healer', 3); // เยียวยาผ่านการสื่อสาร
+      } else if (value.includes('อยู่เงียบๆ คนเดียว')) {
+        addCardScore('recharger', 2);
+        addCardScore('adaptor', 1);
+      }
+    }
+    
+    // Case 121: ความช่วยเหลือที่ต้องการ
+    if (step === 121) {
+      if (value.includes('โอบกอดอย่างอ่อนโยน')) {
+        addCardScore('healer', 3); // ความเมตตา
+      } else if (value.includes('ยืนยันว่าเรายังมีคุณค่า')) {
+        addCardScore('healer', 2);
+        addCardScore('pathfinder', 1);
+      } else if (value.includes('คำแนะนำที่ชัดเจน')) {
+        addCardScore('adaptor', 2);
+        addCardScore('creator', 1);
+      } else if (value.includes('โอกาสในการให้อภัย')) {
+        addCardScore('healer', 3);
+      }
+    }
+    
+    // Case 126: ข้อความส่งให้ตัวตนที่บอบบาง
+    if (step === 126) {
+      if (value.includes('ให้อภัยคุณแล้ว')) {
+        addCardScore('healer', 3);
+      } else if (value.includes('คุณมีค่าเสมอ')) {
+        addCardScore('healer', 2);
+        addCardScore('creator', 1);
+      } else if (value.includes('เข้มแข็งมาก')) {
+        addCardScore('pathfinder', 2);
+        addCardScore('creator', 1);
+      } else if (value.includes('เราเข้าใจทุกความเจ็บปวด')) {
+        addCardScore('healer', 3);
+      }
+    }
+    
+    // Case 137: การใช้พลังสร้างสรรค์
+    if (step === 137) {
+      if (value.includes('แรงบันดาลใจให้ผู้อื่น')) {
+        addCardScore('creator', 3); // สร้างแรงบันดาลใจ
+      } else if (value.includes('สร้างสรรค์ผลงานใหม่')) {
+        addCardScore('creator', 3);
+      } else if (value.includes('ดูแลความสัมพันธ์')) {
+        addCardScore('healer', 2);
+        addCardScore('adaptor', 1);
+      } else if (value.includes('เป้าหมายที่แท้จริง')) {
+        addCardScore('pathfinder', 2);
+        addCardScore('creator', 1);
+      }
+    }
+    
     advanceToNextStep(nextStep);
   };
 
@@ -570,7 +797,6 @@ function Story() {
       
       // พิเศษสำหรับ case 13 -> 14: เอฟเฟคแสงกระพริบก่อนเปลี่ยนฉาก
       if (step === 13) {
-        // เล่นเสียงฟ้าร้อง
         if (lightningAudioRef.current) {
           lightningAudioRef.current.src = lightningsound;
           lightningAudioRef.current.volume = isMuted ? 0 : 0.4;
@@ -650,7 +876,8 @@ function Story() {
           onComplete: () => {
             const nextStep = storyJumps[step] || step + 1;
             if (nextStep > TOTAL_STEPS) {
-              navigate(`/postsurvey/${id}?cardType=ผู้รับฟัง`);
+              // เมื่อจบเรื่องแล้วให้ไปหน้า PostSurvey แทน
+              navigate(`/postsurvey/${id}`);
             } else {
               advanceToNextStep(nextStep);
               setTimeout(() => {
@@ -669,7 +896,8 @@ function Story() {
       // สำหรับ case อื่นๆ ทำงานตามปกติ
       const nextStep = storyJumps[step] || step + 1;
       if (nextStep > TOTAL_STEPS) {
-        navigate(`/postsurvey/${id}?cardType=ผู้รับฟัง`);
+        // เมื่อจบเรื่องแล้วให้ไปหน้า PostSurvey แทน
+        navigate(`/postsurvey/${id}`);
       } else {
         advanceToNextStep(nextStep);
       }
@@ -684,7 +912,8 @@ function Story() {
         currentContainer.removeEventListener('click', handleStoryClick);
       }
     };
-  }, [step, navigate, id, advanceToNextStep, isTransitioning, interactiveSteps, storyJumps, isMuted]);
+  }, [step, navigate, id, advanceToNextStep, isTransitioning, interactiveSteps, storyJumps, isMuted, calculateFinalCard]);
+
   // เอฟเฟคกระพริบรัวๆ สำหรับ step 14
   useEffect(() => {
     if (step === 14) {
@@ -706,7 +935,8 @@ function Story() {
   // เอฟเฟคสั่นไหวสำหรับ step 49-55
   useEffect(() => {
     if (step >= 49 && step <= 55) {
-      const shakeAnimation = gsap.to(containerRef.current, {
+      const container = containerRef.current;
+      const shakeAnimation = gsap.to(container, {
         x: () => Math.random() * 4 - 2,
         y: () => Math.random() * 4 - 2,
         duration: 0.1,
@@ -716,7 +946,7 @@ function Story() {
 
       return () => {
         shakeAnimation.kill();
-        gsap.set(containerRef.current, { x: 0, y: 0 });
+        gsap.set(container, { x: 0, y: 0 });
       };
     }
   }, [step]);
@@ -1077,17 +1307,6 @@ function Story() {
       <div className="absolute inset-0 w-full h-full bg-black/50" style={{
         display: step >= 60 ? 'none' : 'block'
       }} />
-      
-      {/* Debug Info */}
-      {step >= 60 && step <= 70 && (
-        <div className="absolute top-20 left-5 z-50 text-red-500 bg-white p-2 text-xs">
-          Step: {step}<br/>
-          BG: {backgroundImage ? 'YES' : 'NO'}<br/>
-          File: {String(backgroundImage).split('/').pop()}<br/>
-          Opacity: {bgRef.current?.style.opacity || 'unknown'}<br/>
-          Filter: {bgRef.current?.style.filter || 'none'}
-        </div>
-      )}
       
       {/* Top Control Buttons */}
       <div className="absolute top-5 right-5 z-20 flex gap-3">

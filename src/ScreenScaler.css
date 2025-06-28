@@ -3,11 +3,10 @@
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
+  width: 100vw;
+  height: 100vh;
   
-  /* --- FIX: เปลี่ยนจากพื้นหลังสีดำเป็นรูปภาพที่สวยงาม --- */
-  background-image: url('./assets/LoginBG.png'); /* ใช้รูปพื้นหลังหลักของแอป */
+  background-image: url('./assets/LoginBG.png');
   background-size: cover;
   background-position: center;
   
@@ -17,7 +16,7 @@
   overflow: hidden;
 }
 
-/* --- เพิ่ม: สร้างเลเยอร์สำหรับเบลอพื้นหลัง --- */
+/* เลเยอร์เบลอพื้นหลัง */
 .screen-scaler-container::before {
   content: '';
   position: absolute;
@@ -25,45 +24,124 @@
   left: 0;
   right: 0;
   bottom: 0;
-  /* เบลอและลดความสว่างพื้นหลังเพื่อขับให้เนื้อหาหลักเด่นขึ้น */
-  backdrop-filter: blur(10px) brightness(0.7); 
-  z-index: 1; /* ให้อยู่หลัง scaled-content */
+  backdrop-filter: blur(8px) brightness(0.6);
+  z-index: 1;
 }
 
-/* .scaled-content คือ "หน้าจอเสมือน" ของแอปพลิเคชัน */
+/* หน้าจอเสมือน ขนาดคงที่ 430x932 */
 .scaled-content {
-  /* 1. กำหนดขนาดของหน้าจอเสมือน (อ้างอิงจาก iPhone 14 Pro Max) */
   width: 430px;
   height: 932px;
   
   position: relative;
-  z-index: 2; /* --- เพิ่ม: ทำให้ scaled-content อยู่เหนือเลเยอร์ที่เบลอ --- */
-  background-color: #fff; /* สีพื้นหลังเริ่มต้นของแอป */
-  overflow-x: hidden;
-  overflow-y: auto; /* ทำให้สามารถ scroll ได้ถ้าเนื้อหายาวเกิน */
+  z-index: 2;
+  background-color: #fff;
+  overflow: hidden;
   
-  /* 2. สั่งให้ย่อ/ขยาย จากจุดกึ่งกลางเสมอ */
+  /* จัดให้ขยาย/ย่อจากจุดกึ่งกลาง */
   transform-origin: center center;
-  transform: scale(var(--scale-factor, 1));
   
-  /* ตกแต่งเพิ่มเติมให้ดูเหมือนอุปกรณ์จริง */
-  box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+  /* เงาให้ดูเหมือนอุปกรณ์จริง */
+  box-shadow: 
+    0 0 30px rgba(0, 0, 0, 0.3),
+    0 0 60px rgba(0, 0, 0, 0.2);
+  border-radius: 12px;
+  
+  /* ขนาดตัวอักษรพื้นฐาน - ไม่เปลี่ยนแปลง */
+  font-size: 16px;
+  
+  /* --- เพิ่ม: การจัดการตัดคำและการแสดงผลข้อความ --- */
+  /* ใช้ hyphenation เพื่อตัดคำให้สวย */
+  -webkit-hyphens: auto;
+  -moz-hyphens: auto;
+  -ms-hyphens: auto;
+  hyphens: auto;
+  
+  /* ป้องกันการแตกหักของคำไทย */
+  word-break: keep-all;
+  overflow-wrap: break-word;
+  
+  /* การจัดข้อความให้สมดุล */
+  text-wrap: balance;
+  
+  /* เพิ่มความนุ่มนวลในการแสดงผล */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* --- 3. ตรรกะการคำนวณขนาดด้วย CSS เท่านั้น --- */
+/* --- เพิ่ม: การปรับปรุงการตัดคำสำหรับ elements ต่าง ๆ --- */
+.scaled-content p,
+.scaled-content h1,
+.scaled-content h2,
+.scaled-content h3,
+.scaled-content span,
+.scaled-content div {
+  /* การตัดคำภาษาไทยที่ดีขึ้น */
+  word-break: keep-all;
+  overflow-wrap: break-word;
+  text-wrap: balance;
+  
+  /* เว้นบรรทัดให้สวยงาม */
+  line-height: 1.6;
+  
+  /* ป้องกันการ orphan และ widow */
+  orphans: 2;
+  widows: 2;
+}
 
-/* สำหรับหน้าจอที่ "สูงกว่า" อัตราส่วนของจอเสมือน (เช่น มือถือแนวตั้ง) */
-/* จะคำนวณ scale จาก "ความกว้าง" ของหน้าจอจริง */
-@media (max-aspect-ratio: 430/932) {
+/* การปรับปรุงเฉพาะ button และ input */
+.scaled-content button,
+.scaled-content input,
+.scaled-content textarea {
+  word-break: keep-all;
+  overflow-wrap: break-word;
+  text-wrap: balance;
+  
+  /* ปรับ line-height ให้เหมาะสม */
+  line-height: 1.4;
+}
+
+/* ปรับปรุงการแสดงผลสำหรับข้อความยาว */
+.scaled-content .story-content p,
+.scaled-content .question-wrapper p {
+  /* เพิ่มการจัดการข้อความยาวเป็นพิเศษ */
+  text-align: justify;
+  text-justify: inter-word;
+  
+  /* เว้นบรรทัดที่เหมาะสม */
+  line-height: 1.7;
+  
+  /* การจัดระยะห่างระหว่างย่อหน้า */
+  margin-bottom: 1.2em;
+}
+
+/* ลบขอบมนในมือถือ */
+@media screen and (max-width: 768px) {
   .scaled-content {
-    --scale-factor: calc(100vw / 430);
+    border-radius: 0;
   }
 }
 
-/* สำหรับหน้าจอที่ "กว้างกว่า" อัตราส่วนของจอเสมือน (เช่น จอคอม, แท็บเล็ต) */
-/* จะคำนวณ scale จาก "ความสูง" ของหน้าจอจริง */
-@media (min-aspect-ratio: 430/932) {
-  .scaled-content {
-    --scale-factor: calc(100vh / 932);
-  }
+/* --- เพิ่ม: การปรับปรุงเฉพาะสำหรับภาษาไทย --- */
+.scaled-content {
+  /* ใช้ font-feature-settings เพื่อปรับปรุงการแสดงผลภาษาไทย */
+  font-feature-settings: "liga", "kern";
+  
+  /* ปรับ letter-spacing ให้เหมาะกับภาษาไทย */
+  letter-spacing: 0.02em;
+}
+
+/* การจัดการตัวอักษรขนาดใหญ่ */
+.scaled-content h1,
+.scaled-content h2 {
+  letter-spacing: 0.01em;
+  word-spacing: 0.1em;
+}
+
+/* การจัดการข้อความใน buttons */
+.scaled-content button {
+  white-space: normal;
+  word-wrap: break-word;
+  text-align: center;
+  padding: 0.75em 1em;
 }

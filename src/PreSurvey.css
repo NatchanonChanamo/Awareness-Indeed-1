@@ -169,3 +169,34 @@ button[type="submit"] {
 button[type="submit"]:hover {
   background-color: #be185d;
 }
+
+/* Media Queries สำหรับ responsive */
+@media (max-width: 768px) {
+  .presurvey-container {
+    padding: 1rem 0.5rem;
+  }
+  
+  .survey-section {
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .presurvey-header h2 {
+    font-size: 1.25rem;
+  }
+  
+  .rating-scale-container {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .scale-label-start,
+  .scale-label-end {
+    order: 0;
+  }
+  
+  .options {
+    order: 1;
+    gap: 0.5rem;
+  }
+}

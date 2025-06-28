@@ -119,10 +119,16 @@ function PreSurvey() {
   };
 
   return (
-    <div className="presurvey-container">
-      <div className="presurvey-header">
-        <h2>แบบประเมิน 'ก่อน': การสำรวจสภาวะภายในและมุมมองต่อตนเอง</h2>
-        <div className="instructions">
+    <div style={{ 
+      height: '100vh', 
+      overflowY: 'auto', 
+      overflowX: 'hidden',
+      backgroundColor: '#fdf2f8'
+    }}>
+      <div className="presurvey-container">
+        <div className="presurvey-header">
+          <h2>แบบประเมิน 'ก่อน': การสำรวจสภาวะภายในและมุมมองต่อตนเอง</h2>
+          <div className="instructions">
           <p><strong>คำแนะนำสำหรับผู้เล่น:</strong> "โปรดอ่านแต่ละข้อความด้านล่าง และเลือกตัวเลือกที่ตรงกับความรู้สึกหรือความคิดของคุณใน 'ปัจจุบัน' มากที่สุด ไม่มีคำตอบที่ถูกหรือผิด นี่คือการสำรวจเพื่อทำความเข้าใจตัวคุณเอง"</p>
         </div>
         <div className="scale-guide">
@@ -162,6 +168,7 @@ function PreSurvey() {
         ))}
         <button type="submit">ส่งแบบประเมิน</button>
       </form>
+      </div>
     </div>
   );
 }
