@@ -45,43 +45,96 @@ import lightningsound from './assets/lightningsound.mp3';
 import warpdoorsound from './assets/warpdoorsound.mp3';
 import warpsound from './assets/warpsound.mp3';
 import windsound from './assets/Windsound.mp3';
+import dooropen from './assets/dooropen.mp3';
+import alarm from './assets/alarm.mp3';
 
 // --- Helper Components ---
-const InputWrapper = ({ question, value, setter, handleTextInputSubmit, nextStep, placeholder }) => {
+const InputWrapper = ({ question, value, setter, handleTextInputSubmit, nextStep, placeholder, step }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (value.trim()) {
       handleTextInputSubmit(nextStep);
     }
   };
+  
+  // ปรับ style ตาม step
+  const labelStyle = step >= 62 
+    ? "block text-white text-xl md:text-2xl lg:text-3xl mb-4 text-balance [text-shadow:_3px_3px_6px_rgb(0_0_0_/_100%),_-2px_-2px_4px_rgb(0_0_0_/_90%),_2px_-2px_4px_rgb(0_0_0_/_90%),_-2px_2px_4px_rgb(0_0_0_/_90%),_0px_0px_8px_rgb(0_0_0_/_70%)]"
+    : "block text-white text-xl md:text-2xl lg:text-3xl mb-4 text-balance";
+    
+  const inputStyle = step >= 62
+    ? "w-full p-3 bg-black/20 border-2 border-white/70 rounded-lg text-white placeholder-white/70 focus:outline-none focus:ring-2 focus:ring-white/70 [text-shadow:_2px_2px_4px_rgb(0_0_0_/_100%),_-1px_-1px_2px_rgb(0_0_0_/_90%),_1px_-1px_2px_rgb(0_0_0_/_90%),_-1px_1px_2px_rgb(0_0_0_/_90%)]"
+    : "w-full p-3 bg-white/10 border border-white/30 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/50";
+    
+  const buttonStyle = step >= 62
+    ? "px-8 py-3 bg-black/80 text-white font-semibold rounded-lg hover:bg-black/90 transition-colors [text-shadow:_2px_2px_4px_rgb(0_0_0_/_100%),_-1px_-1px_2px_rgb(0_0_0_/_90%),_1px_-1px_2px_rgb(0_0_0_/_90%),_-1px_1px_2px_rgb(0_0_0_/_90%)] border-2 border-white/70"
+    : "px-8 py-3 bg-white/80 text-black font-semibold rounded-lg hover:bg-white transition-colors";
+  
   return (
-    <div className="w-full max-w-lg text-center z-10">
+    <div className="w-full max-w-lg z-10">
       <form onSubmit={handleSubmit}>
-        <label className="block text-white text-xl md:text-2xl lg:text-3xl mb-4 text-balance">{question}</label>
-        <input
-          type="text"
-          value={value}
-          onChange={(e) => setter(e.target.value)}
-          className="w-full p-3 bg-white/10 border border-white/30 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/50"
-          placeholder={placeholder}
-          required
-        />
-        <button type="submit" className="mt-4 px-8 py-3 bg-white/80 text-black font-semibold rounded-lg hover:bg-white transition-colors">
-          ตกลง
-        </button>
+        <label className={`text-center ${labelStyle}`}>{question}</label>
+        <div className="w-full">
+          <input
+            type="text"
+            value={value}
+            onChange={(e) => setter(e.target.value)}
+            className={inputStyle}
+            placeholder={placeholder}
+            required
+          />
+          <div className="w-full text-right mt-2">
+            <button type="submit" className={buttonStyle}>
+              ตกลง
+            </button>
+          </div>
+        </div>
       </form>
     </div>
   );
 };
 
-const QuestionWrapper = ({ question, children }) => (
-  <div className="w-full max-w-2xl text-center z-10">
-    {question && <h2 className="text-white text-xl md:text-2xl lg:text-3xl mb-6 text-balance">{question}</h2>}
-    <div className="flex flex-col items-center gap-4 w-full">
-      {children}
+const QuestionWrapper = ({ question, children, step }) => {
+  const questionStyle = step >= 62
+    ? "text-white text-xl md:text-2xl lg:text-3xl mb-6 text-balance [text-shadow:_3px_3px_6px_rgb(0_0_0_/_100%),_-2px_-2px_4px_rgb(0_0_0_/_90%),_2px_-2px_4px_rgb(0_0_0_/_90%),_-2px_2px_4px_rgb(0_0_0_/_90%),_0px_0px_8px_rgb(0_0_0_/_70%)]"
+    : "text-white text-xl md:text-2xl lg:text-3xl mb-6 text-balance";
+    
+  return (
+    <div className="w-full max-w-2xl text-center z-10">
+      {question && <h2 className={questionStyle}>{question}</h2>}
+      <div className="flex flex-col items-center gap-4 w-full">
+        {children}
+      </div>
     </div>
-  </div>
-);
+  );
+};
+
+// --- Typewriter Effect Component ---
+const TypewriterEffect = ({ text, step, onComplete }) => {
+  const [displayText, setDisplayText] = useState('');
+  const [currentIndex, setCurrentIndex] = useState(0);
+  
+  useEffect(() => {
+    if (currentIndex < text.length) {
+      const timer = setTimeout(() => {
+        setDisplayText(prev => prev + text[currentIndex]);
+        setCurrentIndex(prev => prev + 1);
+      }, 200); // ความเร็วในการพิมพ์ 200ms ต่อตัวอักษร
+      
+      return () => clearTimeout(timer);
+    } else if (onComplete && currentIndex === text.length) {
+      onComplete();
+    }
+  }, [currentIndex, text, onComplete]);
+  
+  // ปรับ style ตาม step
+  const baseTextStyle = "text-white font-light text-2xl md:text-3xl lg:text-4xl text-center text-balance leading-relaxed";
+  const textStyle = step >= 62 
+    ? `${baseTextStyle} [text-shadow:_4px_4px_8px_rgb(0_0_0_/_100%),_-3px_-3px_6px_rgb(0_0_0_/_90%),_3px_-3px_6px_rgb(0_0_0_/_90%),_-3px_3px_6px_rgb(0_0_0_/_90%),_0px_0px_10px_rgb(0_0_0_/_80%)]`
+    : baseTextStyle;
+  
+  return <p className={textStyle}>{displayText}</p>;
+};
 
 function Story() {
   const { id } = useParams();
@@ -121,6 +174,8 @@ function Story() {
   const rainAudioRef = useRef(null); // เพิ่ม ref สำหรับเสียงฝน
   const lightningAudioRef = useRef(null); // เพิ่ม ref สำหรับเสียงฟ้าร้อง
   const warpAudioRef = useRef(null); // เพิ่ม ref สำหรับเสียง warp
+  const doorAudioRef = useRef(null); // เพิ่ม ref สำหรับเสียง dooropen  
+  const alarmAudioRef = useRef(null); // เพิ่ม ref สำหรับเสียง alarm
 
   const TOTAL_STEPS = 169;
   const interactiveSteps = [5, 8, 28, 65, 74, 79, 82, 84, 98, 103, 105, 119, 121, 126, 133, 137, 141, 144, 149];
@@ -268,6 +323,15 @@ function Story() {
       }
     }
 
+    // จัดการเสียงประตูเปิด dooropen (case 10-11)
+    if (step === 10) {
+      if (doorAudioRef.current) {
+        doorAudioRef.current.src = dooropen;
+        doorAudioRef.current.volume = isMuted ? 0 : 0.4;
+        doorAudioRef.current.play().catch(console.error);
+      }
+    }
+
     // จัดการเสียงฝน rainsound (case 15-16)
     if (step === 15) {
       if (rainAudioRef.current) {
@@ -349,11 +413,19 @@ function Story() {
       const isInstantChange = (step === 11 && stepHistory.length > 0 && stepHistory[stepHistory.length - 1] === 10) ||
                               (step === 14 && stepHistory.length > 0 && stepHistory[stepHistory.length - 1] === 13) ||
                               (step === 15 && stepHistory.length > 0 && stepHistory[stepHistory.length - 1] === 14) ||
-                              (step >= 24 && step <= 48) || // ไม่เฟดระหว่าง light1, light2, light3
-                              (step >= 49 && step <= 55) ||
-                              (step >= 60); // ไม่เฟดตั้งแต่ case 60 เป็นต้นไป (รวม case 62+)
+                              (step >= 24 && step <= 48); // ไม่เฟดระหว่าง light1, light2, light3
       
-      if (isInstantChange) {
+      // สำหรับ case 62+ ให้เปลี่ยนแบบต่อเนื่องไม่มีการเฟด
+      if (step >= 62) {
+        setBackgroundImage(newBg);
+        // ให้ opacity เป็น 1 เสมอ ไม่ให้มีการกระพริบ
+        if (bgRef.current) {
+          gsap.set(bgRef.current, { 
+            opacity: 1, 
+            filter: 'brightness(1)' 
+          });
+        }
+      } else if (isInstantChange) {
         setBackgroundImage(newBg);
         // Force reset opacity และ filter สำหรับ case 60+
         if (step >= 60 && bgRef.current) {
@@ -743,8 +815,15 @@ function Story() {
   }, [step, backgroundImage]);
 
   const { name = '', age = '' } = userData || {};
-  const textBaseStyle = "text-white font-light text-2xl md:text-3xl lg:text-4xl text-center text-balance leading-relaxed";
-  const choiceButtonStyle = "w-full max-w-md p-3 bg-black/20 border-2 border-white/50 rounded-lg text-white text-center text-base md:text-lg hover:bg-white/30 transition-colors duration-300 backdrop-blur-sm";
+  
+  // ปรับ text style ให้มี stroke เข้มขึ้นสำหรับ case 62+ เพื่อให้เห็นชัดบนพื้นหลังสว่าง
+  const textBaseStyle = step >= 62 
+    ? "text-white font-light text-2xl md:text-3xl lg:text-4xl text-center text-balance leading-relaxed [text-shadow:_4px_4px_8px_rgb(0_0_0_/_100%),_-3px_-3px_6px_rgb(0_0_0_/_90%),_3px_-3px_6px_rgb(0_0_0_/_90%),_-3px_3px_6px_rgb(0_0_0_/_90%),_0px_0px_10px_rgb(0_0_0_/_80%)]"
+    : "text-white font-light text-2xl md:text-3xl lg:text-4xl text-center text-balance leading-relaxed";
+    
+  const choiceButtonStyle = step >= 62
+    ? "w-full max-w-md p-3 bg-black/40 border-2 border-white/80 rounded-lg text-white text-center text-base md:text-lg hover:bg-black/50 transition-colors duration-300 backdrop-blur-sm [text-shadow:_3px_3px_6px_rgb(0_0_0_/_100%),_-2px_-2px_4px_rgb(0_0_0_/_90%),_2px_-2px_4px_rgb(0_0_0_/_90%),_-2px_2px_4px_rgb(0_0_0_/_90%),_0px_0px_8px_rgb(0_0_0_/_80%)]"
+    : "w-full max-w-md p-3 bg-black/20 border-2 border-white/50 rounded-lg text-white text-center text-base md:text-lg hover:bg-white/30 transition-colors duration-300 backdrop-blur-sm";
   
   const renderContent = () => {
     switch (step) {
@@ -753,12 +832,12 @@ function Story() {
       case 2: return <p className={textBaseStyle}>บนถนนที่วุ่นวายรถติดยาวเหยียด คุณกำลังเดินทางกลับบ้าน</p>;
       case 3: return <p className={textBaseStyle}>ท้องฟ้ามืดสนิท เมฆเทากำลังก่อตัว ดูเหมือนพายุฝนกำลังมา</p>;
       case 4: return <p className={`${textBaseStyle} italic`}>"อะไรนักหนานะ ชีวิต"</p>;
-      case 5: return <InputWrapper question="วันนี้คุณเพิ่งจะ..." value={userAnswerDay} setter={setUserAnswerDay} handleTextInputSubmit={handleTextInputSubmit} nextStep={6} placeholder="...เจออะไรมา" />;
+      case 5: return <InputWrapper question="วันนี้คุณเพิ่งจะ..." value={userAnswerDay} setter={setUserAnswerDay} handleTextInputSubmit={handleTextInputSubmit} nextStep={6} placeholder="...เจออะไรมา" step={step} />;
       case 6: return <p className={textBaseStyle}>คุณถอนหายใจดังเฮือก</p>;
       case 7: return <p className={textBaseStyle}>ความเหน็ดเหนื่อยที่คุณมีในวันนี้ มันยากที่จะบรรยาย</p>;
       case 8: {
         const feelings = ["เฉยๆ", "หมดแรง", "ไร้พลัง", "ท้อแท้", "สิ้นหวัง", "อ้างว้าง", "โดดเดี่ยว", "สับสน", "ลังเล", "ไม่มั่นใจ", "โกรธ", "หงุดหงิด", "กดดัน", "แบกรับ"];
-        return (<QuestionWrapper question="คำใดบ้างที่ดูใกล้เคียงกับคุณตอนที่กำลังเหนื่อย?"><div className="grid grid-cols-2 md:grid-cols-3 gap-4 w-full max-w-3xl">{feelings.map(feeling => (<button key={feeling} className={choiceButtonStyle} onClick={() => handleChoice(setFeelingWhenTired, feeling, 10)}>{feeling}</button>))}</div></QuestionWrapper>);
+        return (<QuestionWrapper question="คำใดบ้างที่ดูใกล้เคียงกับคุณตอนที่กำลังเหนื่อย?" step={step}><div className="grid grid-cols-2 md:grid-cols-3 gap-4 w-full max-w-3xl">{feelings.map(feeling => (<button key={feeling} className={choiceButtonStyle} onClick={() => handleChoice(setFeelingWhenTired, feeling, 10)}>{feeling}</button>))}</div></QuestionWrapper>);
       }
       // case 9 is skipped
       case 10: return <p className={textBaseStyle}>คุณกลับมาถึงบ้าน</p>;
@@ -782,7 +861,7 @@ function Story() {
       case 26: return <p className={textBaseStyle}>แสงนั้นสว่างจ้ามาก ราวกับจ้องดวงอาทิตย์ตรงหน้า มันสว่างจนคุณต้องหยีตามอง พลางตื่นตระหนกและไม่เข้าใจในสถานการณ์</p>;
       case 27: return <p className={textBaseStyle}>แสงนั้นเริ่มขยายขนาดเพิ่มขึ้นจนเท่าตัวคุณ แถมด้วยแรงบางอย่างที่สั่นไหวเบา ๆ ที่คุณพอจะจับได้</p>;
       case 28: {
-        return (<QuestionWrapper question="เจออะไรแปลก ๆ ขนาดนี้แล้ว คุณว่าจะทำอะไรต่อ ในสถานการณ์นี้ ?">
+        return (<QuestionWrapper question="เจออะไรแปลก ๆ ขนาดนี้แล้ว คุณว่าจะทำอะไรต่อ ในสถานการณ์นี้ ?" step={step}>
             <button className={choiceButtonStyle} onClick={() => handleChoice(setReactionToStrangeLight, 'พยายามทำความเข้าใจ', 29)}>พยายามทำความเข้าใจ หาคำตอบว่าเกิดอะไรขึ้น</button>
             <button className={choiceButtonStyle} onClick={() => handleChoice(setReactionToStrangeLight, 'ยอมจำนน', 34)}>คงทำอะไรไม่ได้แล้ว อะไรจะเกิดก็เกิดเถอะ</button>
             <button className={choiceButtonStyle} onClick={() => handleChoice(setReactionToStrangeLight, 'สัมผัส', 39)}>แปลก ๆ นะ แต่ลองเอามือไปจับแสงสีขาวนั้นดู คงไม่เป็นไรหรอกมั้ง</button>
@@ -832,7 +911,7 @@ function Story() {
       case 62: return <p className={textBaseStyle}>แสงนั้นมันหายไปแล้ว</p>;
       case 63: return <p className={textBaseStyle}>แต่ตอนนี้… คุณอยู่ในสถานที่บางอย่างที่คุณคุ้นเคยมาก</p>;
       case 64: return <p className={textBaseStyle}>แต่จากการตื่นตระหนกมาซักพัก คุณเลยยังนึกไม่ออกว่าที่นี้ คือที่ไหน ?</p>;
-      case 65: return <InputWrapper question="คุณคิดว่าที่คุณอยู่ที่นี้คือที่ไหน" value={locationGuess} setter={setLocationGuess} handleTextInputSubmit={handleTextInputSubmit} nextStep={66} />;
+      case 65: return <InputWrapper question="คุณคิดว่าที่คุณอยู่ที่นี้คือที่ไหน" value={locationGuess} setter={setLocationGuess} handleTextInputSubmit={handleTextInputSubmit} nextStep={66} step={step} />;
       case 66: return <p className={textBaseStyle}>คุณสรุปได้ว่ากำลังอยู่ที่ {locationGuess || 'ที่แห่งนั้น'}</p>;
       case 67: return <p className={textBaseStyle}>บรรยากาศที่นี้ช่างแตกต่างและแปลกประหลาด, อากาศก็เช่นกัน จะร้อนก็ไม่ใช่แต่จะหนาวก็ไม่เชิง</p>;
       case 68: return <p className={textBaseStyle}>ที่นี้แน่ใจคือ มันไม่รู้สึกสบายเลย</p>;
@@ -843,7 +922,7 @@ function Story() {
       case 73: return <p className={textBaseStyle}>ร่างนั้นคือร่างที่ส่องแสงสว่างที่คุณไม่ทราบว่าเขาคือใคร</p>;
       case 74: {
         const choices = ["เข้าไปหาอีกฝ่ายด้วยความสงสัย แต่ยังเว้นระยะห่าง", "ลองสัมผัสที่ตัวเขาว่าเขามีลักษณะ เป็นอย่างไร (เขาอาจอยากให้ช่วยเหลือ)", "พยายามถอยห่างเผื่อเตรียมหนี", "ไถ่ถามให้อีกฝ่ายตอบถึงสถานการณ์ตอนนี้ และให้อีกฝ่ายอธิบายทั้งหมด"];
-        return (<QuestionWrapper question="ตอนนี้คุณอยู่ใกล้เขาแล้ว คุณจะทำอะไรเมื่อเห็นว่าเขาเป็นร่างแสงสว่างขาว ๆ แต่ดูไม่ออกว่าเป็นคนหรือเปล่า">{choices.map(choice => (<button key={choice} className={choiceButtonStyle} onClick={() => handleChoice(setInitialReactionToWhiteFigure, choice, 75)}>{choice}</button>))}</QuestionWrapper>);
+        return (<QuestionWrapper question="ตอนนี้คุณอยู่ใกล้เขาแล้ว คุณจะทำอะไรเมื่อเห็นว่าเขาเป็นร่างแสงสว่างขาว ๆ แต่ดูไม่ออกว่าเป็นคนหรือเปล่า" step={step}>{choices.map(choice => (<button key={choice} className={choiceButtonStyle} onClick={() => handleChoice(setInitialReactionToWhiteFigure, choice, 75)}>{choice}</button>))}</QuestionWrapper>);
       }
       case 75: return <p className={`${textBaseStyle} italic`}>“ไง..” เขาทักคุณสั้น ๆ เมื่อเห็นคุณ</p>;
       case 76: return <p className={`${textBaseStyle} italic`}>“ใจเย็นก่อนนะ”</p>;
@@ -851,13 +930,13 @@ function Story() {
       case 78: return <p className={`${textBaseStyle} italic`}>“ที่แห่งนี้.. กำลังล่มสลายน่ะ มันเริ่มพังทีละนิด ทีละนิด จนเป็นแบบนี้”</p>;
       case 79: {
         const choices = ["โศกเศร้า สิ้นหวัง หมดหนทาง", "ผิดหวังในตัวเอง", "โกรธที่ควบคุมมันไม่ได้", "อ่อนแอ ว่างเปล่า", "งงงวย สับสนที่ไม่อาจเข้าใจ"];
-        return (<QuestionWrapper question="“อ่อ แต่ขอถามอะไรหน่อยสิ คุณดูเป็นคนที่ผ่านอะไรมาเยอะดี เรา..แค่อยากรู้น่ะ ว่า ตอนที่คุณรู้สึกเครียดมาก กับ บางสิ่งหรือปัญหา ที่แก้ไม่ได้หรือไม่ตกซักที คุณรู้สึกยังไงหรอ”">{choices.map(choice => (<button key={choice} className={choiceButtonStyle} onClick={() => handleChoice(setFeelingWhenStressed, choice, 80)}>{choice}</button>))}</QuestionWrapper>);
+        return (<QuestionWrapper question="อ่อ แต่ขอถามอะไรหน่อยสิ คุณดูเป็นคนที่ผ่านอะไรมาเยอะดี เรา..แค่อยากรู้น่ะ ว่า ตอนที่คุณรู้สึกเครียดมาก กับ บางสิ่งหรือปัญหา ที่แก้ไม่ได้หรือไม่ตกซักที คุณรู้สึกยังไงหรอ" step={step}><div className="grid grid-cols-2 md:grid-cols-3 gap-4 w-full max-w-3xl">{choices.map(choice => (<button key={choice} className={choiceButtonStyle} onClick={() => handleChoice(setFeelingWhenStressed, choice, 80)}>{choice}</button>))}</div></QuestionWrapper>);
       }
       case 80: return <p className={`${textBaseStyle} italic`}>“งั้นเองสินะ เราก็เหมือนกันเลย เราก็รู้สึก {feelingWhenStressed || 'แบบนั้น'} เหมือนกัน”</p>;
       case 81: return <p className={`${textBaseStyle} italic`}>“นี่ คุณพอจะช่วยเราได้มั้ย …ช่วยฟื้นฟูที่แห่งนี้ได้หรือเปล่า” ร่างนั้นค่อย ๆ ถามด้วยเสียงแผ่วเบา</p>;
-      case 82: return <QuestionWrapper question={"“จะให้เราช่วยคุณอย่างไร เราเป็นแค่คนธรรมดา” คุณบอกร่างนั้นไป แม้ใจจะมีอยากช่วยบ้าง แต่ก็ทั้งนึกไม่ออกและไม่รู้จะช่วยอะไรได้"}><button className={choiceButtonStyle} onClick={() => handleChoice(null, null, 83)}>บอกเขาไป</button></QuestionWrapper>;
+      case 82: return <QuestionWrapper question="" step={step}><button className={choiceButtonStyle} onClick={() => handleChoice(null, null, 83)}>จะให้เราช่วยคุณอย่างไร เราเป็นแค่คนธรรมดา</button></QuestionWrapper>;
       case 83: return <p className={`${textBaseStyle} italic`}>“เป็นคนธรรมดาก็ไม่ได้แปลว่าจะทำอะไรไม่ได้นี่หน่า”</p>;
-      case 84: return <QuestionWrapper question="“ที่จักรวาลเรา เราก็แค่คนธรรมดาที่ไม่ได้พิเศษอะไร”"><button className={choiceButtonStyle} onClick={() => handleChoice(null, null, 85)}>พูดต่อไป</button></QuestionWrapper>;
+      case 84: return <QuestionWrapper question="" step={step}><button className={choiceButtonStyle} onClick={() => handleChoice(null, null, 85)}>ที่จักรวาลเรา เราก็แค่คนธรรมดาที่ไม่ได้พิเศษอะไร</button></QuestionWrapper>;
       case 85: return <p className={`${textBaseStyle} italic`}>“แล้วจำเป็นต้องเป็นคนพิเศษด้วยหรอ” ร่างนั้นตอบกลับคุณทันที</p>;
       case 86: return <p className={textBaseStyle}>”ก็ไม่หรอก แต่ถ้าเป็นคนที่พิเศษก็คงจะดีกว่านี้ ได้รับการชื่นชม ได้มีคุณค่า และได้การยอมรับ”</p>;
       case 87: return <p className={textBaseStyle}>ร่างสีขาวยืนนิ่งแล้วหันมาบอกคุณอย่างมั่นใจ</p>;
@@ -871,19 +950,19 @@ function Story() {
       case 95: return <p className={textBaseStyle}>คุณเห็นเด็กคนหนึ่ง ร่างเล็ก ๆ อายุน่าจะราว ๆ ไม่เกินแปดถึงเก้าขวบ หน้าตาเหมือนคุณในตอนเด็กเลยก็ว่าได้</p>;
       case 96: return <p className={`${textBaseStyle} italic`}>“เขาน่ะเป็นแบบนี้มาสักระยะแล้วหลังจากที่นี้เป็นแบบนี้ คุณช่วยไปปลอบเขาหน่อยได้มั้ย”</p>;
       case 97: return <p className={textBaseStyle}>คุณพยักหน้ารับแบบเล็กน้อย ก่อนที่จะเดินไปหยุดตรงหน้าเด็กคนนั้น</p>;
-      case 98: return <InputWrapper question="เห็นเด็กคนนี้แล้ว คุณคิดว่าเด็กคนนี้กำลังรู้สึกอะไร" value={childFeelingGuess} setter={setChildFeelingGuess} handleTextInputSubmit={handleTextInputSubmit} nextStep={99} />;
+      case 98: return <InputWrapper question="เห็นเด็กคนนี้แล้ว คุณคิดว่าเด็กคนนี้กำลังรู้สึกอะไร" value={childFeelingGuess} setter={setChildFeelingGuess} handleTextInputSubmit={handleTextInputSubmit} nextStep={99} step={step} />;
       case 99: return <p className={`${textBaseStyle} italic`}>“ไง..คุณน่าจะเป็นรุ่นราวพี่เรา” เด็กคนนั้นเงยหน้ามองและทักทายคุณ</p>;
       case 100: return <p className={`${textBaseStyle} italic`}>“ตอนนี้เรา {childFeelingGuess || 'รู้สึกไม่ดีเลย' }”</p>;
       case 101: return <p className={`${textBaseStyle} italic`}>“อืม เป็นเพื่อนคุยหน่อยได้มั้ยพี่” เด็กคนนี้ร้องขอเบา ๆ</p>;
       case 102: return <p className={textBaseStyle}>คุณเลยก้มตัวลง นั่งลงใกล้ ๆ เด็กคนนี้</p>;
       case 103: {
         const choices = ["จะยอมหยุดพักจากทุกสิ่ง ให้ร่างกายและจิตใจได้พักผ่อนอย่างเต็มที่ ไม่ฝืน", "จะหาทางระบายความรู้สึกนั้นออกมา อาจจะเขียนบันทึก ดูหนัง เล่นเกม ฟังเพลง หรือพูดคุยกับคนที่ไว้ใจ", "จะเผชิญหน้ากับความรู้สึกนั้น พยายามทำความเข้าใจต้นตอของมัน และหาวิธีแก้ไขปัญหาที่แท้จริง", "เรียนรู้ที่จะปฏิเสธในสิ่งที่ไม่ไหว หรือสิ่งที่ไม่ส่งผลดีต่อจิตใจตัวเอง"];
-        return (<QuestionWrapper question="“เราถามอะไรพี่ได้มั้ย ตอนพี่เจอเรื่องไม่ดี พี่จัดการและก็ทำอะไรเหรอ ? เราไม่รู้ว่าจะทำอะไร หรือควรทำอะไรได้ เราไม่อยากให้มันฉุดรั้งใจเราแบบนี้”">{choices.map(choice => (<button key={choice} className={choiceButtonStyle} onClick={() => handleChoice(setHowToManageStress, choice, 104)}>{choice}</button>))}</QuestionWrapper>);
+        return (<QuestionWrapper question="เราถามอะไรพี่ได้มั้ย ตอนพี่เจอเรื่องไม่ดี พี่จัดการและก็ทำอะไรเหรอ ? เราไม่รู้ว่าจะทำอะไร หรือควรทำอะไรได้ เราไม่อยากให้มันฉุดรั้งใจเราแบบนี้" step={step}>{choices.map(choice => (<button key={choice} className={choiceButtonStyle} onClick={() => handleChoice(setHowToManageStress, choice, 104)}>{choice}</button>))}</QuestionWrapper>);
       }
       case 104: return <p className={`${textBaseStyle} italic`}>“เป็นวิธีที่ดีเลยนะ เราคงจะลองทำตามดู”</p>;
       case 105: {
         const choices = ["ได้อยู่ท่ามกลางธรรมชาติ สัมผัสแสงแดด สายลม หรือเสียงของต้นไม้ใบหญ้า", "ได้กลับไปทำสิ่งที่รัก หรืองานอดิเรกที่ทำให้ลืมความกังวลและได้อยู่กับตัวเอง", "การได้ระบายหรือพูดคุยกับคนที่ไว้ใจ คนที่รับฟังและเข้าใจ โดยไม่ตัดสิน(รวมถึงสัตว์เลี้ยงด้วย)", "การได้อยู่เงียบๆ คนเดียว ทำสมาธิ อ่านหนังสือ หรือฟังเพลงที่ผ่อนคลาย"];
-        return (<QuestionWrapper question="“… เราถามเพิ่มได้มั้ย แล้วในวันที่ 'พลังใจ’ ของพี่ไม่มีเหลือเลย อะไรคือ 'แหล่งพลังงาน' เล็กๆ น้อยๆ ที่จะช่วยให้พี่ได้กลับมาเติมเต็มตัวเอง ?”">{choices.map(choice => (<button key={choice} className={choiceButtonStyle} onClick={() => handleChoice(setEnergySource, choice, 106)}>{choice}</button>))}</QuestionWrapper>);
+        return (<QuestionWrapper question="… เราถามเพิ่มได้มั้ย แล้วในวันที่ 'พลังใจ' ของพี่ไม่มีเหลือเลย อะไรคือ 'แหล่งพลังงาน' เล็กๆ น้อยๆ ที่จะช่วยให้พี่ได้กลับมาเติมเต็มตัวเอง ?" step={step}>{choices.map(choice => (<button key={choice} className={choiceButtonStyle} onClick={() => handleChoice(setEnergySource, choice, 106)}>{choice}</button>))}</QuestionWrapper>);
       }
       case 106: return <p className={textBaseStyle}>เมื่อคุณตอบเด็กคนนี้ไป บรรยากาศรอบข้างเริ่มดีขึ้น อากาศเริ่มอบอุ่นขึ้นมาบ้าง ต้นบางต้น เริ่มฟื้นคืนสภาพตัวเองได้</p>;
       case 107: return <p className={`${textBaseStyle} italic`}>“เราพอเข้าใจบ้างแล้ว ขอบคุณพี่มากนะ เราจะพยายามดู” เด็กคนนั้นลุกขึ้นตอบ</p>;
@@ -897,21 +976,20 @@ function Story() {
       case 115: return <p className={`${textBaseStyle} italic`}>“แล้วทำไมคุณไม่รักตัวเองล่ะ” เด็กคนนั้นโพล่งถามออกไป</p>;
       case 116: return <p className={`${textBaseStyle} italic`}>“มั-น ดู แอบเห็นแก่ตัวล่ะมั้-“</p>;
       case 117: return <p className={`${textBaseStyle} italic`}>“รักตัวเองไม่เท่ากับเห็นแก่ตัวซักหน่อย รักตัวเองได้ดี ก็จะรักคนอื่นได้ดีเช่นกัน”</p>;
-      case 118: return <p className={`${textBaseStyle} italic`}>“แต่เราไม่รู้สึกว่าตัวเองมีค่าเลย เราไม่เคยรู้สึกว่าตัวเองมีคุณค่าเลย”</p>
-      case 118: return <p className={`${textBaseStyle} italic`}>“เราขอโทษที่ทำให้ผิดหวังนะ เราพยายามแล้ว”</p>;
-      case 119: return <QuestionWrapper question={"“ไม่ว่าอะไรจะเกิด แต่คุณก็ยังคงเป็นคุณเสมอ” คุณกล่าวซ้ำไป"}><button className={choiceButtonStyle} onClick={() => handleChoice(null, null, 120)}>กล่าวซ้ำไป</button></QuestionWrapper>;
+      case 118: return <p className={`${textBaseStyle} italic`}>“แต่เราไม่รู้สึกว่าตัวเองมีค่าเลย เราไม่เคยรู้สึกว่าตัวเองมีคุณค่าเลย เราขอโทษที่ทำให้ผิดหวังนะ เราพยายามแล้ว”</p>
+      case 119: return <QuestionWrapper question="" step={step}><button className={choiceButtonStyle} onClick={() => handleChoice(null, null, 120)}>ไม่ว่าอะไรจะเกิด แต่คุณก็ยังคงเป็นคุณเสมอ</button></QuestionWrapper>;
       case 120: return <p className={textBaseStyle}>สิ้นเสียงคุณ ร่างนั้นเริ่มกลับมาดีขึ้นบ้าง แม้จะยังกระพริบไปมา ระหว่างร่างโปร่งแสงปกติ กับร่างโปร่งใสของเมื่อกี้</p>;
       case 121: {
         const choices = ["เพียงแค่ได้รับการโอบกอดอย่างอ่อนโยน และมีใครสักคนรับฟังความเจ็บปวด โดยไม่ตัดสิน", "ต้องการใครสักคนมายืนยันว่าเรายังมีคุณค่า ไม่ว่าเราจะเคยทำอะไรผิดพลาดมาแค่ไหนก็ตาม", "ต้องการคำแนะนำที่ชัดเจนว่าจะต้องทำอย่างไร เพื่อให้หลุดพ้นจากความทุกข์ทรมานนี้", "อยากได้รับโอกาสในการให้อภัยตัวเอง และโอกาสในการเริ่มต้นชีวิตใหม่ที่ดีกว่า"];
-        return (<QuestionWrapper question="คุณได้จินตนาการ ตั้งคำถามกับตัวเอง: ร่างนั้นที่บอบบางและใกล้สลาย... หากเราคือร่างนั้น ในห้วงเวลาที่สิ้นหวังที่สุด เราอยากจะได้รับ 'ความช่วยเหลือ' หรือ 'คำพูด' แบบไหนมากที่สุดกันนะ ?">{choices.map(choice => (<button key={choice} className={choiceButtonStyle} onClick={() => handleChoice(setHelpForWhiteFigure, choice, 122)}>{choice}</button>))}</QuestionWrapper>);
+        return (<QuestionWrapper question="คุณได้จินตนาการ ตั้งคำถามกับตัวเอง: ร่างนั้นที่บอบบางและใกล้สลาย... หากเราคือร่างนั้น ในห้วงเวลาที่สิ้นหวังที่สุด เราอยากจะได้รับ 'ความช่วยเหลือ' หรือ 'คำพูด' แบบไหนมากที่สุดกันนะ ?" step={step}>{choices.map(choice => (<button key={choice} className={choiceButtonStyle} onClick={() => handleChoice(setHelpForWhiteFigure, choice, 122)}>{choice}</button>))}</QuestionWrapper>);
       }
-      case 122: return <p className={textBaseStyle}>เมื่อคุณตอบ '{helpForWhiteFigure || '...'}' เป็นคำตอบในใจแล้ว คุณก็เริ่มเข้าใจ ทั้งตัวร่างนั้นและตัวเองขึ้นมาบ้าง</p>;
+      case 122: return <p className={textBaseStyle}>เมื่อคุณตอบเด็กคนนี้ไป บรรยากาศรอบข้างเริ่มดีขึ้น อากาศเริ่มอบอุ่นขึ้นมาบ้าง ต้นบางต้น เริ่มฟื้นคืนสภาพตัวเองได้</p>;
       case 123: return <p className={`${textBaseStyle} italic`}>“เรา..ไม่เป็นอะไรมากแล้วล่ะ.. ขอโทษที่ทำให้เป็นห่วง” ร่างสีขาวนั้นพูดด้วยเสียงเศร้า</p>;
       case 124: return <p className={`${textBaseStyle} italic`}>“เราจะ..พยายาม เป็นตัวเองในทางที่ดีขึ้น เราสัญญา”</p>;
       case 125: return <p className={`${textBaseStyle} italic`}>“แน่นอน!! เราเชื่อ” เด็กคนนั้นตอบกลับ</p>;
       case 126: {
         const choices = ["อยากจะบอกว่า 'ให้อภัยคุณแล้ว... เรายอมรับในทุกสิ่งที่เป็น... ไม่ว่าคุณจะเป็นอย่างไรก็ตาม'", "อยากจะบอกว่า 'คุณมีค่าเสมอ... ไม่จำเป็นต้องพิเศษ... เรารักคุณในแบบที่คุณเป็น'", "อยากจะบอกว่า 'คุณเข้มแข็งมากที่ผ่านเรื่องราวมาได้ถึงตรงนี้… มาเติบโตไปข้างหน้าด้วยกันนะ'", "เราอยากจะบอกว่า 'เราเข้าใจทุกความเจ็บปวดของคุณ... เราจะอยู่เคียงข้างคุณเสมอ... ไม่ว่าอะไรจะเกิดขึ้น'"];
-        return (<QuestionWrapper question="ตอนนี้... เมื่อคุณได้เข้าใจความรู้สึกของ 'ตัวตนที่บอบบาง' นั้นแล้ว... หากคุณสามารถส่ง 'คำพูด' หรือ 'ความรู้สึก' ใดไปให้เขาได้ในตอนนี้... คุณอยากจะบอกอะไรกับ 'เขา' มากที่สุด... เพื่อโอบกอดและเยียวยาความเจ็บปวดเหล่านั้น?">{choices.map(choice => (<button key={choice} className={choiceButtonStyle} onClick={() => handleChoice(setMessageToPastSelf, choice, 127)}>{choice}</button>))}</QuestionWrapper>);
+        return (<QuestionWrapper question="ตอนนี้... เมื่อคุณได้เข้าใจความรู้สึกของ 'ตัวตนที่บอบบาง' นั้นแล้ว... หากคุณสามารถส่ง 'คำพูด' หรือ 'ความรู้สึก' ใดไปให้เขาได้ในตอนนี้... คุณอยากจะบอกอะไรกับ 'เขา' มากที่สุด... เพื่อโอบกอดและเยียวยาความเจ็บปวดเหล่านั้น?" step={step}>{choices.map(choice => (<button key={choice} className={choiceButtonStyle} onClick={() => handleChoice(setMessageToPastSelf, choice, 127)}>{choice}</button>))}</QuestionWrapper>);
       }
       case 127: return <p className={textBaseStyle}>คุณบอกร่างนั้นว่า “{messageToPastSelf || '...'}”</p>;
       case 128: return <p className={textBaseStyle}>ทั้งสองคนมองหน้าคุณพร้อมกัน ด้วยสายตาที่เริ่มอ่อนโยน มีความสุขบ้าง</p>;
@@ -919,33 +997,40 @@ function Story() {
       case 130: return <p className={textBaseStyle}>ตอนนี้เหมือนสถานการณ์รอบด้านเริ่มกลับมา สภาพแวดล้อมผิดธรรมชาติ กลับสู่ปกติ ท้องฟ้า บรรยากาศ อากาศ และตลอดสิ่งแวดล้อม ทุกอย่างฟื้นฟูอย่างฉับพลัน</p>;
       case 131: return <p className={`${textBaseStyle} italic`}>“ดูเหมือน ภัยจะเริ่มหายไปแล้วนะพี่” เด็กคนนั้นบอก</p>;
       case 132: return <p className={`${textBaseStyle} italic`}>“อืม ใช่ ทั้งหมดนี้เป็นเพราะคุณจริง ๆ นะ” ร่างสีขาวที่เริ่มกลายเป็นร่างคนแบบปกติพูดต่อ</p>;
-      case 133: return <QuestionWrapper question="“ไม่เลยเรายังไม่ได้ทำอะไรเลยนะ”"><button className={choiceButtonStyle} onClick={() => handleChoice(null, null, 134)}>พูดออกไป</button></QuestionWrapper>;
+      case 133: return <QuestionWrapper question="" step={step}><button className={choiceButtonStyle} onClick={() => handleChoice(null, null, 134)}>ไม่เลยเรายังไม่ได้ทำอะไรเลยนะ</button></QuestionWrapper>;
       case 134: return <p className={`${textBaseStyle} italic`}>“คุณทำมันจริง ๆ คุณช่วยพวกเราไว้ เมื่อจิตใจคุณเริ่มมั่นคง ที่แห่งนี้ก็จะกลับมาสดชื่นเหมือนเดิมดังเคยเป็น คุณเริ่มเรียนรู้ที่จะรู้ว่าการรักตัวเอง มันสำคัญมาก”</p>;
       case 135: return <p className={`${textBaseStyle} italic`}>“ตอนนี้ เราคงต้องส่งคุณกลับแล้ว ต้องขอโทษจริง ๆ ที่พาคุณมาอย่างกระทันหัน แต่คุณน่ะ ‘สำคัญกับที่นี้เสมอนะ’ ” ร่างสีขาวที่เป็นร่างคนเรียบร้อยได้กล่าว</p>;
       case 136: return <p className={`${textBaseStyle} italic`}>“ขอถามอะไรเป็นครั้งสุดท้ายก่อนกลับได้มั้ย”</p>;
       case 137: {
         const choices = ["อยากใช้เรื่องราวและประสบการณ์ที่ได้เรียนรู้ มาเป็นแรงบันดาลใจให้ผู้อื่น ให้พวกเขากล้าที่จะรักและเข้าใจตัวเอง", "อยากนำพลังและความสุขที่ได้กลับมานี้ ไปสร้างสรรค์ผลงานใหม่ๆ ที่เป็นประโยชน์ หรือทำให้ผู้อื่นมีความสุข", "อยากนำความเข้าใจในตัวเองไปใช้กับการดูแลความสัมพันธ์กับคนรอบข้างให้แข็งแรงและมีความสุขยิ่งขึ้น", "อยากใช้พลังทั้งหมดนี้ เพื่อก้าวไปสู่เป้าหมายที่แท้จริงของชีวิต ที่ค้นพบในภารกิจนี้ โดยไม่ลังเลอีกต่อไป"];
-        return (<QuestionWrapper question="”เมื่อตัวตนภายในของคุณสมบูรณ์ และเต็มไปด้วยพลัง คุณจะใช้พลังนี้เพื่อ 'สร้างสรรค์' หรือ 'แบ่งปัน' สิ่งใด ให้กับโลกที่แท้จริงของท่าน?”">{choices.map(choice => (<button key={choice} className={choiceButtonStyle} onClick={() => handleChoice(setCreativeUseOfPower, choice, 138)}>{choice}</button>))}</QuestionWrapper>);
+        return (<QuestionWrapper question="เมื่อตัวตนภายในของคุณสมบูรณ์ และเต็มไปด้วยพลัง คุณจะใช้พลังนี้เพื่อ 'สร้างสรรค์' หรือ 'แบ่งปัน' สิ่งใด ให้กับโลกที่แท้จริงของท่าน?" step={step}>{choices.map(choice => (<button key={choice} className={choiceButtonStyle} onClick={() => handleChoice(setCreativeUseOfPower, choice, 138)}>{choice}</button>))}</QuestionWrapper>);
       }
       case 138: return <p className={`${textBaseStyle} italic`}>“ขอบคุณที่บอกมาอย่างนั้นนะ พวกเราเชื่อมั่นในตัวคุณเสมอ”</p>;
       case 139: return <p className={`${textBaseStyle} italic`}>“อยากบอกแค่ว่า เพราะคุณสมควรที่จะมีความสุขที่สุดในโลก”</p>;
       case 140: return <p className={textBaseStyle}>เมื่อสิ้นร่างนั้นกล่าวจบ เด็กคนนั้นก็เดินมาหาหาคุณ</p>;
-      case 141: return <InputWrapper question="“นี่พี่ ถามไรหน่อยก่อนพี่จะไปได้มั้ย พี่เชื่อว่าผมจะไปได้ไกลเท่าพี่มั้ย เพราะผมไม่รู้ ว่าผมเก่งพอหรือดีพอจะทำได้มั้ย พี่น่ะเก่ง เก่งสุดๆจนผมน่าจะเทียบไม่ติด”" value={childDreamQuestion} setter={setChildDreamQuestion} handleTextInputSubmit={handleTextInputSubmit} nextStep={142} />;
+      case 141: return <InputWrapper question="นี่พี่ ถามไรหน่อยก่อนพี่จะไปได้มั้ย พี่เชื่อว่าผมจะไปได้ไกลเท่าพี่มั้ย เพราะผมไม่รู้ ว่าผมเก่งพอหรือดีพอจะทำได้มั้ย พี่น่ะเก่ง เก่งสุดๆจนผมน่าจะเทียบไม่ติด" value={childDreamQuestion} setter={setChildDreamQuestion} handleTextInputSubmit={handleTextInputSubmit} nextStep={142} step={step} />;
       case 142: return <p className={`${textBaseStyle} italic`}>“งั้นหรอ ผมเองก็จะเชื่อมั่นแบบนั้นเช่นกันนะ”</p>;
       case 143: return <p className={`${textBaseStyle} italic`}>“ถึงแม้ความฝันของพวกเรา จะไปได้ไกลหรือไม่ไกล เราเองก็ไม่รู้ แต่มันก็ดีที่เราได้เดินทางร่วมกันนะพี่ และเราอยากเดินทางร่วมกับพี่ไปจนถึงที่สุดเลย”</p>;
-      case 144: return <InputWrapper question="“คุณอยากบอกเด็กคนนี้ว่าอะไร เป็นการบอกลาเขามั้ย”" value={messageToChildSelf} setter={setMessageToChildSelf} handleTextInputSubmit={handleTextInputSubmit} nextStep={145} />;
+      case 144: return <InputWrapper question="คุณอยากบอกเด็กคนนี้ว่าอะไร เป็นการบอกลาเขามั้ย" value={messageToChildSelf} setter={setMessageToChildSelf} handleTextInputSubmit={handleTextInputSubmit} nextStep={145} step={step} />;
       case 145: return <p className={textBaseStyle}>เมื่อคุณบอกเขาเรียบร้อย เด็กคนนั้นก็น้ำตาไหลด้วยความปลื้มปิติ พร้อมกับแสงสีขาวที่เริ่มขยายจากข้างหลังของคุณ พร้อมแรงดึงดูดที่เริ่มแรงขึ้น</p>;
       case 146: return <p className={`${textBaseStyle} italic`}>“ซักวันหนึ่งเราจะได้พบกันนะ พี่{name} ยังไงก็ ‘{messageToChildSelf || '...'}’ นะ”</p>;
       case 147: return <p className={textBaseStyle}>คุณยิ้มตอบกลับเด็กคนนั้นไป</p>;
       case 148: return <p className={`${textBaseStyle} italic`}>“ก่อนที่คุณจะไป ช่วยรับกระดาษนี้ไว้ทีสิ แล้วก็ขอบคุณสำหรับทุกอย่างนะ คุณเป็นคนสำคัญของพวกเรา พวกเราจะไม่มีวันลืมคุณเลย” ร่างสีขาวที่เป็นคนตอนนี้บอกคุณ</p>;
-      case 149: return <QuestionWrapper question="“ได้สิ นั่นสินะ แล้วคุณชื่ออะไรนะ”"><button className={choiceButtonStyle} onClick={() => handleChoice(null, null, 150)}>ถามชื่อของเขา</button></QuestionWrapper>;
+      case 149: return <QuestionWrapper question="" step={step}><button className={choiceButtonStyle} onClick={() => handleChoice(null, null, 150)}>ได้สิ นั่นสินะ แล้วคุณชื่ออะไรนะ</button></QuestionWrapper>;
       case 150: return <p className={textBaseStyle}>คุณพึ่งนึกได้ว่ายังไม่รู้ชื่อของคนที่เคยเป็นร่างสีขาวเลย ที่ตอนนี้เริ่มเห็นหน้าเขาชัดขึ้นเรื่อย ๆ</p>;
       case 151: return <p className={`${textBaseStyle} italic`}>“เราชื่อ {name} น่ะ”</p>;
       case 152: return <p className={textBaseStyle}>ก่อนที่จะงงและจะได้บอกลาคนตรงหน้า คุณก็ถูกดึงดูดด้วยแรงดึงดูดของประตูนั้นเข้าไปแล้ว...</p>;
       
       // --- บทสรุป: การกลับมา ---
       case 153: return <p className={textBaseStyle}>.....</p>;
-      case 154: return <p className={textBaseStyle}>06.58</p>;
+      case 154: return <TypewriterEffect text="06.58....06.59.......07.00" step={step} onComplete={() => {
+        // เล่นเสียง alarm เมื่อพิมพ์เสร็จ
+        if (alarmAudioRef.current) {
+          alarmAudioRef.current.src = alarm;
+          alarmAudioRef.current.volume = isMuted ? 0 : 0.5;
+          alarmAudioRef.current.play().catch(console.error);
+        }
+      }} />;
       case 155: return <p className={textBaseStyle}>เสียงนาฬิกาปลุกดังขึ้น... คุณค่อย ๆ ลืมตาตื่นจากฝันที่ยาวนาน</p>;
       case 156:return <p className={textBaseStyle}>วันนี้คือวันศุกร์... และยังมีบางสิ่งที่คุณต้องรับมือในโลกแห่งความจริง</p>;
       case 157:return <p className={textBaseStyle}>คุณยังคงจำความฝันนั้นได้... มันทั้งชัดเจนและเหมือนจริงอย่างน่าประหลาด</p>;
@@ -976,6 +1061,8 @@ function Story() {
       <audio ref={rainAudioRef} preload="auto" />
       <audio ref={lightningAudioRef} preload="auto" />
       <audio ref={warpAudioRef} preload="auto" />
+      <audio ref={doorAudioRef} preload="auto" />
+      <audio ref={alarmAudioRef} preload="auto" />
       
       {/* Background Image */}
       <div
