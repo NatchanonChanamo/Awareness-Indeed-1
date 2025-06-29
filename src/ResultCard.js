@@ -1,15 +1,17 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { useParams, useSearchParams } from 'react-router-dom';
+import { useParams, useSearchParams, useNavigate } from 'react-router-dom'; // เพิ่ม useNavigate
 import { toPng } from 'html-to-image';
 import { gsap } from 'gsap';
 import './ResultCard.css';
 
 // Default card image (fallback)
 import MCard5 from './assets/Mcard5.png';
+import EmergencyHelp from './EmergencyHelp';
 
 function ResultCard() {
   const { id } = useParams();
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate(); // เพิ่มการประกาศ navigate
   const cardRef = useRef(null);
   
   // รับข้อมูลการ์ดจาก URL parameters
@@ -186,11 +188,15 @@ function ResultCard() {
     fetchUserDataFromFirebase();
   }, [id, playerName]);
 
+  // เพิ่มฟังก์ชันสำหรับไป About Us
+  const handleAboutUsClick = () => {
+    navigate('/aboutus');
+  };
+
   return (
     <div className="result-container">
       <header className="result-header">
         <h1>กระดาษพันธสัญญาของตัวคุณ</h1>
-        <h2 className="card-type-title">{cardType}</h2>
         <h3 className="card-subtitle">{cardTitle}</h3>
       </header>
 
@@ -243,14 +249,18 @@ function ResultCard() {
           บันทึกรูป
         </button>
         <div className="footer-links">
-          <a href="https://www.instagram.com/awareness.indeed2025?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank" rel="noopener noreferrer" className="footer-button">
+          {/* แก้ไขจาก <a href="/aboutus"> เป็น button */}
+          <button onClick={handleAboutUsClick} className="footer-button">
             About Us
-          </a>
+          </button>
           <a href="https://www.instagram.com/awareness.indeed2025?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank" rel="noopener noreferrer" className="footer-button">
             Website
           </a>
         </div>
       </footer>
+
+      {/* เพิ่มปุ่มช่วยเหลือฉุกเฉิน */}
+      <EmergencyHelp />
     </div>
   );
 }

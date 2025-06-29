@@ -136,7 +136,7 @@ function PreSurvey() {
       duration: 0.7,
       ease: 'power3.in',
       onComplete: () => {
-        navigate(`/story/${id}`);
+        navigate(`/quote/${id}`);
       }
     });
   };

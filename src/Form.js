@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import bulogo from './assets/bulogo.png';
 import projectLogo from './assets/ProjectLogo.png'; // Import โลโก้โปรเจกต์
 import LoginBG from './assets/LoginBG.png'; // Import รูปพื้นหลัง
+import EmergencyHelp from './EmergencyHelp';
 
 function Form() {
   const [name, setName] = useState('');
@@ -150,6 +151,9 @@ function Form() {
           ส่งข้อมูล
         </button>
       </form>
+
+      {/* เพิ่มปุ่มช่วยเหลือฉุกเฉิน */}
+      <EmergencyHelp />
     </div>
   );
 }

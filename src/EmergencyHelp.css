@@ -1,0 +1,297 @@
+@import url('https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap');
+
+/* ปุ่มเครื่องหมายตกใจ - เล็กมากๆ และไม่ให้ ScreenScaler scale */
+.emergency-help-button {
+  position: fixed;
+  top: 8px;
+  right: 8px;
+  width: 18px; /* เล็กลงอีก */
+  height: 18px; /* เล็กลงอีก */
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  color: white;
+  border: none;
+  border-radius: 3px; /* เล็กลงอีก */
+  font-size: 10px; /* เล็กลงอีก */
+  font-weight: bold;
+  font-family: 'Prompt', sans-serif;
+  cursor: pointer;
+  z-index: 99999; /* เพิ่มให้สูงสุด */
+  box-shadow: 0 1px 3px rgba(220, 38, 38, 0.4);
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  /* ป้องกัน ScreenScaler */
+  transform-origin: center !important;
+  
+  /* บังคับไม่ให้ถูก scale */
+  transform: scale(1) !important;
+}
+
+/* Override ScreenScaler */
+.screen-scaler-container .emergency-help-button,
+.scaled-content .emergency-help-button {
+  position: fixed !important;
+  top: 8px !important;
+  right: 8px !important;
+  width: 18px !important;
+  height: 18px !important;
+  font-size: 10px !important;
+  transform: scale(1) !important;
+  z-index: 99999 !important;
+}
+
+.emergency-help-button:hover {
+  transform: scale(1.1) !important; /* เล็กน้อย */
+  box-shadow: 0 2px 4px rgba(220, 38, 38, 0.6);
+  background: linear-gradient(135deg, #b91c1c 0%, #991b1b 100%);
+}
+
+.emergency-help-button:active {
+  transform: scale(0.9) !important;
+}
+
+/* Responsive สำหรับหน้าจอเล็ก */
+@media (max-width: 768px) {
+  .emergency-help-button,
+  .screen-scaler-container .emergency-help-button,
+  .scaled-content .emergency-help-button {
+    width: 16px !important;
+    height: 16px !important;
+    font-size: 9px !important;
+    top: 6px !important;
+    right: 6px !important;
+    border-radius: 2px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .emergency-help-button,
+  .screen-scaler-container .emergency-help-button,
+  .scaled-content .emergency-help-button {
+    width: 14px !important;
+    height: 14px !important;
+    font-size: 8px !important;
+    top: 5px !important;
+    right: 5px !important;
+    border-radius: 2px !important;
+  }
+}
+
+/* Background overlay */
+.emergency-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 100000;
+  backdrop-filter: blur(5px);
+}
+
+/* กล่องข้อความหลัก */
+.emergency-help-content {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+  z-index: 100001;
+  max-width: 85vw;
+  max-height: 75vh;
+  width: 450px;
+  overflow-y: auto;
+  font-family: 'Prompt', sans-serif;
+  animation: slideIn 0.3s ease-out;
+}
+
+/* ป้องกัน ScreenScaler กับ overlay และ content */
+.screen-scaler-container .emergency-overlay,
+.scaled-content .emergency-overlay {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  transform: none !important;
+  z-index: 100000 !important;
+}
+
+.screen-scaler-container .emergency-help-content,
+.scaled-content .emergency-help-content {
+  position: fixed !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  z-index: 100001 !important;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -60%);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+}
+
+/* Header */
+.emergency-help-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px 12px 20px;
+  border-bottom: 2px solid #fee2e2;
+  background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+  border-radius: 12px 12px 0 0;
+}
+
+.emergency-help-header h3 {
+  margin: 0;
+  color: #dc2626;
+  font-size: 1.1rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.emergency-close-button {
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: #dc2626;
+  cursor: pointer;
+  padding: 0;
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.emergency-close-button:hover {
+  background: rgba(220, 38, 38, 0.1);
+  transform: rotate(90deg);
+}
+
+/* Body */
+.emergency-help-body {
+  padding: 15px 20px 20px 20px;
+}
+
+.help-section {
+  margin-bottom: 20px;
+  padding: 15px;
+  background: #f9fafb;
+  border-radius: 10px;
+  border-left: 4px solid #dc2626;
+}
+
+.help-section:last-of-type {
+  margin-bottom: 12px;
+}
+
+.help-section h4 {
+  margin: 0 0 8px 0;
+  color: #dc2626;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.phone-number {
+  font-size: 1.7rem;
+  font-weight: 700;
+  color: #dc2626;
+  margin: 6px 0 10px 0;
+  text-align: center;
+  background: white;
+  padding: 8px;
+  border-radius: 6px;
+  border: 2px solid #fee2e2;
+  letter-spacing: 1.5px;
+}
+
+.phone-number.small {
+  font-size: 1.2rem;
+  margin: 3px 0;
+  padding: 5px 8px;
+  display: inline-block;
+  text-align: left;
+}
+
+.phone-group {
+  background: white;
+  padding: 12px;
+  border-radius: 6px;
+  border: 2px solid #fee2e2;
+  margin: 8px 0;
+}
+
+.phone-item {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 8px;
+  gap: 3px;
+}
+
+.phone-item:last-child {
+  margin-bottom: 0;
+}
+
+.phone-label {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #6b7280;
+}
+
+.phone-time {
+  font-size: 0.75rem;
+  color: #9ca3af;
+  font-style: italic;
+}
+
+.help-section p {
+  margin: 10px 0 0 0;
+  color: #374151;
+  line-height: 1.5;
+  font-size: 0.9rem;
+}
+
+.emergency-note {
+  background: linear-gradient(135deg, #fef7ff 0%, #f3e8ff 100%);
+  border: 2px solid #e9d5ff;
+  border-radius: 10px;
+  padding: 12px;
+  margin-top: 15px;
+}
+
+.emergency-note p {
+  margin: 0;
+  color: #6b21a8;
+  font-size: 0.85rem;
+  text-align: center;
+  line-height: 1.4;
+}
+
+/* Animation สำหรับการปิด */
+.emergency-help-content.closing {
+  animation: slideOut 0.3s ease-in;
+}
+
+@keyframes slideOut {
+  from {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+  to {
+    opacity: 0;
+    transform: translate(-50%, -60%);
+  }
+}
