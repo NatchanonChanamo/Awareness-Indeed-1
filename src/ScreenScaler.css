@@ -14,18 +14,22 @@
 }
 
 .scaled-content {
-  /* ขนาดคงที่ตามการออกแบบ */
-  width: 680px;
+  /* ขนาดคงที่ตามการออกแบบ - มือถือมาตรฐาน */
+  width: 480px;
   height: 844px;
   background-color: #fff;
   overflow-y: auto;
   overflow-x: hidden;
   position: relative;
   
+  /* ป้องกันเนื้อหาออกเฟรม */
+  box-sizing: border-box;
+  padding: 20px;
+  
   /* ฟอนต์และการแสดงผล */
   font-family: 'Prompt', sans-serif;
-  font-size: 16px; /* ขนาดฟอนต์พื้นฐาน */
-  line-height: 1.6;
+  font-size: 20px; /* ขนาดฟอนต์พื้นฐานใหญ่ขึ้น */
+  line-height: 1.4;
   
   /* การตัดคำภาษาไทย */
   word-break: keep-all;
@@ -51,35 +55,44 @@
   perspective: 1000px;
 }
 
-/* ขนาดองค์ประกอบต่างๆ - ออกแบบสำหรับ 680px เป็นพื้นฐาน */
+/* ขนาดองค์ประกอบต่างๆ - ออกแบบสำหรับ 480px เป็นพื้นฐาน */
 .scaled-content h1 { 
-  font-size: 28px;
-  font-weight: 600;
+  font-size: 32px;
+  font-weight: 700;
   margin: 0 0 20px 0;
+  line-height: 1.2;
+  word-wrap: break-word;
 }
 
 .scaled-content h2 { 
-  font-size: 24px;
-  font-weight: 500;
-  margin: 0 0 16px 0;
+  font-size: 28px;
+  font-weight: 600;
+  margin: 0 0 18px 0;
+  line-height: 1.2;
+  word-wrap: break-word;
 }
 
 .scaled-content h3 { 
-  font-size: 20px;
-  font-weight: 500;
-  margin: 0 0 12px 0;
+  font-size: 24px;
+  font-weight: 600;
+  margin: 0 0 16px 0;
+  line-height: 1.2;
+  word-wrap: break-word;
 }
 
 .scaled-content p { 
-  font-size: 16px;
-  font-weight: 300;
+  font-size: 20px;
+  font-weight: 400;
   margin: 0 0 16px 0;
+  line-height: 1.4;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .scaled-content button { 
-  font-size: 16px;
-  font-weight: 400;
-  padding: 12px 20px;
+  font-size: 20px;
+  font-weight: 500;
+  padding: 16px 20px;
   border: none;
   border-radius: 8px;
   cursor: pointer;
@@ -87,21 +100,34 @@
   white-space: normal;
   word-wrap: break-word;
   text-align: center;
+  line-height: 1.3;
+  min-height: 52px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .scaled-content input,
 .scaled-content textarea,
 .scaled-content select { 
-  font-size: 16px;
-  padding: 10px;
-  border: 1px solid #ccc;
+  font-size: 20px;
+  font-weight: 400;
+  padding: 14px;
+  border: 2px solid #ccc;
   border-radius: 6px;
   font-family: inherit;
+  line-height: 1.3;
+  min-height: 48px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .scaled-content label { 
-  font-size: 14px;
-  font-weight: 400;
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 1.3;
+  word-wrap: break-word;
+  display: block;
+  margin-bottom: 8px;
 }
 
 /* เอฟเฟค */
@@ -114,5 +140,158 @@
   transform: translateY(0);
 }
 
-/* ลบ Media Queries ทั้งหมด - ให้ JavaScript จัดการ scaling แต่เพียงอย่างเดียว */
-/* ทุกอุปกรณ์จะแสดงผลเหมือนกันแค่ใหญ่/เล็กต่างกัน */
+/* ปรับขนาดปุ่มควบคุมต่างๆ ให้เล็กลงและไม่บังเนื้อหา */
+.scaled-content .control-button {
+  font-size: 14px !important;
+  padding: 8px 12px !important;
+  min-height: auto !important;
+  width: auto !important;
+  white-space: nowrap;
+  line-height: 1.2;
+}
+
+.scaled-content .top-button {
+  font-size: 12px !important;
+  padding: 6px 8px !important;
+  min-height: auto !important;
+  width: auto !important;
+  border-radius: 4px !important;
+}
+
+/* ซ่อนปุ่ม "ย้อนกลับ" ทั้งหมด - ไม่ใช้แล้ว */
+button:contains("ย้อนกลับ"),
+[title*="ย้อนกลับ"],
+[class*="back"],
+.back-button {
+  display: none !important;
+}
+
+/* หรือซ่อนทุกปุ่มที่อยู่ด้านซ้ายบน */
+.absolute.top-5.left-5 {
+  display: none !important;
+}
+
+/* ปรับขนาดข้อความในคำถามหลายตัวเลือกให้พอดีเฟรม */
+.scaled-content .choice-button {
+  font-size: 16px !important;
+  padding: 12px 16px !important;
+  line-height: 1.3 !important;
+  word-wrap: break-word !important;
+  overflow-wrap: break-word !important;
+  white-space: normal !important;
+  text-align: left !important;
+  min-height: auto !important;
+}
+
+.scaled-content .question-text {
+  font-size: 18px !important;
+  line-height: 1.4 !important;
+  word-wrap: break-word !important;
+  overflow-wrap: break-word !important;
+  margin-bottom: 16px !important;
+}
+
+/* ปรับ container ของคำถามให้มี margin เพียงพอ */
+.scaled-content .question-container {
+  padding: 16px !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+/* ลบ Media Queries ทั้งหมด - ใช้ Fixed Aspect Ratio Scaling */
+/* ทุกอุปกรณ์จะแสดงผลแบบเดียวกัน เพียงแต่ย่อ/ขยายตามขนาดหน้าจอ */
+
+/* ป้องกันข้อความหลุดเฟรมในหน้า Caution และหน้าอื่นๆ */
+.scaled-content .caution-content,
+.scaled-content .text-heavy-content {
+  padding: 16px !important;
+  overflow: hidden !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+/* ปรับขนาดตัวอักษรอัตโนมัติสำหรับเนื้อหาที่มีข้อความเยอะ */
+.scaled-content .caution-content p,
+.scaled-content .text-heavy-content p {
+  font-size: 10px !important; /* ลดจาก 20px เป็น 10px (50%) */
+  line-height: 1.4 !important;
+  margin-bottom: 6px !important; /* ลด margin ตามสัดส่วน */
+  word-wrap: break-word !important;
+  overflow-wrap: break-word !important;
+  hyphens: auto !important;
+}
+
+.scaled-content .caution-content h1,
+.scaled-content .text-heavy-content h1 {
+  font-size: 16px !important; /* ลดจาก 32px เป็น 16px (50%) */
+  margin-bottom: 10px !important;
+  word-wrap: break-word !important;
+  line-height: 1.2 !important;
+}
+
+.scaled-content .caution-content h2,
+.scaled-content .text-heavy-content h2 {
+  font-size: 14px !important; /* ลดจาก 28px เป็น 14px (50%) */
+  margin-bottom: 9px !important;
+  word-wrap: break-word !important;
+  line-height: 1.2 !important;
+}
+
+.scaled-content .caution-content h3,
+.scaled-content .text-heavy-content h3 {
+  font-size: 12px !important; /* ลดจาก 24px เป็น 12px (50%) */
+  margin-bottom: 8px !important;
+  word-wrap: break-word !important;
+  line-height: 1.2 !important;
+}
+
+/* สำหรับข้อความในรายการ (list) */
+.scaled-content .caution-content li,
+.scaled-content .text-heavy-content li {
+  font-size: 9px !important; /* ลดจาก 18px เป็น 9px (50%) */
+  line-height: 1.3 !important;
+  margin-bottom: 3px !important;
+  word-wrap: break-word !important;
+  overflow-wrap: break-word !important;
+}
+
+/* ป้องกันการขยายเกินขนาดคอนเทนเนอร์ */
+.scaled-content .caution-content *,
+.scaled-content .text-heavy-content * {
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+/* ปรับ padding ให้เล็กลงเพื่อประหยัดพื้นที่ */
+.scaled-content .caution-content,
+.scaled-content .text-heavy-content {
+  padding: 10px !important; /* ลดจาก 20px เป็น 10px (50%) */
+  overflow: hidden !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+/* === ลบ Media Queries ที่ไม่ทำงาน และใช้ขนาดเดียวสำหรับทุกอุปกรณ์ === */
+/* ขนาดที่กำหนดด้านบนจะใช้สำหรับทุกอุปกรณ์ เพื่อให้แสดงผลสม่ำเสมอ */
+
+/* เพิ่มการปรับแต่งเพื่อให้ข้อความไม่ล้นออกจากขอบ */
+.scaled-content .caution-content {
+  /* เพิ่มการควบคุมความสูงและการเลื่อน */
+  max-height: calc(100vh - 20px) !important; /* ลด margin */
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+}
+
+/* ปรับแต่งการแสดงผลข้อความให้ดีขึ้น */
+.scaled-content .caution-content p {
+  text-align: justify !important; /* จัดข้อความให้เรียบร้อย */
+  text-justify: inter-word !important;
+}
+
+/* ปรับ style สำหรับปุ่มในหน้า Caution */
+.scaled-content .caution-content button {
+  font-size: 10px !important; /* ลดจาก 20px เป็น 10px (50%) */
+  padding: 8px 10px !important; /* ลด padding ตามสัดส่วน */
+  margin: 4px 2px !important;
+  min-height: auto !important;
+}

@@ -2,18 +2,19 @@ import React, { useEffect, useState } from 'react';
 import './ScreenScaler.css';
 
 /**
- * ScreenScaler แบบ Fixed Aspect Ratio Layout
- * - ออกแบบสำหรับ 680x844px เป็นฐาน
- * - Scale ให้เต็มหน้าจอโดยรักษาสัดส่วน
- * - ไม่เล็กกว่า 100% ของหน้าจอ
+ * ScreenScaler แบบ Responsive Fixed Aspect Ratio Layout
+ * - ออกแบบสำหรับ 480x844px เป็นฐาน (ขนาดมือถือมาตรฐาน)
+ * - มือถือ: Scale ให้พอดีเนื้อหาทั้งหมด (ไม่หลุดเฟรม)
+ * - แท็บเล็ต/คอม: Scale ให้เต็มหน้าจอแต่ไม่เกินขีดจำกัด
+ * - ปรับขนาดปุ่มและข้อความให้เหมาะสมกับทุกอุปกรณ์
  */
 const ScreenScaler = ({ children }) => {
   const [scale, setScale] = useState(1);
   
   useEffect(() => {
     const calculateScale = () => {
-      // ขนาดต้นแบบ
-      const DESIGN_WIDTH = 680;
+      // ขนาดต้นแบบ - มือถือมาตรฐาน
+      const DESIGN_WIDTH = 480;
       const DESIGN_HEIGHT = 844;
       
       // ขนาดหน้าจอจริง
@@ -24,33 +25,29 @@ const ScreenScaler = ({ children }) => {
       const scaleX = windowWidth / DESIGN_WIDTH;
       const scaleY = windowHeight / DESIGN_HEIGHT;
       
-      // --- FIX: ใช้ scale ที่ใหญ่กว่า เพื่อให้เต็มหน้าจอ ---
-      let finalScale;
+      // บังคับให้เต็มหน้าจอทุกอุปกรณ์ - ไม่มีขอบสีดำ
+      let finalScale = Math.max(scaleX, scaleY);
       
-      if (windowWidth <= 480) {
-        // มือถือ: ให้เต็มความกว้างแล้วให้สูงตาม
-        finalScale = scaleX;
-      } else if (windowWidth <= 768) {
-        // แท็บเล็ต: เลือก scale ที่ทำให้เต็มหน้าจอมากที่สุด
-        finalScale = Math.max(scaleX, scaleY);
-      } else {
-        // คอม: เลือก scale ที่เหมาะสม (ไม่ให้ใหญ่เกินไป)
-        finalScale = Math.min(scaleX * 0.9, scaleY * 0.9);
+      // จำกัดขั้นสูงสุดเพื่อไม่ให้ใหญ่เกินไป
+      if (finalScale > 3.0) {
+        finalScale = Math.min(scaleX, scaleY);
       }
       
-      // ขั้นต่ำ 80% สูงสุด 300%
-      finalScale = Math.max(0.8, Math.min(finalScale, 3.0));
+      // ขั้นต่ำและขั้นสูง
+      const adjustedScale = Math.max(0.8, Math.min(finalScale, 3.5));
       
-      setScale(finalScale);
+      setScale(adjustedScale);
       
-      console.log('Scale calculation:', {
-        deviceType: windowWidth <= 480 ? 'mobile' : windowWidth <= 768 ? 'tablet' : 'desktop',
-        windowSize: `${windowWidth}x${windowHeight}`,
+      console.log('Full Screen Scaling - No Black Borders:', {
+        deviceType: windowWidth < 768 ? 'Mobile' : windowWidth < 1024 ? 'Tablet' : 'Desktop',
         designSize: `${DESIGN_WIDTH}x${DESIGN_HEIGHT}`,
-        scaleX: scaleX.toFixed(2),
-        scaleY: scaleY.toFixed(2),
-        finalScale: finalScale.toFixed(2),
-        actualSize: `${Math.round(DESIGN_WIDTH * finalScale)}x${Math.round(DESIGN_HEIGHT * finalScale)}`
+        windowSize: `${windowWidth}x${windowHeight}`,
+        scaleX: scaleX.toFixed(3),
+        scaleY: scaleY.toFixed(3),
+        chosenScale: finalScale.toFixed(3),
+        finalScale: adjustedScale.toFixed(3),
+        scaledSize: `${Math.round(DESIGN_WIDTH * adjustedScale)}x${Math.round(DESIGN_HEIGHT * adjustedScale)}`,
+        coverage: 'FULL SCREEN - No Black Borders'
       });
     };
     

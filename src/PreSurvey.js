@@ -100,22 +100,45 @@ function PreSurvey() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // รวมข้อมูลผู้เล่นจาก form ก่อนหน้า (ถ้ามี)
+    const formData = JSON.parse(localStorage.getItem('formData') || '{}');
+    const combinedData = {
+      ...formData,
+      presurvey: responses,
+      timestamp: new Date().toISOString()
+    };
+    
+    // บันทึกลง localStorage ทันที
+    localStorage.setItem('presurveyData', JSON.stringify(responses));
+    localStorage.setItem('userData', JSON.stringify(combinedData));
+    
+    // เก็บชื่อผู้เล่นแยกต่างหาก
+    if (formData.name) {
+      localStorage.setItem('playerName', formData.name);
+    }
+    
+    console.log('Saved presurvey to localStorage:', responses);
+    console.log('Combined userData saved:', combinedData);
+    
     try {
+      // พยายามบันทึกลง Firebase
       await setDoc(doc(db, "formdata", id), { presurvey: responses }, { merge: true });
       console.log("Pre-survey data added to document with ID: ", id);
-      
-      gsap.to('.presurvey-container', {
-        opacity: 0,
-        y: -20,
-        duration: 0.7,
-        ease: 'power3.in',
-        onComplete: () => {
-          navigate(`/story/${id}`);
-        }
-      });
     } catch (error) {
-      console.error("Error adding document: ", error);
+      console.error("Error adding document to Firebase: ", error);
+      console.log("Continuing with localStorage data...");
     }
+    
+    gsap.to('.presurvey-container', {
+      opacity: 0,
+      y: -20,
+      duration: 0.7,
+      ease: 'power3.in',
+      onComplete: () => {
+        navigate(`/story/${id}`);
+      }
+    });
   };
 
   return (

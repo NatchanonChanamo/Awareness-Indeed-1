@@ -14,6 +14,14 @@ function Form() {
   const [acceptPrivacy, setAcceptPrivacy] = useState('');
   const navigate = useNavigate();
 
+  // ฟังก์ชันจัดการการป้อนชื่อ - ไม่อนุญาตให้ใส่ตัวเลข
+  const handleNameChange = (e) => {
+    const value = e.target.value;
+    // ใช้ regex เพื่อกรองเฉพาะตัวอักษร ช่องว่าง และเครื่องหมายพิเศษที่จำเป็น (ไม่รวมตัวเลข)
+    const filteredValue = value.replace(/[0-9]/g, '');
+    setName(filteredValue);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const formData = {
@@ -23,12 +31,30 @@ function Form() {
       playerType,
       acceptPrivacy
     };
+    
     try {
+      // บันทึกข้อมูลลง localStorage ทันที (backup)
+      localStorage.setItem('formData', JSON.stringify(formData));
+      localStorage.setItem('playerName', name); // เก็บชื่อแยกต่างหาก เพื่อความแน่ใจ
+      console.log('Saved to localStorage:', formData);
+      
+      // พยายามบันทึกลง Firebase
       const docRef = await addDoc(collection(db, "formdata"), formData);
       console.log("Document written with ID: ", docRef.id);
+      
+      // บันทึก document ID ลง localStorage ด้วย
+      localStorage.setItem('formDataId', docRef.id);
+      
       navigate(`/presurvey/${docRef.id}`); 
     } catch (e) {
       console.error("Error adding document: ", e);
+      
+      // หาก Firebase ล้มเหลว ใช้ timestamp เป็น ID แทน
+      const fallbackId = `local_${Date.now()}`;
+      localStorage.setItem('formDataId', fallbackId);
+      console.log('Using fallback ID:', fallbackId);
+      
+      navigate(`/presurvey/${fallbackId}`);
     }
   };
 
@@ -60,9 +86,10 @@ function Form() {
           <input
             type="text"
             value={name}
-            onChange={(e) => setName(e.target.value)}
+            onChange={handleNameChange}
             required
             className="w-full px-3 py-1.5 text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+            placeholder="อยากให้เราเรียกคุณว่าอะไรดี"
           />
         </div>
         <div className="mb-3">
@@ -84,9 +111,9 @@ function Form() {
             className="w-full px-3 py-1.5 text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
           >
             <option value="">เลือกเพศ</option>
-            <option value="male">ชาย</option>
-            <option value="female">หญิง</option>
-            <option value="othersgender">LGBTQ/อื่น ๆ/ไม่ระบุ</option>
+            <option value="ชาย">ชาย</option>
+            <option value="หญิง">หญิง</option>
+            <option value="ไม่ระบุ">LGBTQ/อื่น ๆ/ไม่ระบุ</option>
           </select>
         </div>
         <div className="mb-3">

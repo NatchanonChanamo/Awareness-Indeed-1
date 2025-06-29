@@ -185,18 +185,61 @@ button[type="submit"]:hover {
     font-size: 1.25rem;
   }
   
+  /* === แก้ไข: ให้มือถือแสดงผลแบบเดียวกับแท็บเล็ต/คอม === */
   .rating-scale-container {
-    flex-direction: column;
+    /* ลบ flex-direction: column ออก */
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* เพิ่ม space-between */
+    width: 100%;
+    max-width: 400px; /* จำกัดความกว้างในมือถือ */
+    margin: 0 auto; /* จัดกลาง */
     gap: 0.5rem;
   }
   
   .scale-label-start,
   .scale-label-end {
-    order: 0;
+    /* ลบ order: 0 ออก */
+    font-size: 0.65rem; /* ลดขนาดให้พอดีหน้าจอเล็ก */
+    flex-shrink: 0;
+    max-width: 60px; /* จำกัดความกว้าง */
+    line-height: 1.2;
   }
   
   .options {
-    order: 1;
-    gap: 0.5rem;
+    /* ลบ order: 1 ออก */
+    gap: 0.3rem; /* ลดระยะห่างในมือถือ */
+  }
+  
+  .options .option-label {
+    width: 32px; /* ลดขนาดปุ่มในมือถือ */
+    height: 32px;
+  }
+  
+  .options .option-value {
+    font-size: 0.8rem; /* ลดขนาดตัวเลข */
+  }
+}
+
+/* เพิ่ม Media Query สำหรับมือถือเล็กมาก */
+@media (max-width: 480px) {
+  .rating-scale-container {
+    max-width: 100%;
+    gap: 0.3rem;
+  }
+  
+  .scale-label-start,
+  .scale-label-end {
+    font-size: 0.6rem;
+    max-width: 50px;
+  }
+  
+  .options .option-label {
+    width: 28px;
+    height: 28px;
+  }
+  
+  .options .option-value {
+    font-size: 0.75rem;
   }
 }

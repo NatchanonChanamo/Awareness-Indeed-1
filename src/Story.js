@@ -314,18 +314,91 @@ function Story() {
 
   useEffect(() => {
     const fetchData = async () => {
+      console.log('🔥 Starting data fetch for id:', id);
+      
+      // ลองอ่านจาก localStorage ก่อน
+      let localUserData = null;
+      let localPlayerName = null;
+      
+      try {
+        const storedUserData = localStorage.getItem('userData');
+        const storedPlayerName = localStorage.getItem('playerName');
+        const storedFormData = localStorage.getItem('formData');
+        const storedPresurvey = localStorage.getItem('presurveyData');
+        
+        console.log('📱 localStorage userData:', storedUserData);
+        console.log('📱 localStorage playerName:', storedPlayerName);
+        console.log('📱 localStorage formData:', storedFormData);
+        console.log('📱 localStorage presurveyData:', storedPresurvey);
+        
+        if (storedUserData) {
+          localUserData = JSON.parse(storedUserData);
+          console.log('✅ Found userData in localStorage:', localUserData);
+        }
+        
+        if (storedPlayerName) {
+          localPlayerName = storedPlayerName;
+          console.log('✅ Found playerName in localStorage:', localPlayerName);
+        }
+        
+        // ถ้าไม่มีใน userData แต่มีใน formData ลองดึงจาก formData
+        if (!localUserData && storedFormData) {
+          const formData = JSON.parse(storedFormData);
+          localUserData = {
+            name: formData.name,
+            age: formData.age,
+            gender: formData.gender
+          };
+          console.log('✅ Using data from formData:', localUserData);
+        }
+        
+      } catch (error) {
+        console.error('❌ Error reading localStorage:', error);
+      }
+      
+      // ถ้ามีข้อมูลใน localStorage ใช้เลย
+      if (localUserData && localUserData.name) {
+        console.log('🎯 Using localStorage data');
+        setUserData(localUserData);
+        return;
+      }
+      
+      // ถ้าไม่มี ลองดึงจาก Firebase (เปลี่ยนจาก presurvey เป็น formdata)
       if (id) {
+        console.log('🔥 No localStorage data, fetching from Firebase for id:', id);
         try {
-          const docRef = doc(db, "presurvey", id);
+          const docRef = doc(db, "formdata", id);
           const docSnap = await getDoc(docRef);
           if (docSnap.exists()) {
-            setUserData(docSnap.data());
+            const data = docSnap.data();
+            console.log('🔥 Raw Firebase data:', data);
+            console.log('🔥 Name in Firebase:', data.name);
+            
+            setUserData(data);
+            
+            // ตรวจสอบว่า data.name มีค่าหรือไม่
+            if (data.name) {
+              // บันทึกลง localStorage สำหรับใช้ในหน้าอื่น
+              const userDataToSave = {
+                name: data.name,
+                age: data.age,
+                gender: data.gender,
+              };
+              
+              localStorage.setItem('userData', JSON.stringify(userDataToSave));
+              localStorage.setItem('playerName', data.name);
+              console.log('✅ User data saved to localStorage:', userDataToSave);
+            } else {
+              console.log('❌ No name found in Firebase data');
+            }
           } else {
-            console.log("No such document!");
+            console.log("❌ No such document in Firebase!");
           }
         } catch (error) {
-          console.error("Error fetching user data:", error);
+          console.error("❌ Error fetching user data from Firebase:", error);
         }
+      } else {
+        console.log('❌ No id provided to fetch data');
       }
     };
     fetchData();
@@ -682,8 +755,8 @@ function Story() {
   const handleChoice = (setter, value, nextStep) => {
     if (setter) setter(value);
     
-    // --- เพิ่มคะแนนการ์ดตามคำตอบ ---
-    
+    // Case 28: การเผชิญหน้ากับแสงประหลาด
+
     // Case 28: การเผชิญหน้ากับแสงประหลาด
     if (step === 28) {
       if (value === 'พยายามทำความเข้าใจ') {
@@ -701,7 +774,7 @@ function Story() {
         console.log('Step 28: Added 1 point to recharger');
       }
     }
-    
+
     // Case 74: การตอบสนองต่อร่างสีขาว
     if (step === 74) {
       if (value.includes('สงสัย แต่ยังเว้นระยะห่าง')) {
@@ -714,7 +787,7 @@ function Story() {
         addCardScore('adaptor', 2); // พยายามเข้าใจสถานการณ์
       }
     }
-    
+
     // Case 79: ความรู้สึกเมื่อเครียด
     if (step === 79) {
       if (value.includes('โศกเศร้า สิ้นหวัง')) {
@@ -726,15 +799,17 @@ function Story() {
         addCardScore('pathfinder', 2); // แสดงความรู้สึกตรงไปตรงมา
       } else if (value.includes('อ่อนแอ ว่างเปล่า')) {
         addCardScore('healer', 2);
+        addCardScore('recharger', 1); // ⭐ เพิ่ม: ความรู้สึกว่างเปล่าต้องพักและเติมพลัง
       } else if (value.includes('งงงวย สับสน')) {
         addCardScore('adaptor', 2); // ยอมรับความไม่แน่นอน
       }
     }
-    
+
     // Case 103: วิธีจัดการเรื่องไม่ดี
     if (step === 103) {
       if (value.includes('หยุดพักจากทุกสิ่ง')) {
         addCardScore('recharger', 3); // รู้จักหยุดพัก
+        addCardScore('adaptor', 1); // ⭐ เพิ่ม: การรู้ว่าเมื่อไหร่ควรหยุดคือทักษะการปรับตัว
       } else if (value.includes('หาทางระบาย')) {
         addCardScore('creator', 2); // สร้างสรรค์วิธีระบาย
         addCardScore('healer', 1);
@@ -745,13 +820,14 @@ function Story() {
         addCardScore('adaptor', 1);
       }
     }
-    
+
     // Case 105: แหล่งพลังงาน
     if (step === 105) {
       if (value.includes('ธรรมชาติ สัมผัสแสงแดด')) {
         addCardScore('recharger', 3); // ฟื้นฟูจากธรรมชาติ
       } else if (value.includes('ทำสิ่งที่รัก')) {
         addCardScore('creator', 3); // สร้างสรรค์จากความรัก
+        addCardScore('pathfinder', 1); // ⭐ เพิ่ม: การมีเป้าหมายที่รักต้องการพลังใจที่แน่วแน่
       } else if (value.includes('ระบายหรือพูดคุย')) {
         addCardScore('healer', 3); // เยียวยาผ่านการสื่อสาร
       } else if (value.includes('อยู่เงียบๆ คนเดียว')) {
@@ -759,7 +835,7 @@ function Story() {
         addCardScore('adaptor', 1);
       }
     }
-    
+
     // Case 121: ความช่วยเหลือที่ต้องการ
     if (step === 121) {
       if (value.includes('โอบกอดอย่างอ่อนโยน')) {
@@ -774,7 +850,7 @@ function Story() {
         addCardScore('healer', 3);
       }
     }
-    
+
     // Case 126: ข้อความส่งให้ตัวตนที่บอบบาง
     if (step === 126) {
       if (value.includes('ให้อภัยคุณแล้ว')) {
@@ -789,7 +865,7 @@ function Story() {
         addCardScore('healer', 3);
       }
     }
-    
+
     // Case 137: การใช้พลังสร้างสรรค์
     if (step === 137) {
       if (value.includes('แรงบันดาลใจให้ผู้อื่น')) {
@@ -799,6 +875,7 @@ function Story() {
       } else if (value.includes('ดูแลความสัมพันธ์')) {
         addCardScore('healer', 2);
         addCardScore('adaptor', 1);
+        addCardScore('recharger', 1); // ⭐ เพิ่ม: ความสัมพันธ์ดีต้องมีพลังในตัวก่อน
       } else if (value.includes('เป้าหมายที่แท้จริง')) {
         addCardScore('pathfinder', 2);
         addCardScore('creator', 1);
@@ -1303,9 +1380,79 @@ function Story() {
       case 148: return <p className={`${textBaseStyle} italic`}>“ก่อนที่คุณจะไป ช่วยรับกระดาษนี้ไว้ทีสิ แล้วก็ขอบคุณสำหรับทุกอย่างนะ คุณเป็นคนสำคัญของพวกเรา พวกเราจะไม่มีวันลืมคุณเลย” ร่างสีขาวที่เป็นคนตอนนี้บอกคุณ</p>;
       case 149: return <QuestionWrapper question="" step={step}><button className={choiceButtonStyle} onClick={() => handleChoice(null, null, 150)}>ได้สิ นั่นสินะ แล้วคุณชื่ออะไรนะ</button></QuestionWrapper>;
       case 150: return <p className={textBaseStyle}>คุณพึ่งนึกได้ว่ายังไม่รู้ชื่อของคนที่เคยเป็นร่างสีขาวเลย ที่ตอนนี้เริ่มเห็นหน้าเขาชัดขึ้นเรื่อย ๆ</p>;
-      case 151: return <p className={`${textBaseStyle} italic`}>“เราชื่อ {name} น่ะ”</p>;
+        case 151: {
+          // เพิ่ม Debug เพื่อตรวจสอบข้อมูล
+          console.log('=== Case 151 Debug ===');
+          console.log('userData:', userData);
+          console.log('name from userData:', userData?.name);
+          console.log('localStorage userData:', localStorage.getItem('userData'));
+          console.log('localStorage playerName:', localStorage.getItem('playerName'));
+          console.log('localStorage formData:', localStorage.getItem('formData'));
+          console.log('id:', id);
+          
+          let displayName = '';
+          
+          // ลำดับการหาชื่อผู้เล่น
+          // 1. จาก userData.name ที่ได้จาก useEffect
+          if (userData?.name && userData.name.trim() !== '') {
+            displayName = userData.name;
+            console.log('✅ Using userData.name:', displayName);
+          }
+          // 2. จาก localStorage playerName (มาจาก Form.js ที่เพิ่งแก้)
+          else {
+            const storedPlayerName = localStorage.getItem('playerName');
+            if (storedPlayerName && storedPlayerName.trim() !== '') {
+              displayName = storedPlayerName;
+              console.log('✅ Using localStorage playerName:', displayName);
+            }
+            // 3. จาก localStorage userData
+            else {
+              try {
+                const storedUserData = localStorage.getItem('userData');
+                if (storedUserData) {
+                  const parsedData = JSON.parse(storedUserData);
+                  if (parsedData.name && parsedData.name.trim() !== '') {
+                    displayName = parsedData.name;
+                    console.log('✅ Using localStorage userData.name:', displayName);
+                  }
+                }
+              } catch (error) {
+                console.error('❌ Error parsing userData localStorage:', error);
+              }
+              
+              // 4. จาก localStorage formData (fallback)
+              if (!displayName || displayName.trim() === '') {
+                try {
+                  const storedFormData = localStorage.getItem('formData');
+                  if (storedFormData) {
+                    const parsedData = JSON.parse(storedFormData);
+                    if (parsedData.name && parsedData.name.trim() !== '') {
+                      displayName = parsedData.name;
+                      console.log('✅ Using localStorage formData.name:', displayName);
+                    }
+                  }
+                } catch (error) {
+                  console.error('❌ Error parsing formData localStorage:', error);
+                }
+              }
+            }
+          }
+          
+          // 5. Fallback สุดท้าย
+          if (!displayName || displayName.trim() === '') {
+            displayName = 'เพื่อน';
+            console.log('❌ Using fallback name:', displayName);
+          }
+          
+          console.log('🎯 Final displayName for case 151:', displayName);
+          
+          return (
+            <p className={`${textBaseStyle} italic`}>
+              "เราชื่อ {displayName} น่ะ"
+            </p>
+          );
+        }  
       case 152: return <p className={textBaseStyle}>ก่อนที่จะงงและจะได้บอกลาคนตรงหน้า คุณก็ถูกดึงดูดด้วยแรงดึงดูดของประตูนั้นเข้าไปแล้ว...</p>;
-      
       // --- บทสรุป: การกลับมา ---
       case 153: return <p className={textBaseStyle}>.....</p>;
       case 154: return <TypewriterEffect text="06.58....06.59.......07.00" step={step} onComplete={() => {

@@ -17,7 +17,8 @@ function ResultCard() {
   const cardTitle = searchParams.get('cardTitle') || 'ผู้รับมือ';
   const cardImageSrc = searchParams.get('cardImage') || '';
   
-  const [cardImage, setCardImage] = useState(MCard5); // เริ่มต้นด้วย fallback
+  const [cardImage, setCardImage] = useState(MCard5);
+  const [playerName, setPlayerName] = useState(''); // เพิ่ม state สำหรับชื่อผู้เล่น
 
   useEffect(() => {
     console.log('=== ResultCard Debug ===');
@@ -25,31 +26,106 @@ function ResultCard() {
     console.log('URL cardType:', cardType);
     console.log('URL cardTitle:', cardTitle);
     
-    // ลองหาข้อมูลจาก localStorage ก่อน (กรณี direct access)
+    // ลองหาข้อมูลจาก localStorage หลายแหล่ง
     const storedCardData = localStorage.getItem('userCardData');
+    const storedUserData = localStorage.getItem('userData');
+    const storedFormData = localStorage.getItem('formData');
+    const storedPresurveyData = localStorage.getItem(`presurvey_${id}`);
+    
+    console.log('🔍 localStorage userCardData:', storedCardData);
+    console.log('🔍 localStorage userData:', storedUserData);
+    console.log('🔍 localStorage formData:', storedFormData);
+    console.log('🔍 localStorage presurveyData:', storedPresurveyData);
+    
     if (storedCardData) {
       try {
         const parsedData = JSON.parse(storedCardData);
-        console.log('Found localStorage data:', parsedData);
+        console.log('Found localStorage card data:', parsedData);
         if (parsedData.cardImage) {
           setCardImage(parsedData.cardImage);
           console.log('Using cardImage from localStorage:', parsedData.cardImage);
-          return;
         }
       } catch (error) {
-        console.error('Error parsing localStorage data:', error);
+        console.error('Error parsing localStorage card data:', error);
       }
     }
     
-    // ถ้าไม่มีใน localStorage ให้ใช้จาก URL parameter
+    // ลองหาชื่อจากหลายแหล่ง (ตามลำดับความสำคัญ)
+    let foundName = '';
+    
+    // 1. จาก localStorage playerName (มาจาก Form.js)
+    const storedPlayerName = localStorage.getItem('playerName');
+    if (storedPlayerName && storedPlayerName.trim() !== '') {
+      foundName = storedPlayerName;
+      console.log('✅ Player name from localStorage playerName:', storedPlayerName);
+    }
+    
+    // 2. จาก userData
+    else if (storedUserData) {
+      try {
+        const userData = JSON.parse(storedUserData);
+        if (userData.name) {
+          foundName = userData.name;
+          console.log('✅ Player name from userData:', userData.name);
+        }
+      } catch (error) {
+        console.error('Error parsing user data:', error);
+      }
+    }
+    
+    // 3. จาก formData
+    if (!foundName && storedFormData) {
+      try {
+        const formData = JSON.parse(storedFormData);
+        if (formData.name) {
+          foundName = formData.name;
+          console.log('✅ Player name from formData:', formData.name);
+        }
+      } catch (error) {
+        console.error('Error parsing form data:', error);
+      }
+    }
+    
+    // 3. จาก presurvey data
+    if (!foundName && storedPresurveyData) {
+      try {
+        const presurveyData = JSON.parse(storedPresurveyData);
+        if (presurveyData.name) {
+          foundName = presurveyData.name;
+          console.log('✅ Player name from presurveyData:', presurveyData.name);
+        }
+      } catch (error) {
+        console.error('Error parsing presurvey data:', error);
+      }
+    }
+    
+    // 4. ลองหาจาก Firebase โดยใช้ id
+    if (!foundName && id) {
+      // ฟังก์ชันนี้จะทำงานใน useEffect แยก
+      console.log('🔍 Will try to fetch from Firebase with id:', id);
+    }
+    
+    if (foundName) {
+      setPlayerName(foundName);
+      console.log('✅ Final player name set:', foundName);
+    } else {
+      console.log('❌ No name found from any source');
+    }
+    
+    // จัดการรูปภาพ
     if (cardImageSrc && cardImageSrc !== 'undefined' && cardImageSrc !== '') {
       setCardImage(cardImageSrc);
       console.log('Using cardImage from URL:', cardImageSrc);
-    } else {
-      setCardImage(MCard5); // ใช้ fallback image
+    } else if (!storedCardData) {
+      setCardImage(MCard5);
       console.log('Using fallback cardImage:', MCard5);
     }
-  }, [cardImageSrc, cardType, cardTitle]);
+  }, [cardImageSrc, cardType, cardTitle, id]);
+
+  // ⭐ Debug: แสดงชื่อที่จะใช้
+  useEffect(() => {
+    console.log('🎯 Final playerName to display:', playerName);
+  }, [playerName]);
 
   useEffect(() => {
     if (cardRef.current) {
@@ -71,7 +147,7 @@ function ResultCard() {
     })
       .then((dataUrl) => {
         const link = document.createElement('a');
-        link.download = `covenant-card-${cardTitle}-${id}.png`;
+        link.download = `covenant-card-${cardTitle}-${playerName || id}.png`;
         link.href = dataUrl;
         link.click();
       })
@@ -80,6 +156,35 @@ function ResultCard() {
         alert('ขออภัย, ไม่สามารถบันทึกรูปภาพได้ในขณะนี้');
       });
   };
+
+  // เพิ่ม useEffect แยกสำหรับดึงข้อมูลจาก Firebase
+  useEffect(() => {
+    const fetchUserDataFromFirebase = async () => {
+      if (!playerName && id) { // ถ้ายังไม่มีชื่อและมี id
+        try {
+          const { doc, getDoc } = await import('firebase/firestore');
+          const { db } = await import('./firebase');
+          
+          const docRef = doc(db, "formdata", id); // เปลี่ยนจาก presurvey เป็น formdata
+          const docSnap = await getDoc(docRef);
+          
+          if (docSnap.exists()) {
+            const data = docSnap.data();
+            if (data.name) {
+              setPlayerName(data.name);
+              console.log('✅ Player name from Firebase:', data.name);
+            }
+          } else {
+            console.log('❌ No Firebase document found for id:', id);
+          }
+        } catch (error) {
+          console.error('Error fetching from Firebase:', error);
+        }
+      }
+    };
+    
+    fetchUserDataFromFirebase();
+  }, [id, playerName]);
 
   return (
     <div className="result-container">
@@ -92,31 +197,32 @@ function ResultCard() {
       <main className="card-area">
         <div ref={cardRef} className="covenant-card">
           {cardImage ? (
-            <div style={{ 
-              width: '100%', 
-              height: '100%', 
-              display: 'flex', 
-              flexDirection: 'column', 
-              alignItems: 'center', 
-              justifyContent: 'center',
-              position: 'relative' /* เพิ่ม relative positioning */
-            }}>
+            <div className="card-container">
               <img 
                 src={cardImage} 
                 alt={`${cardType} - ${cardTitle}`} 
                 className="card-image"
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  objectFit: 'contain', /* เปลี่ยนเป็น contain เพื่อให้เห็นการ์ดเต็ม */
-                  objectPosition: 'center'
-                }}
                 onError={(e) => {
                   e.target.style.display = 'none';
                   e.target.nextElementSibling.style.display = 'block';
                 }}
               />
-              <div style={{ display: 'none', textAlign: 'center', padding: '2rem' }}>
+              
+              {/* เพิ่ม overlay สำหรับชื่อผู้เล่น */}
+              {playerName && (
+                <div className="name-overlay">
+                  <div className="name-from">
+                    <span className="name-label"></span>
+                    <span className="player-name">{playerName}</span>
+                  </div>
+                  <div className="name-to">
+                    <span className="name-label"></span>
+                    <span className="player-name">{playerName}</span>
+                  </div>
+                </div>
+              )}
+              
+              <div className="card-fallback" style={{ display: 'none', textAlign: 'center', padding: '2rem' }}>
                 <h3 style={{ color: '#7c3aed', marginBottom: '1rem' }}>{cardTitle}</h3>
                 <p style={{ color: '#6b7280' }}>{cardType}</p>
                 <p style={{ fontSize: '0.8rem', color: '#9ca3af', marginTop: '1rem' }}>

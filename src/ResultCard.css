@@ -71,6 +71,16 @@
 }
 
 /* --- เพิ่ม: สไตล์สำหรับรูปภาพการ์ด --- */
+.card-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
 .card-image {
   width: 100%;
   height: 100%;
@@ -78,6 +88,110 @@
   object-fit: contain; /* ใช้ contain เพื่อให้เห็นการ์ดเต็ม */
   object-position: center; /* จัดให้อยู่กึ่งกลาง */
   border-radius: 15px; /* ให้มุมโค้งตามการ์ด */
+}
+
+/* สไตล์สำหรับ overlay ชื่อ */
+.name-overlay {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  pointer-events: none; /* ไม่ขัดขวางการคลิก */
+  z-index: 10;
+}
+
+/* ปรับ position ของชื่อให้อยู่ในวงกลมที่กำหนด */
+.name-from {
+  position: absolute;
+  top: 2%; /* ขึ้นไปใกล้ขอบบนมากขึ้น */
+  left: 25%; /* ขยับมาซ้ายอีกหน่อย จาก 30% เป็น 25% */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.name-to {
+  position: absolute;
+  bottom: 1%; /* ลงไปอีกหน่อย จาก 2% เป็น 1% */
+  left: 25%; /* ขยับมาซ้ายอีกหน่อย จาก 30% เป็น 25% */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.name-label {
+  font-family: 'Prompt', sans-serif;
+  font-size: 1rem; /* เพิ่มจาก 0.8rem */
+  font-weight: 500; /* เพิ่มความหนา */
+  color: #2D1810;
+  margin-bottom: 3px;
+  text-shadow: 2px 2px 4px rgba(255, 255, 255, 1);
+}
+
+.player-name {
+  font-family: 'Prompt', sans-serif;
+  font-size: 1.8rem; /* เพิ่มขนาดให้เท่าหัวข้อ */
+  font-weight: 700;
+  color: #1A0E0A;
+  text-shadow: 2px 2px 4px rgba(255, 255, 255, 1);
+  max-width: 150px; /* เพิ่มความกว้างรองรับตัวอักษรใหญ่ขึ้น */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Responsive สำหรับขนาดชื่อ */
+@media (max-width: 480px) {
+  .name-label {
+    font-size: 0.6rem;
+  }
+  
+  .player-name {
+    font-size: 1.2rem; /* เพิ่มขนาดในมือถือ */
+    max-width: 80px;
+  }
+}
+
+@media (min-width: 768px) {
+  .name-label {
+    font-size: 0.8rem;
+  }
+  
+  .player-name {
+    font-size: 1.6rem; /* เพิ่มขนาดในแท็บเล็ต */
+    max-width: 130px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .name-label {
+    font-size: 0.9rem;
+  }
+  
+  .player-name {
+    font-size: 1.8rem; /* ขนาดเต็มในคอม */
+    max-width: 150px;
+  }
+}
+
+/* ปรับ position สำหรับหน้าจอแนวนอน */
+@media (orientation: landscape) and (max-height: 700px) {
+  .name-from {
+    top: 6%;
+  }
+  
+  .name-to {
+    bottom: 6%;
+  }
+  
+  .name-label {
+    font-size: 0.6rem;
+  }
+  
+  .player-name {
+    font-size: 0.8rem;
+  }
 }
 
 .result-footer {
