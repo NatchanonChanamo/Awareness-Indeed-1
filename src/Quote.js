@@ -23,7 +23,7 @@ const quotes = [
     description: "นักวิจัยและศาสตราจารย์ด้านสังคมสงเคราะห์"
   },
   {
-    thai: "ฉันไม่ไว้ใจคนที่ไม่รักตัวเองแล้วมาบอกว่า 'ฉันรักคุณ'... จงระวัง เมื่อคนเปลือยกายหยิบยื่นเสื้อให้คุณ",
+    thai: "ฉันไม่ไว้ใจคนที่ไม่รักตัวเองแล้วมาบอกว่า 'ฉันรักคุณ'... ฉะนั้นจงระวัง เมื่อคนเปลือยกายหยิบยื่นเสื้อให้คุณ",
     english: "I don't trust people who don't love themselves and tell me, 'I love you.' ... Be careful when a naked person offers you a shirt.",
     author: "Maya Angelou",
     description: "กวีและนักเขียนชาวอเมริกัน"
@@ -89,13 +89,13 @@ const quotes = [
     description: "นักแสดงและนักมนุษยธรรม"
   },
   {
-    thai: "จงเป็นเวอร์ชันที่ดีที่สุดของตัวเอง ไม่ใช่เป็นแค่สำเนาของคนอื่น",
+    thai: "จงเป็นเวอร์ชันที่ดีที่สุดของตัวเอง ไม่ใช่เป็นแค่สำเนาลอกเลียนแบบของคนอื่น",
     english: "Always be a first-rate version of yourself, instead of a second-rate version of somebody else.",
     author: "Judy Garland",
     description: "นักแสดงและนักร้อง"
   },
   {
-    thai: "ฉันจำเป็นต้องสูญเสียเธอไป เพื่อที่จะได้รักตัวเอง",
+    thai: "ฉันอาจจำเป็นต้องสูญเสียเธอไป เพื่อที่จะได้รักตัวเอง",
     english: "I needed to lose you to love me.",
     author: "Selena Gomez",
     description: "จากเพลง Lose You to Love Me"
@@ -107,7 +107,7 @@ const quotes = [
     description: "จากเพลง Daylight"
   },
   {
-    thai: "ฉันคือโซลเมตของตัวเอง ฉันรู้ว่าฉันเป็นควีน แต่ฉันไม่ต้องการมงกุฎใดๆ",
+    thai: "ฉันคือ soulmate ของตัวเอง ฉันรู้ว่าฉันเป็นควีน แต่ฉันไม่ต้องการมงกุฎใดๆ",
     english: "I'm my own soulmate... I know I'm a queen but I don't need no crown.",
     author: "Lizzo",
     description: "จากเพลง Soulmate"
@@ -123,6 +123,12 @@ const quotes = [
     english: "",
     author: "เฉาก๊วย จีสอง",
     description: "จากเพลง ไม่มีใครตาย เพราะคนอื่นไม่รัก"
+  },
+  {
+    thai: "ถ้าคุณได้รับความสามารถที่จะให้รักในบางสิ่ง จงรักตัวเองก่อน",
+    english: "If you have the ability to love, love yourself first.",
+    author: "Charles Bukowski",
+    description: "นักปรัชญาและนักเขียน"
   }
 ];
 
