@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/Awareness-Indeed-1/static/css/main.7788dbec.css",
-    "main.js": "/Awareness-Indeed-1/static/js/main.4e168ba5.js",
+    "main.css": "/Awareness-Indeed-1/static/css/main.e12c7de7.css",
+    "main.js": "/Awareness-Indeed-1/static/js/main.f3c0d41c.js",
     "static/media/bgmusic2.mp3": "/Awareness-Indeed-1/static/media/bgmusic2.4e5f7a76b34f418a08db.mp3",
     "static/media/bgmusic3.mp3": "/Awareness-Indeed-1/static/media/bgmusic3.6e3460caad967407a13b.mp3",
     "static/media/bgmusic1.mp3": "/Awareness-Indeed-1/static/media/bgmusic1.057218152139eb9dd3bf.mp3",
@@ -62,11 +62,11 @@
     "static/media/room4.jpg": "/Awareness-Indeed-1/static/media/room4.c3c3571b5338795e35e4.jpg",
     "static/media/bulogo.png": "/Awareness-Indeed-1/static/media/bulogo.e8442173d3f64edea1a0.png",
     "index.html": "/Awareness-Indeed-1/index.html",
-    "main.7788dbec.css.map": "/Awareness-Indeed-1/static/css/main.7788dbec.css.map",
-    "main.4e168ba5.js.map": "/Awareness-Indeed-1/static/js/main.4e168ba5.js.map"
+    "main.e12c7de7.css.map": "/Awareness-Indeed-1/static/css/main.e12c7de7.css.map",
+    "main.f3c0d41c.js.map": "/Awareness-Indeed-1/static/js/main.f3c0d41c.js.map"
   },
   "entrypoints": [
-    "static/css/main.7788dbec.css",
-    "static/js/main.4e168ba5.js"
+    "static/css/main.e12c7de7.css",
+    "static/js/main.f3c0d41c.js"
   ]
 }
