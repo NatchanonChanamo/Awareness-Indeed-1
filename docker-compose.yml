@@ -1,6 +1,10 @@
+version: '3.8'
 services:
-  awareness-indeed-web:
-    build: .
-    container_name: awareness_indeed_app
+  awareness-indeed:
+    build:
+      context: .
+      dockerfile: Dockerfile
     ports:
-      - '8080:80'
+      - "80:80"  # หรือ port ที่ต้องการ
+    container_name: awareness-indeed-app
+    restart: unless-stopped
